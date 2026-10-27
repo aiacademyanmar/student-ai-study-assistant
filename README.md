@@ -37,3 +37,7 @@ Source project under `app/src/main/java/asia/aaii/studentstudy/`.
 - This is **not** a cache, download, transcript, translation, or redistribution of OpenAI Academy's full proprietary courses or recordings.
 - Academy videos and gated site content remain online-only; online Academy login may still need an external browser.
 - Native Chat remains dependent on a separately deployed HTTPS backend; its API keys are never bundled in the APK.
+
+
+## V2.5 External Browser
+All Academy Courses navigation opens https://academy.openai.com/pages/courses?linkMenu=Courses via Android ACTION_VIEW in an external web browser. Bundled original Burmese offline reading lessons remain available inside the app.
