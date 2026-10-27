@@ -205,7 +205,7 @@ public class MainActivity extends Activity {
             tab.setClickable(true);
             tab.setOnClickListener(v->{
                 if("chat".equals(route)){startActivity(new Intent(this,NativeChatActivity.class));finish();}
-                else if("courses".equals(route)){startActivity(new Intent(this,AcademyWebViewActivity.class));finish();}
+                else if("courses".equals(route)){AcademyBrowser.openCourses(this);}
                 else {
                     Intent intent=new Intent(this,CatalogActivity.class);
                     intent.putExtra("open_page",route);
