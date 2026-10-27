@@ -30,7 +30,13 @@ public class OLevelSyllabusActivity extends Activity{
  TextView text(String s,int size,boolean bold){TextView t=new TextView(this);t.setText(s);t.setTextColor(NAVY);t.setTextSize(size);if(bold)t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);t.setLineSpacing(dp(3),1.08f);return t;}
  void add(String s,int size,boolean bold,int margin){TextView t=text(s,size,bold);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(margin);body.addView(t,lp);}
  void btn(String s,Runnable action){TextView v=text(s,15,false);v.setPadding(dp(15),dp(15),dp(12),dp(15));v.setBackground(bg(WHITE));v.setOnClickListener(w->action.run());LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(9);body.addView(v,lp);}
- @Override public void onCreate(Bundle b){super.onCreate(b);prefs=getSharedPreferences("gce_o_2026_v211",MODE_PRIVATE);draw();}
+ @Override public void onCreate(Bundle b){super.onCreate(b);prefs=getSharedPreferences("gce_o_2026_v211",MODE_PRIVATE);
+  Intent from=getIntent();subject=from.getIntExtra("subject_index",-1);topic=from.getIntExtra("topic_index",-1);subtopic=from.getIntExtra("subtopic_index",-1);stage=from.getIntExtra("lesson_index",-1);
+  if(subject<0||subject>=OLevel2026.SUBJECTS.length){subject=-1;topic=-1;subtopic=-1;stage=-1;}
+  else if(topic<0||topic>=OLevel2026.SUBJECTS[subject].topics.length){topic=-1;subtopic=-1;stage=-1;}
+  else if(subtopic<0||subtopic>=OLevel2026.SUBJECTS[subject].topics[topic].subtopics.length){subtopic=-1;stage=-1;}
+  else if(stage<0||stage>=OLevel2026.LESSON_STAGES.length)stage=-1;
+  draw();}
  String context(){
   OLevel2026.Subject s=OLevel2026.SUBJECTS[subject];OLevel2026.Topic t=s.topics[topic];
   return "Cambridge O Level | "+s.name+" ("+s.code+") | exam-year 2026 | Topic: "+t.name+" | Subtopic: "+t.subtopics[subtopic]+" | Lesson: "+OLevel2026.LESSON_STAGES[stage];
@@ -64,6 +70,7 @@ public class OLevelSyllabusActivity extends Activity{
   if(clipboard!=null)clipboard.setPrimaryClip(ClipData.newPlainText("O Level prompt",s));
   Toast.makeText(this,"Prompt ကို Copy ပြီးပါပြီ",Toast.LENGTH_SHORT).show();
  }
+ void openCoverage(){Intent intent=new Intent(this,SyllabusCoverageActivity.class);intent.putExtra("subject_index",subject);intent.putExtra("topic_index",topic);intent.putExtra("subtopic_index",subtopic);startActivity(intent);}
  void openOfficial(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception ex){Toast.makeText(this,"Browser မတွေ့ပါ",Toast.LENGTH_SHORT).show();}}
  void back(){if(stage>=0)stage=-1;else if(subtopic>=0)subtopic=-1;else if(topic>=0)topic=-1;else if(subject>=0)subject=-1;else{finish();return;}draw();}
  void draw(){
@@ -95,6 +102,7 @@ public class OLevelSyllabusActivity extends Activity{
      btn("📄 Official Cambridge Syllabus PDF",()->openOfficial(audit.pdfUrl));
    }
    btn("🌐 Cambridge Subject Page",()->openOfficial(s.officialUrl));
+   btn("✅ Coverage Checklist · Learning Outcomes",()->openCoverage());
    for(int x=0;x<s.topics.length;x++){final int i=x;OLevel2026.Topic t=s.topics[i];btn("Topic "+(x+1)+" · "+t.name+"\n"+t.subtopics.length+" Study subtopics",()->{topic=i;draw();});}
   }else if(subtopic<0){
    OLevel2026.Topic t=OLevel2026.SUBJECTS[subject].topics[topic];
@@ -113,6 +121,7 @@ public class OLevelSyllabusActivity extends Activity{
    btn("📝 Exam Practice — Timed Questions",()->run("exam"));
    btn("⭐ Exam Tips & Summary — Active Recall",()->run("revision"));
    btn("🧪 Practical / Source / Data Skills AI Prompt",()->run("practical"));
+   btn("✅ Syllabus Coverage Checklist",()->openCoverage());
    btn("📋 Teaching Prompt Copy",()->copy(instruction("teach")));
    btn("📋 Practice Prompt Copy",()->copy(instruction("practice")));
    btn("📋 Exam Prompt Copy",()->copy(instruction("exam")));
