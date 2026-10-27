@@ -85,7 +85,7 @@ public class OLevelSyllabusActivity extends Activity{
   if(subject<0){
    add("Subject → Topic → Subtopic → Lesson → Exercises → Exam Practice",16,true,4);
    add(OLevel2026.SUBJECTS.length+" Subjects · "+OLevel2026.topicCount()+" Topic groups · "+OLevel2026.subtopicCount()+" Study subtopics · "+OLevel2026.lessonCount()+" Lesson stages",13,false,9);
-   add("Official heading အတည်ပြုထားသည့်ဘာသာ ၅ ခု၊ Study Map / အသေးစိတ်စစ်ဆေးရန် ကျန်ရှိသည့်ဘာသာ ၇ ခု။ Subtopic/Lesson များသည် App ရဲ့ ကိုယ်ပိုင်သင်ယူရေးခွဲခြားမှုများဖြစ်သည်။",13,false,12);
+   add("ဘာသာရပ် ၁၂ ခုအတွက် top-level heading audit လုပ်ထားပြီး Outcome အပြည့်အစုံကို ဆက်စစ်ရပါမည်။ Subtopic/Lesson များသည် App ရဲ့ ကိုယ်ပိုင်သင်ယူရေးခွဲခြားမှုများဖြစ်သည်။",13,false,12);
    for(int x=0;x<OLevel2026.SUBJECTS.length;x++){final int i=x;OLevel2026.Subject s=OLevel2026.SUBJECTS[i];btn("📚 "+s.name+" · "+s.code+"\n"+s.topics.length+" Topic groups · syllabus "+s.years+"\n"+(s.officialTopicHeadings?"✓ Verified top-level headings":"◷ Study Map · Verify PDF"),()->{subject=i;draw();});}
   }else if(topic<0){
    OLevel2026.Subject s=OLevel2026.SUBJECTS[subject];
@@ -121,7 +121,7 @@ public class OLevelSyllabusActivity extends Activity{
    btn("📝 Exam Practice — Timed Questions",()->run("exam"));
    btn("⭐ Exam Tips & Summary — Active Recall",()->run("revision"));
    btn("🧪 Practical / Source / Data Skills AI Prompt",()->run("practical"));
-   btn("✅ Syllabus Coverage Checklist",()->openCoverage());
+   btn("✅ Syllabus Coverage / Gap Report",()->openCoverage());
    btn("📋 Teaching Prompt Copy",()->copy(instruction("teach")));
    btn("📋 Practice Prompt Copy",()->copy(instruction("practice")));
    btn("📋 Exam Prompt Copy",()->copy(instruction("exam")));
