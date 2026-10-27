@@ -293,7 +293,7 @@ public class NativeChatActivity extends Activity {
     private void go(String destination){
         if("tutor".equals(destination))return;
         Intent next;
-        if("courses".equals(destination))next=new Intent(this,AcademyWebViewActivity.class);
+        if("courses".equals(destination)){AcademyBrowser.openCourses(this);return;}
         else {
             next=new Intent(this,CatalogActivity.class);
             next.putExtra("open_page",destination);
