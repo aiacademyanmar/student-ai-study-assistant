@@ -115,7 +115,7 @@ public class SyllabusAuditActivity extends Activity {
   root.addView(StudyDesign.navigation(this,SyllabusAuditActivity.class));
  }
  private void subjects(){
-  body.addView(StudyDesign.hero(this,"2026 EXAM YEAR · USER AUDIT","O / AS / A Level Coverage","24 subjects · PDF references · Audit gaps"));
+  body.addView(StudentPromoBanner.create(this,"2026 SYLLABUS AUDIT","Check Your\nStudy Coverage","24 subjects · User-reviewed PDF mapping","Open Coverage",()->{},false));
   heading("⚠ These are app-defined study items. Match and gap labels come from YOUR manual PDF review; Cambridge has not verified them.",13);
   LinearLayout tabs=StudyDesign.row(this);
   for(String mode:new String[]{"O","A"}){
