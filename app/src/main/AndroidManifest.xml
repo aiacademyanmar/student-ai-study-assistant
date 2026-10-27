@@ -12,6 +12,7 @@
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".NativeChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".OfflineReaderActivity" android:exported="false" />
+        <activity android:name=".GceStudyActivity" android:exported="false" />
         <activity
             android:name=".CatalogActivity"
             android:screenOrientation="unspecified"
