@@ -123,7 +123,9 @@ public class CatalogActivity extends Activity {
         hero.addView(image,lp(128,171));margin(hero,body,0,0,0,10);
     }
     private void home(){
-        brand();hero();
+        brand();
+        body.addView(StudentPromoBanner.create(this,"MYANMAR STUDENTS","GCE O Level +\nAS/A Level","AI နဲ့အတူ လေ့လာပါ","Explore Study",()->startActivity(new Intent(this,PromotionActivity.class)),true));
+        margin(StudyDesign.action(this,"✨ Illustration Promotion / Share",false,()->startActivity(new Intent(this,PromotionActivity.class))),body,0,10,0,12);
         LinearLayout quick=StudyDesign.card(this);
         quick.addView(StudyDesign.text(this,"YOUR LEARNING SPACE",12,StudyDesign.BLUE,true));
         LinearLayout shortcuts=StudyDesign.row(this);
@@ -155,6 +157,7 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("🎨 Student AI Promotional Page","ကောင်လေး/ကောင်မလေး Illustration · Share ›",()->startActivity(new Intent(this,PromotionActivity.class)));
         section("📋 Syllabus Outcome Audit · O & A Level","24 subjects · Manual PDF mapping · Pending & Gaps ›",()->startActivity(new Intent(this,SyllabusAuditActivity.class)));
         section("✍ Native Written Answer · Self-Review","48 original exercises · AI review & model answers ›",()->startActivity(new Intent(this,WrittenPracticeActivity.class)));
         section("📈 Topic Learning Analytics","Weak topics & Written self-review ›",()->startActivity(new Intent(this,TopicAnalyticsActivity.class)));
@@ -276,7 +279,7 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.27");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.28");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
