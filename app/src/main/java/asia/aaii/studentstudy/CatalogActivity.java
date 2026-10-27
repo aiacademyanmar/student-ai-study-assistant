@@ -144,6 +144,12 @@ public class CatalogActivity extends Activity {
         gce.addView(tv("ဘာသာရပ် ၂၄ ခု · Chapter ၉၆ ခု · Lesson ၂၈၈ ခု · AI Prompts & Exercises",13,MUTED,false));
         margin(button("GCE AI Tutor ဖွင့်ရန်  ›",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),gce,0,12,0,0);
         margin(gce,body,0,0,0,6);
+        section("👩‍🏫  TEACHER RENT · ဆရာ/ဆရာမ ငှားရန်","ဆရာရှာရန်  ›",()->startActivity(new Intent(this,TeacherRentActivity.class)));
+        LinearLayout rent=card(0xFFE9F4FF);
+        rent.addView(tv("GCE O & A Level · Teacher Marketplace",17,NAVY,true));
+        rent.addView(tv("ဘာသာရပ်အလိုက် Teacher Profile ရှာဖွေခြင်း၊ Online / In-person ရွေးချယ်ခြင်း၊ Booking Request Draft သိမ်းခြင်း",12,MUTED,false));
+        margin(button("Teacher Rent Menu ဖွင့်ရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),rent,0,12,0,0);
+        margin(rent,body,0,0,0,6);
         section("📖  Offline မြန်မာစာဖတ်ခန်း","ဖတ်ရန်  ›",()->startActivity(new Intent(this,OfflineReaderActivity.class)));
         LinearLayout offline=card(0xFFE3F6EC);
         offline.addView(tv("AI at Work · Work Users",16,NAVY,true));
@@ -232,11 +238,12 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.6");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.9");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🎓  GCE O & A Level AI Tutor",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),body,0,0,0,12);
+        margin(button("👩‍🏫  TEACHER RENT · ဆရာ/ဆရာမ ငှားရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),body,0,0,0,12);
         margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
         margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->AcademyBrowser.openCourses(this)),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
@@ -255,9 +262,9 @@ public class CatalogActivity extends Activity {
         wrapper.addView(hairline,new LinearLayout.LayoutParams(-1,d(1)));
         LinearLayout bar=row();
         padding(bar,2,3,2,4);
-        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သင်တန်း","ပိုမို"};
-        String[] icons={"⌂","▤","✦","▣","☰"};
-        String[] routes={"home","list","tutor","courses","profile"};
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သင်တန်း","ဆရာငှား","ပိုမို"};
+        String[] icons={"⌂","▤","✦","▣","♙","☰"};
+        String[] routes={"home","list","tutor","courses","teacher","profile"};
         for(int i=0;i<routes.length;i++){
             final String route=routes[i];
             boolean active=page.equals(route)
@@ -282,6 +289,8 @@ public class CatalogActivity extends Activity {
                     startActivity(intent);
                 }else if("courses".equals(route)){
                     AcademyBrowser.openCourses(this);
+                }else if("teacher".equals(route)){
+                    startActivity(new Intent(this,TeacherRentActivity.class));
                 }else {
                     if("list".equals(route)) filter=-1;
                     show(route);
