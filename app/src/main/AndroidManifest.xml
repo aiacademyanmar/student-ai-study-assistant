@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
@@ -9,6 +10,8 @@
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:supportsRtl="true">
         <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".NativeChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".AcademyWebViewActivity" android:exported="false" />
         <activity
             android:name=".CatalogActivity"
             android:screenOrientation="unspecified"
