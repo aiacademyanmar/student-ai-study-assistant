@@ -43,6 +43,8 @@ public class NativeChatActivity extends Activity {
     private JSONArray messages = new JSONArray();
     private SharedPreferences preferences;
     private boolean sending=false;
+    private String conversationKey="conversation";
+    private String sessionTitle="Native AI Chat · မြန်မာဘာသာ";
 
     private int dp(float n){return (int)(getResources().getDisplayMetrics().density*n+.5f);}
     private GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));return d;}
@@ -65,7 +67,11 @@ public class NativeChatActivity extends Activity {
     @Override public void onCreate(Bundle state){
         super.onCreate(state);
         preferences=getSharedPreferences("student_ai_chat_v23",MODE_PRIVATE);
-        try{messages=new JSONArray(preferences.getString("conversation","[]"));}catch(Exception ignored){messages=new JSONArray();}
+        String session=getIntent().getStringExtra("chat_session");
+        if(session!=null&&session.matches("[a-zA-Z0-9_]{1,100}"))conversationKey="conversation_"+session;
+        String title=getIntent().getStringExtra("chat_title");
+        if(title!=null&&!title.trim().isEmpty())sessionTitle=title;
+        try{messages=new JSONArray(preferences.getString(conversationKey,"[]"));}catch(Exception ignored){messages=new JSONArray();}
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(WHITE);
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -85,7 +91,7 @@ public class NativeChatActivity extends Activity {
         TextView back=tap("‹",BLUE,0xFFE8F1FF,()->go("home"));top.addView(back);
         LinearLayout titles=column();pad(titles,12,0,0,0);
         titles.addView(text("✦ AI ဆရာ",20,NAVY,true));
-        titles.addView(text("Native AI Chat · မြန်မာဘာသာ",11,MUTED,false));
+        titles.addView(text(sessionTitle,11,MUTED,false));
         top.addView(titles,new LinearLayout.LayoutParams(0,-2,1));
         top.addView(tap("⚙",BLUE,0xFFE8F1FF,()->settings()));
         top.addView(tap("↺",MUTED,0xFFE8F1FF,()->confirmClear()));
@@ -169,7 +175,7 @@ public class NativeChatActivity extends Activity {
             for(int i=messages.length()-40;i<messages.length();i++)trimmed.put(messages.opt(i));
             messages=trimmed;
         }
-        preferences.edit().putString("conversation",messages.toString()).apply();
+        preferences.edit().putString(conversationKey,messages.toString()).apply();
         drawHistory();
     }
 
@@ -177,7 +183,7 @@ public class NativeChatActivity extends Activity {
         if(sending)return;
         String msg=composer.getText().toString().trim();
         if(msg.isEmpty())return;
-        if(msg.length()>3000){composer.setError("စာလုံး ၃၀၀၀ အောက် ရေးပါ");return;}
+        if(msg.length()>6000){composer.setError("စာလုံး ၆၀၀၀ အောက် ရေးပါ");return;}
         String endpoint=preferences.getString("backend_url","").trim();
         if(!endpoint.startsWith("https://")){
             Toast.makeText(this,"အရင်ဆုံး HTTPS AI Server ချိတ်ဆက်ပါ",Toast.LENGTH_LONG).show();settings();return;
@@ -263,7 +269,7 @@ public class NativeChatActivity extends Activity {
         new AlertDialog.Builder(this).setTitle("စကားဝိုင်းများ ရှင်းမလား?")
             .setMessage("ဖုန်းထဲမှာ သိမ်းထားသော AI စကားဝိုင်းများကို ဖျက်မည်။")
             .setPositiveButton("ရှင်းမည်",(d,w)->{
-                messages=new JSONArray();preferences.edit().remove("conversation").apply();render();
+                messages=new JSONArray();preferences.edit().remove(conversationKey).apply();render();
             }).setNegativeButton("မလုပ်တော့",null).show();
     }
 
