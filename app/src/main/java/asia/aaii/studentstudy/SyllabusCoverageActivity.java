@@ -41,6 +41,8 @@ public final class SyllabusCoverageActivity extends Activity {
     private int subject=-1,topic=-1,subtopic=-1,lesson=0;
     private SharedPreferences prefs;
     private OutcomeCrosswalkStore crosswalk;
+    private SyllabusGapEngine gaps;
+    private int exportType=0;
     private LinearLayout root,body;
     private boolean onlyPending=false;
     private int dp(float x){return (int)(getResources().getDisplayMetrics().density*x+.5f);}
@@ -87,7 +89,7 @@ public final class SyllabusCoverageActivity extends Activity {
     }
     private String percent(int k,int total){return total==0?"0%":((int)Math.round(k*100.0/total))+"%";}
     @Override public void onCreate(Bundle b){
-        super.onCreate(b);prefs=getSharedPreferences("o_level_coverage_v215",MODE_PRIVATE);crosswalk=new OutcomeCrosswalkStore(this);
+        super.onCreate(b);prefs=getSharedPreferences("o_level_coverage_v215",MODE_PRIVATE);crosswalk=new OutcomeCrosswalkStore(this);gaps=new SyllabusGapEngine(this);
         subject=getIntent().getIntExtra("subject_index",-1);
         topic=getIntent().getIntExtra("topic_index",-1);
         subtopic=getIntent().getIntExtra("subtopic_index",-1);
@@ -148,6 +150,7 @@ public final class SyllabusCoverageActivity extends Activity {
         int maps=0,matches=0,gaps=0;
         for(OLevel2026.Subject item:OLevel2026.SUBJECTS){int[] x=crosswalk.counts(item,-1);maps+=x[0];matches+=x[1];gaps+=x[2];}
         add(body,text("Crosswalk references: "+maps+" · user-match "+matches+" · gaps "+gaps,13,BLUE,true),12);
+        add(body,button("📊 Coverage Gap Report (App Study Map)",()->showGapReport(),true),9);
         add(body,button("📤 Manual Crosswalk JSON Export",()->exportCrosswalk(),false),9);
         add(body,button(onlyPending?"✓ Filter ပိတ်ပြီး အားလုံးပြမည်":"◷ မပြီးသေးသည့်ဘာသာများသာ ပြမည်",()->{
             onlyPending=!onlyPending;draw();
@@ -169,6 +172,7 @@ public final class SyllabusCoverageActivity extends Activity {
         add(body,text("2026 Exam · Syllabus reference period "+s.years,12,MUTED,false),6);
         add(body,text("Topic headings: "+(s.officialTopicHeadings?"cross-check recorded":"verification pending")+
             "\nLearning outcome clauses: mapping still requires manual PDF checking",13,ORANGE,true),11);
+        add(body,button("📊 Subject Coverage Gap Report",()->showGapReport(),true),9);
         add(body,button("🌐 Cambridge subject page ဖွင့်ရန်",()->open(s.officialUrl),false),12);
         Cambridge2026Audit.Source doc=Cambridge2026Audit.byCode(s.code);
         if(doc!=null)add(body,button("📄 PDF Syllabus ဖွင့်ရန်",()->open(doc.pdfUrl),false),8);
@@ -219,6 +223,7 @@ public final class SyllabusCoverageActivity extends Activity {
             "မသတ်မှတ်ရသေး — Official PDF မှ Page/Clause ကို ကိုယ်တိုင်ရှာပြီး ထည့်ပါ။":
             "Recorded PDF page/clause: "+existing,13,existing.isEmpty()?ORANGE:GREEN,false),8);
         add(body,button("✎ PDF Page / Clause မှတ်သားရန်",()->editReference(),false),9);
+        add(body,button("🤖 Potential Gap Lesson Prompt",()->gapPrompt(),true),9);
         add(body,button("🌐 Cambridge Syllabus ကို စစ်ရန်",()->{
             Cambridge2026Audit.Source audit=Cambridge2026Audit.byCode(s.code);
             open(audit!=null?audit.pdfUrl:s.officialUrl);
@@ -252,6 +257,7 @@ public final class SyllabusCoverageActivity extends Activity {
             String status=record.optString("status",OutcomeCrosswalkStore.PENDING);
             add(body,button("["+(i+1)+"] "+OutcomeCrosswalkStore.statusLabel(status)+
                 "\nPDF: "+record.optString("reference","not specified")+
+                "\nOutcome ID: "+record.optString("outcome_id","not entered")+
                 "\nOutcome: "+record.optString("summary","not specified")+
                 "\nReviewer: "+record.optString("reviewer","unknown")+
                 "\n✎ Edit / Delete",()->editCrosswalk(position),false),9);
@@ -263,9 +269,11 @@ public final class SyllabusCoverageActivity extends Activity {
         JSONArray rows=crosswalk.get(selectedSubject,selectedTopic,subname);
         JSONObject existing=position>=0?rows.optJSONObject(position):null;
         LinearLayout form=column();form.setPadding(dp(17),dp(5),dp(17),dp(5));
-        EditText reference=edit("PDF page, section, learning outcome ID",
+        EditText reference=edit("Official PDF page / section (user supplied)",
             existing==null?"":existing.optString("reference"));
-        EditText summary=edit("Short paraphrase of the syllabus learning outcome",
+        EditText outcomeId=edit("Official outcome/reference ID (optional, do not invent)",
+            existing==null?"":existing.optString("outcome_id"));
+        EditText summary=edit("Original paraphrase of syllabus outcome",
             existing==null?"":existing.optString("summary"));
         EditText reviewer=edit("Reviewer name / initials",
             existing==null?"":existing.optString("reviewer"));
@@ -280,7 +288,7 @@ public final class SyllabusCoverageActivity extends Activity {
         String status=existing==null?OutcomeCrosswalkStore.PENDING:existing.optString("status");
         choice.setSelection(OutcomeCrosswalkStore.MATCH.equals(status)?1:
             OutcomeCrosswalkStore.GAP.equals(status)?2:0);
-        add(form,reference,5);add(form,summary,9);add(form,reviewer,9);
+        add(form,reference,5);add(form,outcomeId,9);add(form,summary,9);add(form,reviewer,9);
         add(form,notes,9);add(form,choice,11);
         AlertDialog.Builder dialog=new AlertDialog.Builder(this)
             .setTitle(position<0?"Add Manual Syllabus Outcome":"Edit Manual Syllabus Outcome")
@@ -292,6 +300,7 @@ public final class SyllabusCoverageActivity extends Activity {
                 JSONObject entry=new JSONObject();
                 try{
                     entry.put("reference",reference.getText().toString().trim());
+                    entry.put("outcome_id",outcomeId.getText().toString().trim());
                     entry.put("summary",summary.getText().toString().trim());
                     entry.put("notes",notes.getText().toString().trim());
                     entry.put("reviewer",reviewer.getText().toString().trim());
@@ -318,6 +327,7 @@ public final class SyllabusCoverageActivity extends Activity {
         input.setMaxLines(3);return input;
     }
     private void exportCrosswalk(){
+        exportType=0;
         Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
@@ -327,13 +337,73 @@ public final class SyllabusCoverageActivity extends Activity {
     }
     @Override protected void onActivityResult(int request,int result,Intent data){
         super.onActivityResult(request,result,data);
-        if(request==901&&result==RESULT_OK&&data!=null&&data.getData()!=null){
+        if((request==901||request==902)&&result==RESULT_OK&&data!=null&&data.getData()!=null){
             try(OutputStream stream=getContentResolver().openOutputStream(data.getData())){
                 if(stream==null)throw new Exception("Cannot open document");
-                stream.write(crosswalk.exportAll().toString(2).getBytes("UTF-8"));
+                if(request==902)stream.write(gaps.reportCsv(subject).getBytes("UTF-8"));
+                else stream.write(crosswalk.exportAll().toString(2).getBytes("UTF-8"));
                 toast("Crosswalk JSON file saved");
             }catch(Exception ex){toast("JSON export failed");}
         }
+    }
+    private void gapPrompt(){
+        SyllabusGapEngine.Entry e=null;
+        for(SyllabusGapEngine.Entry candidate:gaps.entries(subject)){
+            if(candidate.topic==topic&&candidate.subtopic==subtopic){e=candidate;break;}
+        }
+        if(e!=null)AiProviderRouter.chooseAndRun(this,gaps.aiGapPrompt(e),
+            "gap_"+e.subjectData.code+"_"+topic+"_"+subtopic,"Learning Gap Tutor");
+    }
+    private void showGapReport(){
+        final int selected=subject;
+        final java.util.List<SyllabusGapEngine.Entry> entries=gaps.entries(selected);
+        final SyllabusGapEngine.Stats stats=gaps.stats(selected);
+        final String[] categories={
+            "All app study topics","Not mapped to manual PDF refs",
+            "Manual review pending","User-reported potential gap",
+            "User-marked match","Study/practice/exam incomplete"};
+        final String[] statuses={"all",SyllabusGapEngine.UNMAPPED,SyllabusGapEngine.REVIEW,
+            SyllabusGapEngine.GAP,SyllabusGapEngine.MATCH,"learning"};
+        final int[] selectedIndex={0};
+        new AlertDialog.Builder(this).setTitle("Coverage Gap Report\n"+stats.summary()+
+            "\nWARNING: Not official Cambridge coverage")
+            .setSingleChoiceItems(categories,0,(d,i)->selectedIndex[0]=i)
+            .setPositiveButton("Show",(d,w)->gapReportDetails(entries,statuses[selectedIndex[0]]))
+            .setNeutralButton("Export CSV",(d,w)->exportGapCsv())
+            .setNegativeButton("Close",null).show();
+    }
+    private void gapReportDetails(java.util.List<SyllabusGapEngine.Entry> all,String filter){
+        java.util.ArrayList<SyllabusGapEngine.Entry> filtered=new java.util.ArrayList<>();
+        for(SyllabusGapEngine.Entry e:all)
+            if("all".equals(filter)||("learning".equals(filter)&&gaps.learningIncomplete(e))||
+                filter.equals(e.status))filtered.add(e);
+        if(filtered.size()==0){toast("No entries in this category");return;}
+        LinearLayout list=column();list.setPadding(dp(12),dp(7),dp(12),dp(8));
+        ScrollView scroll=new ScrollView(this);scroll.addView(list);
+        for(SyllabusGapEngine.Entry entry:filtered){
+            add(list,button(entry.label()+"\n"+entry.subjectData.code+" | "+
+                entry.topicData.name+"\n"+entry.subtopicName+"\n"+
+                entry.references.length()+" user PDF reference(s)",
+                ()->{
+                    subject=entry.subject;topic=entry.topic;subtopic=entry.subtopic;
+                    draw();
+                },false),7);
+        }
+        new AlertDialog.Builder(this)
+            .setTitle("App Study Gap Report · "+filtered.size()+" rows")
+            .setMessage("Unmapped ≠ an actual Cambridge syllabus omission. Tap an entry to open its crosswalk.")
+            .setView(scroll)
+            .setPositiveButton("Close",null)
+            .setNeutralButton("Export CSV",(d,w)->exportGapCsv()).show();
+    }
+    private void exportGapCsv(){
+        Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/csv");
+        intent.putExtra(Intent.EXTRA_TITLE,subject<0?"GCE_O_Level_2026_Gap_Report.csv":
+            "GCE_O_Level_2026_"+sub().code+"_Gap_Report.csv");
+        try{startActivityForResult(intent,902);}
+        catch(Exception ex){toast("File save app unavailable");}
     }
     private void editReference(){
         EditText input=new EditText(this);input.setSingleLine(false);input.setMinLines(2);
