@@ -204,7 +204,7 @@ public class MainActivity extends Activity {
             tab.setFocusable(true);
             tab.setClickable(true);
             tab.setOnClickListener(v->{
-                if("chat".equals(route)){startActivity(new Intent(this,NativeChatActivity.class));finish();}
+                if("chat".equals(route)){AiProviderRouter.openMain(this);}
                 else if("courses".equals(route)){AcademyBrowser.openCourses(this);}
                 else {
                     Intent intent=new Intent(this,CatalogActivity.class);
@@ -384,7 +384,7 @@ public class MainActivity extends Activity {
         margin(surface,text("သိချင်သော မေးခွန်း",14,INK,true),8,8);
         questionInput=input("ဥပမာ: အပိုင်းကိန်းပေါင်းနည်းကို အဆင့်လိုက် ရှင်းပြပေးပါ။");questionInput.setMinLines(3);
         questionInput.setText(prefs.getString("chat_prompt",""));margin(surface,questionInput,0,10);
-        mainButton(surface,"Native AI ဆရာနှင့် မေးမည်  →",()->{Intent i=new Intent(this,NativeChatActivity.class);i.putExtra("draft",questionInput.getText().toString());startActivity(i);});
+        mainButton(surface,"AI ရွေးပြီး မေးမည်  →",()->{Intent i=new Intent(this,NativeChatActivity.class);AiProviderRouter.chooseAndRun(this,questionInput.getText().toString(),"main_study","AI Study Teacher");});
         margin(surface,button("Study Mode ကို တိုက်ရိုက်ဖွင့်မည်",0xFFE5EDFF,SKY,()->openLink(STUDY_URL)),7,9);
         LinearLayout note=panel(surface);margin(note,text("သိထားရန်",15,INK,true),0,5);
         margin(note,text("ဤ App သည် OpenAI ၏တရားဝင် App မဟုတ်ပါ။ ChatGPT Login ကို ဒီ App ထဲတွင် မတောင်းခံပါ။ Copy လုပ်ထားသော မေးခွန်းကို ChatGPT ထဲမှာ Paste လုပ်ပြီး ပို့ရပါမည်။",13,MUTED,false),0,0);
@@ -397,7 +397,7 @@ public class MainActivity extends Activity {
         if(cb!=null)cb.setPrimaryClip(ClipData.newPlainText("Study prompt",prompt));
         prefs.edit().putString("chat_prompt",raw).apply();
         Toast.makeText(this,"မေးခွန်း Copy ပြီးပါပြီ။ ChatGPT တွင် Paste လုပ်ပါ။",Toast.LENGTH_LONG).show();
-        openLink(STUDY_URL);
+        AiProviderRouter.chooseAndRun(this,prompt,"study_mode","AI Study Mode");
     }
     private void openLink(String url){try{Intent i=new Intent(Intent.ACTION_VIEW,Uri.parse(url));startActivity(i);}catch(Exception ex){Toast.makeText(this,"Browser မတွေ့ပါ။ Link: "+url,Toast.LENGTH_LONG).show();}}
     private void about(){
