@@ -18,6 +18,7 @@
         <activity android:name=".OfflineReaderActivity" android:exported="false" />
         <activity android:name=".GceStudyActivity" android:exported="false" />
         <activity android:name=".OLevelSyllabusActivity" android:exported="false" />
+        <activity android:name=".SyllabusCoverageActivity" android:exported="false" />
         <activity android:name=".TeacherRentActivity" android:exported="false" />
         <activity
             android:name=".CatalogActivity"
