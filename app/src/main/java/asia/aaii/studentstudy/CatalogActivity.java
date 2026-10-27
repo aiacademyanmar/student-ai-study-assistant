@@ -127,8 +127,8 @@ public class CatalogActivity extends Activity {
         LinearLayout quick=StudyDesign.card(this);
         quick.addView(StudyDesign.text(this,"YOUR LEARNING SPACE",12,StudyDesign.BLUE,true));
         LinearLayout shortcuts=StudyDesign.row(this);
-        String[] titles={"📘 O Level","📅 Planner","✅ Progress"};
-        Class<?>[] pages={OLevelSyllabusActivity.class,PriorityStudyActivity.class,SyllabusCoverageActivity.class};
+        String[] titles={"📘 O Level","🎓 A Level","📅 Planner","✅ Progress"};
+        Class<?>[] pages={OLevelSyllabusActivity.class,ALevelSyllabusActivity.class,PriorityStudyActivity.class,SyllabusCoverageActivity.class};
         for(int x=0;x<3;x++){final Class<?> dest=pages[x];TextView view=StudyDesign.chip(this,titles[x],StudyDesign.PALE,StudyDesign.INK);view.setGravity(Gravity.CENTER);view.setOnClickListener(v->startActivity(new Intent(this,dest)));LinearLayout.LayoutParams q=new LinearLayout.LayoutParams(0,d(48),1);if(x>0)q.leftMargin=d(5);shortcuts.addView(view,q);}
         LinearLayout.LayoutParams qp=lp(-1,-2);qp.topMargin=d(12);quick.addView(shortcuts,qp);margin(quick,body,0,0,0,15);
         TextView find=click("⌕   စကားဝိုင်း / အကြောင်းအရာ ရှာရန်...",14,MUTED,false,()->show("list"));
@@ -145,6 +145,12 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("🎓 GCE AS & A Level · 2026 Syllabus","12 subjects · Lessons · Exam Practice ›",()->startActivity(new Intent(this,ALevelSyllabusActivity.class)));
+        LinearLayout aLevelPanel=StudyDesign.card(this);
+        aLevelPanel.addView(StudyDesign.text(this,"🎓  Cambridge AS & A Level · 2026",17,StudyDesign.INK,true));
+        aLevelPanel.addView(StudyDesign.text(this,"12 subjects · 162 study modules · 559 app-designed subtopics · AS / A routes",12,StudyDesign.MUTED,false));
+        margin(StudyDesign.action(this,"A Level AI Learning ဖွင့်ရန်  ›",true,()->startActivity(new Intent(this,ALevelSyllabusActivity.class))),aLevelPanel,0,12,0,0);
+        margin(aLevelPanel,body,0,0,0,12);
         section("📅 O Level Priority Study Plan","7-day suggested tasks ›",()->startActivity(new Intent(this,PriorityStudyActivity.class)));
         section("✅ O Level Syllabus Coverage Checklist","Learning Outcomes & Progress  ›",()->startActivity(new Intent(this,SyllabusCoverageActivity.class)));
         section("📘 O Level 2026 · PDF Syllabus & Exam Guide","အပြည့်အစုံ Topics ကြည့်ရန်  ›",()->startActivity(new Intent(this,OLevelSyllabusActivity.class)));
@@ -253,12 +259,13 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.19");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.20");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
+        margin(button("🎓  GCE AS & A Level 2026 Syllabus",BLUE,WHITE,()->startActivity(new Intent(this,ALevelSyllabusActivity.class))),body,0,0,0,12);
         margin(button("📅  O Level Priority Study Plan",BLUE,WHITE,()->startActivity(new Intent(this,PriorityStudyActivity.class))),body,0,0,0,12);
         margin(button("✅ Syllabus Coverage Checklist",BLUE,WHITE,()->startActivity(new Intent(this,SyllabusCoverageActivity.class))),body,0,0,0,12);
         margin(button("📘  O Level 2026 Syllabus Study Map",BLUE,WHITE,()->startActivity(new Intent(this,OLevelSyllabusActivity.class))),body,0,0,0,12);
