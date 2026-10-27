@@ -23,7 +23,7 @@ public class TopicAnalyticsActivity extends Activity {
   h.setBackgroundColor(-1);h.setPadding(dp(16),dp(15),dp(13),dp(15));h.setOnClickListener(v->finish());root.addView(h);
   ScrollView scroll=new ScrollView(this);body=StudyDesign.col(this);body.setPadding(dp(14),dp(14),dp(14),dp(36));scroll.addView(body);
   root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
-  body.addView(StudyDesign.hero(this,"LEARNING REPORT · V2.25","Weak Topics & Progress","MCQ History · Written Self Review · Local Only"));
+  body.addView(StudyDesign.hero(this,"LEARNING REPORT · V2.26","Weak Topics & Progress","MCQ History · Written Self Review · Local Only"));
   OfflineQuizHistory mcq=new OfflineQuizHistory(this);
   WrittenPracticeStore written=new WrittenPracticeStore(this);
   JSONArray rows=mcq.all(),wr=written.history();
@@ -59,6 +59,17 @@ public class TopicAnalyticsActivity extends Activity {
   for(Map.Entry<String,int[]> e:topics.entrySet())
    line("⚠ "+e.getKey()+" · "+e.getValue()[0]+" error(s) recorded",14);
   if(topics.isEmpty())line("No incorrect MCQ topics recorded yet.",13);
+  line("Question-level Accuracy · V2.26 records",19);
+  for(QuestionInsightEngine.QuestionStats q:QuestionInsightEngine.questions(rows)){
+   line(q.level+" "+q.code+" · "+q.id+" · "+q.topic+" · "+q.result.correct+
+       "/"+q.result.attempted+" correct",13);
+  }
+  line("Answered Topic Accuracy · new records only",19);
+  for(Map.Entry<String,QuestionInsightEngine.Stats> entry:QuestionInsightEngine.topics(rows).entrySet()){
+    QuestionInsightEngine.Stats x=entry.getValue();
+    line(entry.getKey().replace("|"," · ")+" · "+x.percent()+"% ("+x.correct+"/"+x.attempted+")",13);
+    body.addView(StudyDesign.progress(this,x.correct,x.attempted));
+  }
   line("Written Score History (self-review)",19);
   for(int i=0;i<Math.min(wr.length(),30);i++){
    JSONObject a=wr.optJSONObject(i);if(a!=null)
