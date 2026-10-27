@@ -94,12 +94,14 @@ public class ALevelExamCoverageActivity extends Activity{
    text(s().name+" ("+s().code+")",22);
    text("Only original mock questions. Paper rules, exam options and timing must be verified in the 2026 syllabus PDF.",13);
    button("📄 Official syllabus PDF",()->open(s().pdfUrl));
+   button("📊 Score History & Personalized Revision",()->openScores());
    for(ALevelPaperCatalog.Paper paper:papers){
     button("📝 "+paper.label()+"\n"+paper.stage+" · "+paper.format,()->configurePaper(paper));
    }
    if(module>=0)button("◀ Coverage Checklist",()->{screen="coverage";draw();});
   }
  }
+ private void openScores(){Intent i=new Intent(this,ALevelResultsActivity.class);i.putExtra("subject_index",subject);startActivity(i);}
  private void configurePaper(ALevelPaperCatalog.Paper paper){
   LinearLayout form=StudyDesign.col(this);form.setPadding(dp(15),dp(6),dp(15),dp(4));
   TextView caution=StudyDesign.text(this,"Practice timing is user-set, NOT official exam duration. Choose option/route before generating.",13,StudyDesign.MUTED,false);form.addView(caution);
