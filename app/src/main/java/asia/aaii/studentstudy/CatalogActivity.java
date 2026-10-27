@@ -220,6 +220,35 @@ public class CatalogActivity extends Activity {
         if(count==0){LinearLayout t=card(WHITE);t.addView(tv("♡  စကားဝိုင်း မသိမ်းရသေးပါ",18,INK,true));t.addView(tv("AI စကားဝိုင်း ၁၀၀ ထဲက နှစ်သက်ရာ Prompt များကို ♥ နှိပ်ပြီး သိမ်းထားနိုင်ပါတယ်။",14,MUTED,false));margin(t,body,0,20,0,0);
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
+    private void courses(){
+        pageHeader("AI သင်တန်းများ","OpenAI Academy Courses");
+        LinearLayout header=card(0xFFE8F2FF);
+        header.addView(tv("🎓  OpenAI Academy",23,NAVY,true));
+        header.addView(tv("AI ကို အခြေခံမှ စတင်ပြီး လက်တွေ့အသုံးချရန် သင်ယူနိုင်သော တရားဝင်သင်တန်းများ",14,MUTED,false));
+        margin(button("Academy သင်တန်းအားလုံး ဖွင့်ရန် ↗",BLUE,WHITE,()->openUrl(ACADEMY_URL)),header,0,12,0,0);
+        margin(header,body,0,0,0,16);
+        String[] names={"AI Foundations","Applied AI Foundations","Agents and Workflows"};
+        String[] labels={"AI အခြေခံ","လက်တွေ့ AI အသုံးချခြင်း","AI Agent နှင့် Workflow များ"};
+        String[] icons={"📘","🧩","🤖"};
+        String[] notes={
+            "AI နှင့် ChatGPT အခြေခံများ၊ Prompt ရေးသားခြင်း၊ AI အဖြေများကို စနစ်တကျ ပြန်စစ်ခြင်း",
+            "နေ့စဉ်လေ့လာမှုနှင့် အလုပ်များတွင် AI ကို လက်တွေ့အသုံးချခြင်း၊ Workflow စီစဉ်ခြင်း",
+            "AI Agents၊ လုပ်ငန်းစဉ်များ ချိတ်ဆက်ခြင်းနှင့် လုပ်ဆောင်ချက်များကို စစ်ဆေးခြင်း"
+        };
+        for(int i=0;i<names.length;i++){
+            final int at=i;
+            LinearLayout card=card(WHITE);
+            card.addView(tv(icons[i]+"  "+names[i],19,INK,true));
+            card.addView(tv(labels[i],15,BLUE,true));
+            margin(tv(notes[i],13,MUTED,false),card,0,10,0,12);
+            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->openUrl(ACADEMY_COURSES[at])),card,0,0,0,0);
+            margin(card,body,0,0,0,12);
+        }
+        LinearLayout warning=card(0xFFF1F4FA);
+        warning.addView(tv("သတိပြုရန်",15,INK,true));
+        warning.addView(tv("သင်တန်းဖွင့်ရန် အင်တာနက် လိုအပ်ပါသည်။ သင်တန်းအကြောင်းအရာနှင့် လက်မှတ်များကို OpenAI Academy ဝဘ်ဆိုက်ကသာ စီမံပါသည်။ ဤ App သည် OpenAI ၏ တရားဝင် App မဟုတ်ပါ။",12,MUTED,false));
+        margin(warning,body,0,0,0,12);
+    }
     private void profile(){
         pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.2");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
