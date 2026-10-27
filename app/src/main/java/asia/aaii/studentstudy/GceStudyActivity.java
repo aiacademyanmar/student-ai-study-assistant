@@ -56,24 +56,25 @@ public class GceStudyActivity extends Activity {
  }
  private void lessons(){
   GceCurriculum.Chapter c=currentSubject().chapters[chapter];add(body,t(c.title,22,NAVY,true),0);add(body,t(c.focus,14,MUTED,false),8);
-  for(int i=0;i<GceCurriculum.LESSONS.length;i++){final int n=i;add(body,button("📖  "+GceCurriculum.LESSONS[i],()->{lesson=n;draw();}),13);}
+  for(int i=0;i<GceCurriculum.LESSONS.length;i++){final int n=i;add(body,button("📖  "+GcePromptFactory.lessonTitle(c,i),()->{lesson=n;draw();}),13);}
   add(body,t("သင်ကြားမှု: မြန်မာဘာသာရှင်းပြချက် + English Exam Keywords + Worked Example + Guided Questions",13,MUTED,false),18);
  }
  private String prompt(int kind){
   GceCurriculum.Subject s=currentSubject();GceCurriculum.Chapter c=s.chapters[chapter];
-  String mode=kind==0?"Socratic teacher: explain one concept at a time with a Myanmar explanation, key English exam terms, 2 worked examples and a quick check question. Wait for the student's answer before revealing the next step.":kind==1?"Generate 5 original multiple choice questions, one at a time, offer hints, mark answers and explain mistakes in Burmese.":kind==2?"Generate 4 scaffolded short structured exam-style practice questions, without copying past papers. Show marking points only after I answer.":kind==3?"Give 3 incorrect worked answers, ask me to identify errors, then explain corrections in Burmese.":"Create an original 15-minute exam-style mini test with 5 questions, assess each answer and explain improvement actions.";
-  return "You are an experienced GCE "+lv()+" Level tutor for "+s.name+" (Cambridge-oriented syllabus "+s.code+"). Chapter: "+c.title+". Topic focus: "+c.focus+". "+GceCurriculum.LESSONS[lesson]+". Teach in Myanmar language with accurate English terminology. Adapt to my level and never fabricate official past papers or syllabus specifics. "+mode+" Make sure I understand underlying principles rather than simply giving answers.";
+  return kind<0?GcePromptFactory.explain(s,c,lesson):GcePromptFactory.practice(s,c,lesson,kind);
  }
  private void copy(String prompt){ClipboardManager c=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);c.setPrimaryClip(ClipData.newPlainText("GCE AI Tutor Prompt",prompt));Toast.makeText(this,"AI Prompt Copy ပြီးပါပြီ",Toast.LENGTH_SHORT).show();}
  private void chat(String prompt){Intent i=new Intent(this,NativeChatActivity.class);i.putExtra("draft",prompt);startActivity(i);}
  private void lessonView(){
-  GceCurriculum.Chapter c=currentSubject().chapters[chapter];add(body,t(GceCurriculum.LESSONS[lesson],21,NAVY,true),0);add(body,t(c.title+" · "+c.focus,14,MUTED,false),12);
-  add(body,t("AI နှင့် အဆင့်လိုက်လေ့လာခြင်း",19,NAVY,true),20);
-  add(body,t("၁။ သိထားပြီးသားကို မေးခွန်း ၂ ခုနှင့် စစ်ဆေးမည်။\n၂။ မြန်မာလိုရှင်းပြပြီး English Exam Terms ထည့်မည်။\n၃။ Worked Example ဖြင့် ပြမည်။\n၄။ ဖြေဆိုသူကို အရိပ်အမြွက်ပေးပြီး ကိုယ်တိုင်တွက်/ရေးခိုင်းမည်။\n၅။ အမှားပြင်ဆင်ပြီး လေ့ကျင့်ခန်းစစ်မည်။",15,NAVY,false),11);
-  add(body,button("🤖  AI ဆရာနှင့် သင်ယူရန်",()->chat(prompt(0))),18);
-  add(body,button("📋  Teacher Prompt Copy",()->copy(prompt(0))),9);
+  GceCurriculum.Chapter c=currentSubject().chapters[chapter];add(body,t(GcePromptFactory.lessonTitle(c,lesson),21,NAVY,true),0);add(body,t(c.title+" · "+c.focus,14,MUTED,false),12);
+  add(body,t("AI က တန်းရှင်းပြမည့် Lesson Prompt",19,NAVY,true),20);
+  add(body,t("၁။ Learning Objectives\n၂။ မြန်မာဘာသာ အခြေခံရှင်းပြချက်\n၃။ Worked Examples ၂ ခု\n၄။ အမှားများနှင့် Exam Tips\n၅။ လေ့ကျင့်ခန်း ၃ ခု၊ Model Answers နှင့် Mini Summary",15,NAVY,false),11);
+  add(body,button("🤖  Lesson တစ်ခုလုံး AI ရှင်းပြရန်",()->chat(prompt(-1))),18);
+  add(body,button("📋  Lesson Prompt Copy",()->copy(prompt(-1))),9);
+  add(body,t("PROMPT PREVIEW · AI က အောက်ပါညွှန်ကြားချက်အတိုင်း မြန်မာလို တန်းရှင်းပြပါမည်။",13,BLUE,true),16);
+  TextView preview=t(prompt(-1),13,NAVY,false);preview.setPadding(d(13),d(13),d(13),d(13));preview.setBackground(bg(WHITE));add(body,preview,10);
   add(body,t("EXERCISES · စမ်းသပ်လေ့ကျင့်ရေး",19,NAVY,true),24);
-  for(int i=0;i<GceCurriculum.EXERCISES.length;i++){final int x=i;add(body,button((i+1)+". "+GceCurriculum.EXERCISES[i],()->chat(prompt(x==0?0:x))),9);}
+  for(int i=0;i<GceCurriculum.EXERCISES.length;i++){final int x=i;add(body,button((i+1)+". "+GceCurriculum.EXERCISES[i],()->chat(prompt(x))),9);}
   String key=lv()+":"+subject+":"+chapter+":"+lesson;
   add(body,button(prefs.getBoolean(key,false)?"✓ လေ့လာပြီးပါပြီ":"✓ လေ့လာပြီးဟု မှတ်သားမည်",()->{prefs.edit().putBoolean(key,true).apply();Toast.makeText(this,"Progress သိမ်းဆည်းပြီးပါပြီ",Toast.LENGTH_SHORT).show();draw();}),20);
   add(body,t("AI ဖြေဆိုမှုရရှိရန် Native Chat တွင် HTTPS Backend ချိတ်ဆက်ရန်လိုအပ်သည်။ Prompt ကို Copy ပြုလုပ်၍ အခြား AI Study Mode တွင်လည်း အသုံးပြုနိုင်သည်။",12,MUTED,false),16);
