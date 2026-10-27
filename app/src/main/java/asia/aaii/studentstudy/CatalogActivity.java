@@ -138,7 +138,7 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
-        section("📘 O Level 2026 · Syllabus Study Map","အပြည့်အစုံ Topics ကြည့်ရန်  ›",()->startActivity(new Intent(this,OLevelSyllabusActivity.class)));
+        section("📘 O Level 2026 · PDF Syllabus & Exam Guide","အပြည့်အစုံ Topics ကြည့်ရန်  ›",()->startActivity(new Intent(this,OLevelSyllabusActivity.class)));
         LinearLayout official=card(0xFFE7F4FF);
         official.addView(tv("Subject → Topic → Subtopic → Lesson → Exercises → Exam",15,NAVY,true));
         official.addView(tv("Cambridge 2026-oriented Expanded Learning Map · AI App/ChatGPT/Gemini Prompt",13,MUTED,false));
@@ -244,7 +244,7 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.11");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.12");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
