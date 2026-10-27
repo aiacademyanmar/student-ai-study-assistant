@@ -75,7 +75,7 @@ public final class WrittenPracticeActivity extends Activity {
   root.addView(StudyDesign.navigation(this,WrittenPracticeActivity.class));
  }
  private void subjects(){
-  body.addView(StudyDesign.hero(this,"GCE O / AS / A LEVEL · V2.25","Write • Review • Improve",
+  body.addView(StudyDesign.hero(this,"GCE O / AS / A LEVEL · V2.26","Write • Review • Improve",
     "48 original written tasks · model answers · 4-point self-review"));
   heading("⚠ Self-assessment only. Cambridge official mark schemes are not included.",13);
   action("Level: "+("O".equals(level)?"O Level":"AS/A Level")+" · Change",false,()->
@@ -148,16 +148,16 @@ public final class WrittenPracticeActivity extends Activity {
           .setNegativeButton("Continue editing",null).show();
       }
     });
-    action("🤖 AI Tutor — explain and give feedback",false,()->{
+    action("🤖 AI Written Feedback · Explainable Review",false,()->{
       String own=input.getText().toString().trim();
-      String prompt="You are a Burmese-language GCE "+level+" Level tutor for syllabus code "+code+
-        ". Evaluate the following STUDENT WRITTEN ANSWER against this ORIGINAL practice question, "+
-        "sample explanation and app-created four-point checklist. This is NOT an official Cambridge marking scheme."+
-        "\nQuestion: "+t.question+"\nStudent answer: "+own+"\nSample explanation: "+t.model+
-        "\nChecklist: "+android.text.TextUtils.join("; ",t.points)+
-        "\nExplain in Burmese, identify supported correct concepts, correct mistakes, then provide 2 fresh exercises. "+
-        "Do not fabricate official syllabus clauses or marks. Ask the student to check the real 2026 syllabus PDF.";
-      AiProviderRouter.chooseAndRun(this,prompt,"written_"+code+"_"+t.topic,"Written Answer Tutor");
+      if(own.isEmpty()){Toast.makeText(this,"Write an answer before AI feedback",Toast.LENGTH_LONG).show();return;}
+      new AlertDialog.Builder(this).setTitle("Choose feedback focus")
+        .setItems(new String[]{"Complete detailed assessment","Find missing concepts","Improve answer structure","Create two revision exercises"},(d,n)->{
+          String[] req={"full learning feedback","identify missing concepts and why",
+            "improve response structure and clarity","generate two targeted revision exercises"};
+          AiProviderRouter.chooseAndRun(this,WrittenFeedbackPrompts.review(t,own,req[n]),
+             "written_feedback_"+code+"_"+selected,"Written AI Feedback");
+        }).show();
     });
   }
   heading("Answer and self-checks stay on the phone. Sending to an AI provider shares the selected answer via that provider's app.",12);
