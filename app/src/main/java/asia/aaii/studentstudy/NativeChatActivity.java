@@ -129,7 +129,13 @@ public class NativeChatActivity extends Activity {
         entry.addView(input);root.addView(entry,new LinearLayout.LayoutParams(-1,-2));
         footer();
         String draft=getIntent().getStringExtra("draft");
-        if(draft!=null&&!draft.trim().isEmpty())composer.setText(draft);
+        if(draft!=null&&!draft.trim().isEmpty()){
+            composer.setText(draft);
+            if(getIntent().getBooleanExtra("auto_send",false)){
+                getIntent().removeExtra("auto_send");
+                composer.post(()->send());
+            }
+        }
     }
 
     private void refreshStatus(){
