@@ -29,27 +29,30 @@ public class PriorityStudyActivity extends Activity{
   TextView t=text(label,size,false);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(margin);content.addView(t,p);
  }
  private void btn(String label,Runnable click){
-  TextView t=text(label,14,true);t.setPadding(dp(13),dp(13),dp(13),dp(13));t.setBackground(shape(0xFFFFFFFF));
-  t.setOnClickListener(v->click.run());LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);
+  TextView t=StudyDesign.action(this,label,label.startsWith("🤖"),click);
+  LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);
   p.topMargin=dp(9);content.addView(t,p);
  }
  @Override public void onCreate(Bundle b){super.onCreate(b);planner=new PriorityStudyPlan(this);draw();}
  private void draw(){
-  root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(0xFFF2F6FF);setContentView(root);
+  root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(StudyDesign.BG);setContentView(root);
   if(Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,i)->{
    android.graphics.Insets bars=i.getInsets(WindowInsets.Type.systemBars());
    v.setPadding(bars.left,bars.top,bars.right,bars.bottom);return i;});
-  TextView header=text("‹     📅 GCE O Level · Priority Plan",19,true);
+  TextView header=text("‹    📅 GCE O Level · Priority Plan",19,true);
   header.setPadding(dp(18),dp(15),dp(12),dp(15));header.setBackgroundColor(-1);
   header.setOnClickListener(v->finish());root.addView(header);
   ScrollView sc=new ScrollView(this);content=new LinearLayout(this);content.setOrientation(1);
   content.setPadding(dp(15),dp(13),dp(15),dp(35));sc.addView(content);
   root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
+  root.addView(StudyDesign.navigation(this,PriorityStudyActivity.class));
   PriorityStudyPlan.Summary stat=planner.summary();
-  add("7-Day Suggested Study Plan",21,4);
+  LinearLayout hero=StudyDesign.hero(this,"PERSONAL LEARNING DASHBOARD","7-Day Priority Plan","မပြီးသေးသော Study • Practice • Exam tasks");
+  LinearLayout.LayoutParams hp=new LinearLayout.LayoutParams(-1,-2);hp.topMargin=dp(5);content.addView(hero,hp);
   add("Study / Practice / Exam self-reported progress: "+stat.percent()+
       "\nFinished subtopics: "+stat.completedSubtopics+"/"+stat.subtopics+
       "\nStudy "+stat.studyDone+" · Practice "+stat.practiceDone+" · Exam "+stat.examDone,13,9);
+  content.addView(StudyDesign.progress(this,stat.studyDone+stat.practiceDone+stat.examDone,stat.totalSteps));
   add("⚠ Days are task batches, not scheduled calendar dates. Queue is locally generated. "+
       "Unmapped means no manual PDF reference, NOT missing official Cambridge syllabus coverage.",12,12);
   btn("⚙ Filter: "+(planner.subject()<0?"All O Level subjects":
