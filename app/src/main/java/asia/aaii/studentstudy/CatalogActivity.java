@@ -138,6 +138,12 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("🎓 GCE O & A Level AI Tutor","ဘာသာရပ်ရွေးရန်  ›",()->startActivity(new Intent(this,GceStudyActivity.class)));
+        LinearLayout gce=card(0xFFE7F0FF);
+        gce.addView(tv("O Level • A Level",19,NAVY,true));
+        gce.addView(tv("ဘာသာရပ် ၂၄ ခု · Chapter ၉၆ ခု · Lesson ၂၈၈ ခု · AI Prompts & Exercises",13,MUTED,false));
+        margin(button("GCE AI Tutor ဖွင့်ရန်  ›",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),gce,0,12,0,0);
+        margin(gce,body,0,0,0,6);
         section("📖  Offline မြန်မာစာဖတ်ခန်း","ဖတ်ရန်  ›",()->startActivity(new Intent(this,OfflineReaderActivity.class)));
         LinearLayout offline=card(0xFFE3F6EC);
         offline.addView(tv("AI at Work · Work Users",16,NAVY,true));
@@ -226,10 +232,11 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.5");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.6");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
+        margin(button("🎓  GCE O & A Level AI Tutor",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),body,0,0,0,12);
         margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
         margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->AcademyBrowser.openCourses(this)),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
