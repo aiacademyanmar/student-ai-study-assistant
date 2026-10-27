@@ -209,7 +209,7 @@ public class OfflineReaderActivity extends Activity {
     private void go(String route){
         Intent i;
         if("tutor".equals(route))i=new Intent(this,NativeChatActivity.class);
-        else if("courses".equals(route))i=new Intent(this,AcademyWebViewActivity.class);
+        else if("courses".equals(route)){AcademyBrowser.openCourses(this);return;}
         else {i=new Intent(this,CatalogActivity.class);i.putExtra("open_page",route);}
         startActivity(i);finish();
     }
