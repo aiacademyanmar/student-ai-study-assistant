@@ -52,7 +52,9 @@ public class CatalogActivity extends Activity {
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        show("home");
+        String requested = getIntent() == null ? null : getIntent().getStringExtra("open_page");
+        if (!"list".equals(requested) && !"saved".equals(requested) && !"profile".equals(requested)) requested="home";
+        show(requested);
     }
     private int d(float n){ return (int)(getResources().getDisplayMetrics().density*n+.5f); }
     private GradientDrawable fill(int color,int radius){GradientDrawable x=new GradientDrawable();x.setColor(color);x.setCornerRadius(d(radius));return x;}
@@ -71,6 +73,14 @@ public class CatalogActivity extends Activity {
     private void show(String screen){
         page=screen;
         root=col();root.setBackgroundColor(BG);setContentView(root);
+        // Keep the permanent footer above Android 15 navigation/gesture bars.
+        if (Build.VERSION.SDK_INT >= 35) {
+            root.setOnApplyWindowInsetsListener((v, insets) -> {
+                android.graphics.Insets bars = insets.getInsets(android.view.WindowInsets.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return insets;
+            });
+        }
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(false);scroll.setVerticalScrollBarEnabled(false);
         root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
         body=col();padding(body,17,17,17,22);scroll.addView(body);
@@ -209,16 +219,50 @@ public class CatalogActivity extends Activity {
         TextView foot=click("ရည်ညွှန်းချက် — OpenAI 100 Chats for College Students  ↗",12,BLUE,false,()->openUrl("https://chatgpt.com/use-cases/students/"));margin(foot,body,0,18,0,0);
     }
     private TextView button(String s,int color,int text,Runnable action){TextView t=tv(s,14,text,true);t.setGravity(Gravity.CENTER);t.setBackground(fill(color,15));padding(t,13,14,13,14);t.setOnClickListener(w->action.run());return t;}
+    // Persistent, thumb-friendly phone footer, always outside the scrolling body.
     private void bottomBar(){
-        LinearLayout bar=row();bar.setBackground(outline(WHITE,20,LINE));padding(bar,4,7,4,7);
-        String[] title={"ပင်မ","စကားဝိုင်း","သိမ်းထား","ပရိုဖိုင်"};String[] icons={"⌂","▤","♥","♙"};String[] route={"home","list","saved","profile"};
-        for(int i=0;i<4;i++){final String r=route[i];LinearLayout c=col();c.setGravity(Gravity.CENTER);
-            boolean active=page.equals(r)||(page.equals("detail")&&r.equals(returnPage))||(page.equals("compose")&&r.equals("list"));
-            TextView image=tv(icons[i],23,active?BLUE:MUTED,true);image.setGravity(Gravity.CENTER);c.addView(image);
-            TextView text=tv(title[i],11,active?BLUE:MUTED,active);text.setGravity(Gravity.CENTER);c.addView(text);
-            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-2,1);bar.addView(c,p);
-            c.setOnClickListener(w->{if(r.equals("list"))filter=-1;show(r);});
-        }root.addView(bar,new LinearLayout.LayoutParams(-1,d(68)));
+        LinearLayout wrapper=col();
+        wrapper.setBackgroundColor(WHITE);
+        View hairline=new View(this);
+        hairline.setBackgroundColor(LINE);
+        wrapper.addView(hairline,new LinearLayout.LayoutParams(-1,d(1)));
+        LinearLayout bar=row();
+        padding(bar,2,3,2,4);
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သိမ်းထား","ပိုမို"};
+        String[] icons={"⌂","▤","✦","♥","☰"};
+        String[] routes={"home","list","tutor","saved","profile"};
+        for(int i=0;i<routes.length;i++){
+            final String route=routes[i];
+            boolean active=page.equals(route)
+                 ||(page.equals("detail")&&route.equals(returnPage))
+                 ||(page.equals("compose")&&route.equals("list"));
+            LinearLayout tab=col();
+            tab.setGravity(Gravity.CENTER);
+            padding(tab,1,5,1,3);
+            TextView glyph=tv(icons[i],22,active?BLUE:MUTED,true);
+            glyph.setGravity(Gravity.CENTER);
+            if(i==2) { glyph.setTextColor(WHITE); glyph.setBackground(fill(BLUE,16)); padding(glyph,10,2,10,2); }
+            tab.addView(glyph);
+            TextView label=tv(titles[i],10,active?BLUE:MUTED,active);
+            label.setGravity(Gravity.CENTER);
+            tab.addView(label);
+            tab.setContentDescription(titles[i]);
+            tab.setClickable(true);
+            tab.setFocusable(true);
+            tab.setOnClickListener(v->{
+                if("tutor".equals(route)){
+                    Intent intent=new Intent(this,MainActivity.class);
+                    intent.putExtra("open_page","chat");
+                    startActivity(intent);
+                }else {
+                    if("list".equals(route)) filter=-1;
+                    show(route);
+                }
+            });
+            bar.addView(tab,new LinearLayout.LayoutParams(0,d(61),1));
+        }
+        wrapper.addView(bar,new LinearLayout.LayoutParams(-1,d(68)));
+        root.addView(wrapper,new LinearLayout.LayoutParams(-1,-2));
     }
     private void toggleFavorite(int id){if(saved.contains(id))saved.remove(id);else saved.add(id);StringBuilder b=new StringBuilder();for(Integer n:saved)b.append(n).append(',');prefs.edit().putString("favorites",b.toString()).apply();}
     private void copy(String s){ClipboardManager manager=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);manager.setPrimaryClip(ClipData.newPlainText("Student AI Prompt",s));Toast.makeText(this,"Prompt ကို ကူးယူထားပါပြီ",Toast.LENGTH_SHORT).show();}

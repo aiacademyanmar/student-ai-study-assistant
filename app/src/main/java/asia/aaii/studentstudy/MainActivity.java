@@ -119,7 +119,8 @@ public class MainActivity extends Activity {
         getWindow().setStatusBarColor(NAVY);
         getWindow().setNavigationBarColor(WHITE);
         if (Build.VERSION.SDK_INT >= 26) getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        show("home");
+        String requested = getIntent() == null ? null : getIntent().getStringExtra("open_page");
+        show("chat".equals(requested) ? "chat" : "home");
     }
     private int dp(float v){ return (int)(getResources().getDisplayMetrics().density*v+0.5f); }
     private GradientDrawable bg(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));return d;}
@@ -169,17 +170,52 @@ public class MainActivity extends Activity {
         }
         nav();
     }
+    // Match the main catalog's always-visible phone footer in study, quiz and planner screens.
     private void nav(){
-        bottom=horizontal();bottom.setBackground(bg(WHITE,0));pad(bottom,7,8,7,9);
-        String[] destinations={"home","lessons","practice","planner"};
-        for(int i=0;i<4;i++){
-            final String dest=destinations[i];boolean active=page.equals(dest)||(page.equals("lesson")&&i==1)||(page.equals("quiz")&&i==2)||(page.equals("flashcards")&&i==2);
-            LinearLayout item=vertical();item.setGravity(Gravity.CENTER);pad(item,4,5,4,4);
-            TextView icon=text(tabIcons[i],24,active?SKY:MUTED,true);icon.setGravity(Gravity.CENTER);item.addView(icon);
-            TextView lbl=text(tabs[i],11,active?SKY:MUTED,active);lbl.setGravity(Gravity.CENTER);item.addView(lbl);
-            item.setOnClickListener(v->show(dest));bottom.addView(item,new LinearLayout.LayoutParams(0,dp(58),1));
+        bottom=vertical();
+        bottom.setBackgroundColor(WHITE);
+        View line=new View(this);
+        line.setBackgroundColor(0xFFE4ECF6);
+        bottom.addView(line,new LinearLayout.LayoutParams(-1,dp(1)));
+        LinearLayout tabsRow=horizontal();
+        pad(tabsRow,2,3,2,4);
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သိမ်းထား","ပိုမို"};
+        String[] icons={"⌂","▤","✦","♥","☰"};
+        String[] routes={"home","list","chat","saved","about"};
+        for(int i=0;i<routes.length;i++){
+            final String route=routes[i];
+            boolean active=page.equals(route)||(page.equals("quiz")&&route.equals("chat"))
+                ||(page.equals("flashcards")&&route.equals("chat"));
+            LinearLayout tab=vertical();
+            tab.setGravity(Gravity.CENTER);
+            pad(tab,1,5,1,3);
+            TextView glyph=text(icons[i],22,active?SKY:MUTED,true);
+            glyph.setGravity(Gravity.CENTER);
+            if(i==2){
+                glyph.setTextColor(WHITE);
+                glyph.setBackground(bg(SKY,14));
+                pad(glyph,10,2,10,2);
+            }
+            tab.addView(glyph);
+            TextView label=text(titles[i],10,active?SKY:MUTED,active);
+            label.setGravity(Gravity.CENTER);
+            tab.addView(label);
+            tab.setContentDescription(titles[i]);
+            tab.setFocusable(true);
+            tab.setClickable(true);
+            tab.setOnClickListener(v->{
+                if("chat".equals(route)||"about".equals(route)) show(route);
+                else {
+                    Intent intent=new Intent(this,CatalogActivity.class);
+                    intent.putExtra("open_page",route);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            tabsRow.addView(tab,new LinearLayout.LayoutParams(0,dp(61),1));
         }
-        app.addView(bottom,lp(-1,-2));
+        bottom.addView(tabsRow,new LinearLayout.LayoutParams(-1,dp(68)));
+        app.addView(bottom,new LinearLayout.LayoutParams(-1,-2));
     }
     private TextView button(String label, int color, int textColor,Runnable action){
         TextView v=text(label,15,textColor,true);v.setGravity(Gravity.CENTER);pad(v,16,13,16,13);v.setBackground(bg(color,13));
