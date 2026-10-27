@@ -84,7 +84,10 @@ public class AcademyWebViewActivity extends Activity {
    TextView caption=label(items[i],10);caption.setTextColor(i==3?0xFF1264EE:0xFF708099);cell.addView(caption);
    cell.setOnClickListener(v->navigate(route));footer.addView(cell,new LinearLayout.LayoutParams(0,dp(64),1));
   }
-  root.addView(footer);browser.loadUrl(HOME);
+  root.addView(footer);
+  String target=getIntent().getStringExtra("target_url");
+  if(target==null||!target.startsWith("https://academy.openai.com/"))target=HOME;
+  browser.loadUrl(target);
  }
  @Override public void onBackPressed(){if(browser!=null&&browser.canGoBack())browser.goBack();else navigate("home");}
  @Override protected void onDestroy(){if(browser!=null){browser.stopLoading();browser.destroy();browser=null;}super.onDestroy();}
