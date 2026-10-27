@@ -21,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.OutputStream;
 
 /**
  * V2.15: offline coverage crosswalk for the app-created O Level subtopic paths.
@@ -37,6 +40,7 @@ public final class SyllabusCoverageActivity extends Activity {
         BG=0xFFF2F6FD, WHITE=Color.WHITE, GREEN=0xFF0E8365, ORANGE=0xFFA76713;
     private int subject=-1,topic=-1,subtopic=-1,lesson=0;
     private SharedPreferences prefs;
+    private OutcomeCrosswalkStore crosswalk;
     private LinearLayout root,body;
     private boolean onlyPending=false;
     private int dp(float x){return (int)(getResources().getDisplayMetrics().density*x+.5f);}
@@ -83,7 +87,7 @@ public final class SyllabusCoverageActivity extends Activity {
     }
     private String percent(int k,int total){return total==0?"0%":((int)Math.round(k*100.0/total))+"%";}
     @Override public void onCreate(Bundle b){
-        super.onCreate(b);prefs=getSharedPreferences("o_level_coverage_v215",MODE_PRIVATE);
+        super.onCreate(b);prefs=getSharedPreferences("o_level_coverage_v215",MODE_PRIVATE);crosswalk=new OutcomeCrosswalkStore(this);
         subject=getIntent().getIntExtra("subject_index",-1);
         topic=getIntent().getIntExtra("topic_index",-1);
         subtopic=getIntent().getIntExtra("subtopic_index",-1);
@@ -141,6 +145,10 @@ public final class SyllabusCoverageActivity extends Activity {
         add(body,text("App Study Subtopics: "+total+"\n"+
             "သင်ပြီး "+learned+" ("+percent(learned,total)+") · Practice "+practice+
             " · Exam "+exam+"\nPDF Page/Clause မှတ်တမ်း "+mapped+" ခု",14,NAVY,true),15);
+        int maps=0,matches=0,gaps=0;
+        for(OLevel2026.Subject item:OLevel2026.SUBJECTS){int[] x=crosswalk.counts(item,-1);maps+=x[0];matches+=x[1];gaps+=x[2];}
+        add(body,text("Crosswalk references: "+maps+" · user-match "+matches+" · gaps "+gaps,13,BLUE,true),12);
+        add(body,button("📤 Manual Crosswalk JSON Export",()->exportCrosswalk(),false),9);
         add(body,button(onlyPending?"✓ Filter ပိတ်ပြီး အားလုံးပြမည်":"◷ မပြီးသေးသည့်ဘာသာများသာ ပြမည်",()->{
             onlyPending=!onlyPending;draw();
         },false),13);
@@ -204,7 +212,8 @@ public final class SyllabusCoverageActivity extends Activity {
                 " — "+(marked(subject,topic,subtopic,key)?"ပြီး":"မပြီး"),
                 ()->mark(key,!marked(subject,topic,subtopic,key)),false),8);
         }
-        add(body,text("OFFICIAL PDF CROSS-REFERENCE · USER NOTE",16,BLUE,true),22);
+        add(body,text("OFFICIAL PDF CROSSWALK · MULTIPLE REFERENCES",16,BLUE,true),22);
+        drawCrosswalkRows();
         String existing=evidence(subject,topic,subtopic);
         add(body,text(existing.isEmpty()?
             "မသတ်မှတ်ရသေး — Official PDF မှ Page/Clause ကို ကိုယ်တိုင်ရှာပြီး ထည့်ပါ။":
@@ -228,6 +237,103 @@ public final class SyllabusCoverageActivity extends Activity {
             OLevelLearningOutcomes.lessonPrompt(s,t,subtopic,lesson,"teach")),false),9);
         add(body,text("အမှန်တကယ် စာမေးပွဲအတွက် Cambridge က ထုတ်ထားသော Official Syllabus PDF နှင့် "+
             "Learning Outcome/Assessment Objective များကို သီးခြားအတည်ပြုပါ။",12,MUTED,false),15);
+    }
+    private void drawCrosswalkRows(){
+        OLevel2026.Subject subjectObj=sub();OLevel2026.Topic topicObj=top();
+        JSONArray rows=crosswalk.get(subjectObj,topicObj,topicObj.subtopics[subtopic]);
+        add(body,text("Manual entries: "+rows.length()+" · "+
+            OutcomeCrosswalkStore.statusLabel(OutcomeCrosswalkStore.PENDING)+
+            ". No content provider verification.",12,ORANGE,false),7);
+        add(body,button("＋ Official Outcome / PDF Clause Reference ထည့်ရန်",
+            ()->editCrosswalk(-1),true),9);
+        for(int i=0;i<rows.length();i++){
+            JSONObject record=rows.optJSONObject(i);if(record==null)continue;
+            final int position=i;
+            String status=record.optString("status",OutcomeCrosswalkStore.PENDING);
+            add(body,button("["+(i+1)+"] "+OutcomeCrosswalkStore.statusLabel(status)+
+                "\nPDF: "+record.optString("reference","not specified")+
+                "\nOutcome: "+record.optString("summary","not specified")+
+                "\nReviewer: "+record.optString("reviewer","unknown")+
+                "\n✎ Edit / Delete",()->editCrosswalk(position),false),9);
+        }
+    }
+    private void editCrosswalk(int position){
+        OLevel2026.Subject selectedSubject=sub();OLevel2026.Topic selectedTopic=top();
+        String subname=selectedTopic.subtopics[subtopic];
+        JSONArray rows=crosswalk.get(selectedSubject,selectedTopic,subname);
+        JSONObject existing=position>=0?rows.optJSONObject(position):null;
+        LinearLayout form=column();form.setPadding(dp(17),dp(5),dp(17),dp(5));
+        EditText reference=edit("PDF page, section, learning outcome ID",
+            existing==null?"":existing.optString("reference"));
+        EditText summary=edit("Short paraphrase of the syllabus learning outcome",
+            existing==null?"":existing.optString("summary"));
+        EditText reviewer=edit("Reviewer name / initials",
+            existing==null?"":existing.optString("reviewer"));
+        EditText notes=edit("Evidence / difference / missing coverage",
+            existing==null?"":existing.optString("notes"));
+        android.widget.Spinner choice=new android.widget.Spinner(this);
+        String[] labels={"Pending manual review","User-marked match","Potential gap"};
+        android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
+            this,android.R.layout.simple_spinner_item,labels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        choice.setAdapter(adapter);
+        String status=existing==null?OutcomeCrosswalkStore.PENDING:existing.optString("status");
+        choice.setSelection(OutcomeCrosswalkStore.MATCH.equals(status)?1:
+            OutcomeCrosswalkStore.GAP.equals(status)?2:0);
+        add(form,reference,5);add(form,summary,9);add(form,reviewer,9);
+        add(form,notes,9);add(form,choice,11);
+        AlertDialog.Builder dialog=new AlertDialog.Builder(this)
+            .setTitle(position<0?"Add Manual Syllabus Outcome":"Edit Manual Syllabus Outcome")
+            .setView(form).setPositiveButton("Save",(d,which)->{
+                if(reference.getText().toString().trim().isEmpty()||
+                    summary.getText().toString().trim().isEmpty()){
+                    toast("PDF reference နှင့် outcome summary လိုအပ်ပါသည်");return;
+                }
+                JSONObject entry=new JSONObject();
+                try{
+                    entry.put("reference",reference.getText().toString().trim());
+                    entry.put("summary",summary.getText().toString().trim());
+                    entry.put("notes",notes.getText().toString().trim());
+                    entry.put("reviewer",reviewer.getText().toString().trim());
+                    entry.put("status",choice.getSelectedItemPosition()==1?
+                        OutcomeCrosswalkStore.MATCH:choice.getSelectedItemPosition()==2?
+                        OutcomeCrosswalkStore.GAP:OutcomeCrosswalkStore.PENDING);
+                    entry.put("updated",System.currentTimeMillis());
+                }catch(Exception ignored){}
+                JSONArray updated=new JSONArray();
+                for(int i=0;i<rows.length();i++)updated.put(i==position?entry:rows.opt(i));
+                if(position<0)updated.put(entry);
+                crosswalk.put(selectedSubject,selectedTopic,subname,updated);draw();
+            }).setNegativeButton("Cancel",null);
+        if(position>=0)dialog.setNeutralButton("Delete",(d,w)->{
+            JSONArray updated=new JSONArray();for(int i=0;i<rows.length();i++)
+                if(i!=position)updated.put(rows.opt(i));
+            crosswalk.put(selectedSubject,selectedTopic,subname,updated);draw();
+        });
+        dialog.show();
+    }
+    private EditText edit(String hint,String value){
+        EditText input=new EditText(this);input.setHint(hint);
+        input.setText(value);input.setTextSize(13);input.setMinLines(1);
+        input.setMaxLines(3);return input;
+    }
+    private void exportCrosswalk(){
+        Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+        intent.putExtra(Intent.EXTRA_TITLE,"GCE_O_Level_2026_Manual_Crosswalk.json");
+        try{startActivityForResult(intent,901);}
+        catch(Exception ex){toast("File save application not available");}
+    }
+    @Override protected void onActivityResult(int request,int result,Intent data){
+        super.onActivityResult(request,result,data);
+        if(request==901&&result==RESULT_OK&&data!=null&&data.getData()!=null){
+            try(OutputStream stream=getContentResolver().openOutputStream(data.getData())){
+                if(stream==null)throw new Exception("Cannot open document");
+                stream.write(crosswalk.exportAll().toString(2).getBytes("UTF-8"));
+                toast("Crosswalk JSON file saved");
+            }catch(Exception ex){toast("JSON export failed");}
+        }
     }
     private void editReference(){
         EditText input=new EditText(this);input.setSingleLine(false);input.setMinLines(2);
