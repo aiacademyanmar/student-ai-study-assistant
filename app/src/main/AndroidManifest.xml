@@ -25,6 +25,7 @@
         <activity android:name=".WrittenPracticeActivity" android:exported="false" />
         <activity android:name=".TopicAnalyticsActivity" android:exported="false" />
         <activity android:name=".SyllabusAuditActivity" android:exported="false" />
+        <activity android:name=".PromotionActivity" android:exported="false" />
         <activity android:name=".SyllabusCoverageActivity" android:exported="false" />
         <activity android:name=".PriorityStudyActivity" android:exported="false" />
         <activity android:name=".TeacherRentActivity" android:exported="false" />
