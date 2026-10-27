@@ -164,7 +164,7 @@ public class CatalogActivity extends Activity {
         margin(academy,body,0,0,0,4);
         section("AI Study Mode","သင်ခန်းစာများ  ›",()->startActivity(new Intent(this,MainActivity.class)));
         LinearLayout study=card(WHITE);study.addView(tv("🎓  ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူပါ",16,INK,true));study.addView(tv("AI ကို အဖြေချက်ချင်းမပေးစေဘဲ အဆင့်လိုက် မေးခွန်းများဖြင့် လေ့လာနိုင်ပါတယ်။",13,MUTED,false));
-        TextView go=button("ChatGPT Study Mode ဖွင့်ရန်",BLUE,WHITE,()->launchChatGPT("ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူနိုင်အောင် မေးခွန်းတစ်ခုစီ မေးပေးပါ။"));margin(go,study,0,14,0,0);
+        TextView go=button("ChatGPT Study Mode ဖွင့်ရန်",BLUE,WHITE,()->AiProviderRouter.chooseAndRun(this,"ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူနိုင်အောင် မေးခွန်းတစ်ခုစီ မေးပေးပါ။","study_home","Study Mode"));margin(go,study,0,14,0,0);
         margin(study,body,0,0,0,0);
         margin(tv("OpenAI ၏ တရားဝင် App မဟုတ်ပါ။ AI ဖြေဆိုမှုသည် ChatGPT ဝဘ်ဆိုက်တွင်ဖြစ်သည်။",10,MUTED,false),body,0,16,0,0);
     }
@@ -213,7 +213,7 @@ public class CatalogActivity extends Activity {
         margin(box,body,0,0,0,12);
         LinearLayout prompt=card(0xFFE9F2FF);prompt.addView(tv("🪄 အသင့်သုံး AI Prompt",16,INK,true));TextView content=tv(selected.prompt(),13,INK,false);padding(content,0,10,0,10);prompt.addView(content);
         margin(prompt,body,0,0,0,13);
-        margin(button("ChatGPT Study Mode ဖြင့် စတင်ရန်  ↗",BLUE,WHITE,()->launchChatGPT(selected.prompt())),body,0,0,0,9);
+        margin(button("AI ရွေးပြီး စတင်ရန်  ↗",BLUE,WHITE,()->AiProviderRouter.chooseAndRun(this,selected.prompt(),"chat_prompt_"+selected.id,selected.title)),body,0,0,0,9);
         LinearLayout r=row();TextView cp=button("⧉  Prompt ကူးယူရန်",0xFFE2EDFF,NAVY,()->copy(selected.prompt()));r.addView(cp,new LinearLayout.LayoutParams(0,d(48),1));
         TextView save=button(saved.contains(selected.id)?"♥  သိမ်းပြီး":"♡  သိမ်းထားရန်",0xFFFFE6F0,CORAL,()->{toggleFavorite(selected.id);show("detail");});
         LinearLayout.LayoutParams b=new LinearLayout.LayoutParams(0,d(48),1);b.leftMargin=d(8);r.addView(save,b);margin(r,body,0,0,0,5);
@@ -227,7 +227,7 @@ public class CatalogActivity extends Activity {
         margin(tv("သင်၏ Prompt",17,INK,true),body,0,0,0,9);
         EditText edit=new EditText(this);edit.setText(selected.prompt());edit.setTextSize(15);edit.setTextColor(INK);edit.setMinLines(8);edit.setGravity(Gravity.TOP);edit.setBackground(outline(WHITE,15,LINE));padding(edit,13,13,13,13);margin(edit,body,0,0,0,12);
         margin(button("📋  Prompt ကူးယူရန်",0xFFE0F2FF,BLUE,()->copy(edit.getText().toString())),body,0,0,0,10);
-        margin(button("ChatGPT Study Mode ကို ဖွင့်ရန်   ↗",BLUE,WHITE,()->launchChatGPT(edit.getText().toString())),body,0,0,0,13);
+        margin(button("AI ရွေးပြီး Prompt ပို့ရန်   ↗",BLUE,WHITE,()->AiProviderRouter.chooseAndRun(this,edit.getText().toString(),"chat_prompt_"+selected.id,selected.title)),body,0,0,0,13);
         LinearLayout how=card(WHITE);how.addView(tv("အသုံးပြုပုံ",16,INK,true));
         how.addView(tv("၁။ စကားဝိုင်း Prompt ကို ပြင်ဆင်ပါ။\n၂။ အပေါ်က ခလုတ်နှိပ်၍ Prompt ကို ဖုန်း Clipboard ထဲ ကူးပါ။\n၃။ ChatGPT Study Mode ဖွင့်ပြီး Paste လုပ်ပါ။\n၄။ AI ၏ မေးခွန်းများကို ဖြေဆိုလေ့ကျင့်ပါ။",14,MUTED,false));margin(how,body,0,0,0,0);
     }
@@ -238,10 +238,12 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.9");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.10");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
+        margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
+        margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("🎓  GCE O & A Level AI Tutor",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),body,0,0,0,12);
         margin(button("👩‍🏫  TEACHER RENT · ဆရာ/ဆရာမ ငှားရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),body,0,0,0,12);
         margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
@@ -286,7 +288,7 @@ public class CatalogActivity extends Activity {
             tab.setOnClickListener(v->{
                 if("tutor".equals(route)){
                     Intent intent=new Intent(this,NativeChatActivity.class);
-                    startActivity(intent);
+                    AiProviderRouter.openMain(this);
                 }else if("courses".equals(route)){
                     AcademyBrowser.openCourses(this);
                 }else if("teacher".equals(route)){
@@ -303,7 +305,7 @@ public class CatalogActivity extends Activity {
     }
     private void toggleFavorite(int id){if(saved.contains(id))saved.remove(id);else saved.add(id);StringBuilder b=new StringBuilder();for(Integer n:saved)b.append(n).append(',');prefs.edit().putString("favorites",b.toString()).apply();}
     private void copy(String s){ClipboardManager manager=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);manager.setPrimaryClip(ClipData.newPlainText("Student AI Prompt",s));Toast.makeText(this,"Prompt ကို ကူးယူထားပါပြီ",Toast.LENGTH_SHORT).show();}
-    private void launchChatGPT(String prompt){copy(prompt);openUrl(STUDY_URL);}
+    private void launchChatGPT(String prompt){AiProviderRouter.chooseAndRun(this,prompt,"study","AI Study");}
     private void openUrl(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception x){Toast.makeText(this,"Browser မတွေ့ပါ။ ChatGPT ကို Browser တွင် ဖွင့်ပါ။",Toast.LENGTH_LONG).show();}}
     private void back(){if(page.equals("compose")){show("detail");return;}if(page.equals("detail")){show(returnPage);return;}show("home");}
     @Override public void onBackPressed(){if(page.equals("home"))super.onBackPressed();else back();}
