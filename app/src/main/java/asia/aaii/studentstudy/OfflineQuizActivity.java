@@ -54,7 +54,7 @@ public class OfflineQuizActivity extends Activity{
   root.addView(StudyDesign.navigation(this,OfflineQuizActivity.class));
  }
  private void setup(){
-  body.addView(StudyDesign.hero(this,"ORIGINAL QUESTIONS · NO INTERNET","Native Offline MCQ","Instant scoring · explanation · score history"));
+  body.addView(StudentPromoBanner.create(this,"PRACTICE TODAY","Score Higher\nTomorrow","192 original MCQs · Offline scoring","Select Subject",()->{},false));
   label("⚠ 192 original starter MCQs across 24 subjects (8 each). Not official Cambridge papers or comprehensive syllabus coverage.",13);
   button("Level: "+("O".equals(level)?"O Level":"AS/A Level")+" · Change",()->new AlertDialog.Builder(this).setItems(new String[]{"GCE O Level","GCE AS/A Level"},(d,x)->{level=x==0?"O":"A";draw();}).show());
   String[] names=new String[12];for(int i=0;i<12;i++)names[i]="O".equals(level)?OLevel2026.SUBJECTS[i].name:ALevel2026.SUBJECTS[i].name;
