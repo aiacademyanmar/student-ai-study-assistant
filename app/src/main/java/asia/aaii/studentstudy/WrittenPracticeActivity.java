@@ -75,8 +75,7 @@ public final class WrittenPracticeActivity extends Activity {
   root.addView(StudyDesign.navigation(this,WrittenPracticeActivity.class));
  }
  private void subjects(){
-  body.addView(StudyDesign.hero(this,"GCE O / AS / A LEVEL · V2.26","Write • Review • Improve",
-    "48 original written tasks · model answers · 4-point self-review"));
+  body.addView(StudentPromoBanner.create(this,"STUDENT AI · WRITING","Practice Writing","48 original tasks · model answers","Choose Subject",()->{},false));
   heading("⚠ Self-assessment only. Cambridge official mark schemes are not included.",13);
   action("Level: "+("O".equals(level)?"O Level":"AS/A Level")+" · Change",false,()->
     new AlertDialog.Builder(this).setItems(new String[]{"O Level","AS/A Level"},(d,index)->{
