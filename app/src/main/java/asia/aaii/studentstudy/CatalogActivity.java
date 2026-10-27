@@ -37,6 +37,12 @@ public class CatalogActivity extends Activity {
     private static final int[] CAT_COLORS = {GREEN, BLUE, CORAL};
     private static final int[] CAT_BG = {0xFFE8FAF1, 0xFFE7F2FF, 0xFFFFEBF2};
     private static final String STUDY_URL = "https://chatgpt.com/studymode";
+    private static final String ACADEMY_URL = "https://academy.openai.com/pages/courses?linkMenu=Courses";
+    private static final String[] ACADEMY_COURSES = {
+        "https://academy.openai.com/public/courses/ai-foundations-juzjs",
+        "https://academy.openai.com/public/courses/applied-ai-foundations-hgk7r",
+        "https://academy.openai.com/public/courses/agents-and-workflows-bieml"
+    };
     private LinearLayout root, body, cardList;
     private SharedPreferences prefs;
     private final Set<Integer> saved = new HashSet<>();
@@ -53,7 +59,7 @@ public class CatalogActivity extends Activity {
         getWindow().setNavigationBarColor(WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         String requested = getIntent() == null ? null : getIntent().getStringExtra("open_page");
-        if (!"list".equals(requested) && !"saved".equals(requested) && !"profile".equals(requested)) requested="home";
+        if (!"list".equals(requested) && !"saved".equals(requested) && !"courses".equals(requested) && !"profile".equals(requested)) requested="home";
         show(requested);
     }
     private int d(float n){ return (int)(getResources().getDisplayMetrics().density*n+.5f); }
@@ -89,6 +95,7 @@ public class CatalogActivity extends Activity {
         else if(screen.equals("detail")) detail();
         else if(screen.equals("compose")) compose();
         else if(screen.equals("saved")) favorites();
+        else if(screen.equals("courses")) courses();
         else profile();
         bottomBar();
     }
@@ -132,6 +139,12 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->show("courses"));
+        LinearLayout academy=card(0xFFE9F4FF);
+        academy.addView(tv("AI Foundations · Applied AI · Agents & Workflows",15,NAVY,true));
+        academy.addView(tv("အခြေခံမှ လက်တွေ့အသုံးချသင်တန်းအထိ တရားဝင် OpenAI Academy မှ လေ့လာနိုင်ပါသည်။",12,MUTED,false));
+        margin(button("သင်တန်းစာရင်း ဖွင့်ရန်  ›",BLUE,WHITE,()->show("courses")),academy,0,12,0,0);
+        margin(academy,body,0,0,0,4);
         section("AI Study Mode","သင်ခန်းစာများ  ›",()->startActivity(new Intent(this,MainActivity.class)));
         LinearLayout study=card(WHITE);study.addView(tv("🎓  ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူပါ",16,INK,true));study.addView(tv("AI ကို အဖြေချက်ချင်းမပေးစေဘဲ အဆင့်လိုက် မေးခွန်းများဖြင့် လေ့လာနိုင်ပါတယ်။",13,MUTED,false));
         TextView go=button("ChatGPT Study Mode ဖွင့်ရန်",BLUE,WHITE,()->launchChatGPT("ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူနိုင်အောင် မေးခွန်းတစ်ခုစီ မေးပေးပါ။"));margin(go,study,0,14,0,0);
@@ -208,10 +221,11 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ကိုယ်ရေးအချက်အလက်","Student AI Study Assistant V2.0");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.2");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
+        margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->show("courses")),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
         margin(button("ChatGPT Study Mode သို့ သွားရန်",0xFFE8F2FF,NAVY,()->openUrl(STUDY_URL)),body,0,0,0,12);
         LinearLayout privacy=card(WHITE);privacy.addView(tv("အသုံးပြုမှုနှင့် ကိုယ်ရေးလုံခြုံမှု",16,INK,true));
@@ -228,9 +242,9 @@ public class CatalogActivity extends Activity {
         wrapper.addView(hairline,new LinearLayout.LayoutParams(-1,d(1)));
         LinearLayout bar=row();
         padding(bar,2,3,2,4);
-        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သိမ်းထား","ပိုမို"};
-        String[] icons={"⌂","▤","✦","♥","☰"};
-        String[] routes={"home","list","tutor","saved","profile"};
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သင်တန်း","ပိုမို"};
+        String[] icons={"⌂","▤","✦","▣","☰"};
+        String[] routes={"home","list","tutor","courses","profile"};
         for(int i=0;i<routes.length;i++){
             final String route=routes[i];
             boolean active=page.equals(route)
