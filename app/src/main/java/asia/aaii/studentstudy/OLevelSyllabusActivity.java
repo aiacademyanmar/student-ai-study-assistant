@@ -74,7 +74,7 @@ public class OLevelSyllabusActivity extends Activity{
  void openOfficial(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception ex){Toast.makeText(this,"Browser မတွေ့ပါ",Toast.LENGTH_SHORT).show();}}
  void back(){if(stage>=0)stage=-1;else if(subtopic>=0)subtopic=-1;else if(topic>=0)topic=-1;else if(subject>=0)subject=-1;else{finish();return;}draw();}
  void draw(){
-  root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(0xFFF2F6FD);
+  root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(StudyDesign.BG);
   setContentView(root);getWindow().setStatusBarColor(WHITE);getWindow().setNavigationBarColor(WHITE);
   getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
   if(Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,insets)->{android.graphics.Insets i=insets.getInsets(WindowInsets.Type.systemBars());v.setPadding(i.left,i.top,i.right,i.bottom);return insets;});
@@ -83,6 +83,7 @@ public class OLevelSyllabusActivity extends Activity{
   TextView h=text("📘 GCE O LEVEL · 2026",19,true);header.addView(h);root.addView(header);
   ScrollView scroll=new ScrollView(this);body=new LinearLayout(this);body.setOrientation(1);body.setPadding(dp(15),dp(13),dp(15),dp(30));scroll.addView(body);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
   if(subject<0){
+   LinearLayout banner=StudyDesign.hero(this,"2026 CAMBRIDGE STUDY MAP","Explore O Level Subjects","ဘာသာရပ် ၁၂ ခု · AI Lesson · Exercises · Exam Practice");body.addView(banner);
    add("Subject → Topic → Subtopic → Lesson → Exercises → Exam Practice",16,true,4);
    add(OLevel2026.SUBJECTS.length+" Subjects · "+OLevel2026.topicCount()+" Topic groups · "+OLevel2026.subtopicCount()+" Study subtopics · "+OLevel2026.lessonCount()+" Lesson stages",13,false,9);
    add("ဘာသာရပ် ၁၂ ခုအတွက် top-level heading audit လုပ်ထားပြီး Outcome အပြည့်အစုံကို ဆက်စစ်ရပါမည်။ Subtopic/Lesson များသည် App ရဲ့ ကိုယ်ပိုင်သင်ယူရေးခွဲခြားမှုများဖြစ်သည်။",13,false,12);
