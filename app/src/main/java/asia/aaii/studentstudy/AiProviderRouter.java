@@ -57,7 +57,6 @@ public final class AiProviderRouter {
         final AlertDialog dialog=new AlertDialog.Builder(activity)
             .setTitle("AI ရွေးချယ်ပါ · Main AI: "+mainLabel(activity))
             .setSingleChoiceItems(LABELS,choice[0],(d,selected)->choice[0]=selected)
-            .setMessage("APP AI က HTTPS Backend နှင့် အလုပ်လုပ်မည်။ ChatGPT/Gemini အတွက် Prompt ကို Clipboard သို့ကူးပြီး ဖုန်းထဲရှိ App ဖွင့်ပေးပါမည်။")
             .setPositiveButton("ယခုတစ်ကြိမ် သုံးမည်",(d,w)->run(activity,VALUES[choice[0]],content,session,title))
             .setNeutralButton("Main AI အဖြစ် သိမ်း၍သုံးမည်",(d,w)->{
                 setMain(activity,VALUES[choice[0]]);
@@ -72,7 +71,6 @@ public final class AiProviderRouter {
         new AlertDialog.Builder(activity)
             .setTitle("Main AI သတ်မှတ်ရန်")
             .setSingleChoiceItems(LABELS,choice[0],(dialog,index)->choice[0]=index)
-            .setMessage("ရွေးထားသော AI ကို နောက်ထပ် Prompt များတွင် ပုံမှန်ရွေးပြီးသားအဖြစ် ပြပါမည်။ Prompt တစ်ခုချင်းစီမှာလည်း ပြန်ပြောင်းနိုင်ပါသည်။")
             .setPositiveButton("သိမ်းဆည်းမည်",(d,w)->{
                 setMain(activity,VALUES[choice[0]]);
                 Toast.makeText(activity,"Main AI: "+mainLabel(activity)+" · သိမ်းပြီးပါပြီ",Toast.LENGTH_LONG).show();
