@@ -21,6 +21,7 @@ public class OfflineQuizActivity extends Activity{
  private long deadline=0;private android.os.Handler clock=new android.os.Handler(android.os.Looper.getMainLooper());
  private TextView timerView;private boolean answered=false;
  private final ArrayList<String> wrongIds=new ArrayList<>();
+ private JSONArray answers=new JSONArray();
  private final ArrayList<String> weak=new ArrayList<>();
  private int dp(int v){return StudyDesign.dp(this,v);}
  private void label(String s,int size){TextView t=StudyDesign.text(this,s,size,StudyDesign.INK,size>=18);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(12);body.addView(t,p);}
@@ -40,25 +41,25 @@ public class OfflineQuizActivity extends Activity{
   if(quiz.isEmpty())return;
   clock.removeCallbacksAndMessages(null);
   int total=quiz.size();
-  history[0].addDetailed(level,code,correct,total,android.text.TextUtils.join(", ",weak),
-      topic,difficulty,minutes*60,android.text.TextUtils.join(", ",wrongIds));
+  history[0].addAnswers(level,code,correct,total,topic,difficulty,minutes*60,answers);
   quiz.clear();draw();
  }
  @Override public void onBackPressed(){if(!quiz.isEmpty())new AlertDialog.Builder(this).setMessage("Quiz ကို မသိမ်းဘဲ ထွက်မလား?").setPositiveButton("Exit",(d,w)->{quiz.clear();clock.removeCallbacksAndMessages(null);code=null;draw();}).setNegativeButton("Cancel",null).show();else finish();}
  private void draw(){
   root=StudyDesign.col(this);root.setBackgroundColor(StudyDesign.BG);setContentView(root);
   if(Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,i)->{android.graphics.Insets x=i.getInsets(WindowInsets.Type.systemBars());v.setPadding(x.left,x.top,x.right,x.bottom);return i;});
-  TextView title=StudyDesign.text(this,"‹    Offline Quiz · V2.24",19,StudyDesign.INK,true);title.setPadding(dp(14),dp(15),dp(12),dp(15));title.setBackgroundColor(-1);title.setOnClickListener(v->onBackPressed());root.addView(title);
+  TextView title=StudyDesign.text(this,"‹    Offline Quiz · V2.26",19,StudyDesign.INK,true);title.setPadding(dp(14),dp(15),dp(12),dp(15));title.setBackgroundColor(-1);title.setOnClickListener(v->onBackPressed());root.addView(title);
   ScrollView sc=new ScrollView(this);body=StudyDesign.col(this);body.setPadding(dp(14),dp(15),dp(14),dp(25));sc.addView(body);root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
   if(!quiz.isEmpty())question();else if(code==null)setup();else results();
   root.addView(StudyDesign.navigation(this,OfflineQuizActivity.class));
  }
  private void setup(){
   body.addView(StudyDesign.hero(this,"ORIGINAL QUESTIONS · NO INTERNET","Native Offline MCQ","Instant scoring · explanation · score history"));
-  label("⚠ 144 original starter MCQs across 24 subjects (6 each). Not official Cambridge papers or comprehensive syllabus coverage.",13);
+  label("⚠ 192 original starter MCQs across 24 subjects (8 each). Not official Cambridge papers or comprehensive syllabus coverage.",13);
   button("Level: "+("O".equals(level)?"O Level":"AS/A Level")+" · Change",()->new AlertDialog.Builder(this).setItems(new String[]{"GCE O Level","GCE AS/A Level"},(d,x)->{level=x==0?"O":"A";draw();}).show());
   String[] names=new String[12];for(int i=0;i<12;i++)names[i]="O".equals(level)?OLevel2026.SUBJECTS[i].name:ALevel2026.SUBJECTS[i].name;
   for(int i=0;i<12;i++){String cd="O".equals(level)?OLevel2026.SUBJECTS[i].code:ALevel2026.SUBJECTS[i].code;final String pick=cd;button("📚 "+names[i]+" ("+cd+") · "+OfflineQuizCatalog.count(level,cd,OfflineQuizCatalog.ALL,OfflineQuizCatalog.ANY)+" questions",()->{code=pick;topic=OfflineQuizCatalog.ALL;difficulty=OfflineQuizCatalog.ANY;configure();});}
+  button("📊 Topic Learning Analytics",()->startActivity(new android.content.Intent(this,TopicAnalyticsActivity.class)));
   label("Previous offline quiz results",20);
   JSONArray old=history[0].all();for(int i=0;i<Math.min(8,old.length());i++){JSONObject r=old.optJSONObject(i);if(r!=null)label(r.optString("level")+" "+r.optString("code")+": "+r.optInt("correct")+"/"+r.optInt("total")+" · weak: "+r.optString("weak"),12);}
  }
@@ -74,6 +75,8 @@ public class OfflineQuizActivity extends Activity{
   OfflineQuestionBank.Question q=quiz.get(index);
   if(answered)return;answered=true;clock.removeCallbacksAndMessages(null);
   boolean success=choice==q.answer;if(success)correct++;else{weak.add(q.topic);wrongIds.add(q.id);}
+  try{JSONObject item=new JSONObject();item.put("id",q.id);item.put("topic",q.topic);
+    item.put("correct",success);item.put("selected",choice);item.put("answer",q.answer);answers.put(item);}catch(Exception ignored){}
   new AlertDialog.Builder(this).setTitle(success?"✓ Correct":"✗ Review this concept")
    .setMessage("Correct answer: "+q.options[q.answer]+"\n\n"+q.explanation)
    .setPositiveButton(index==quiz.size()-1?"Show score":"Next question",(d,w)->{
@@ -102,7 +105,7 @@ public class OfflineQuizActivity extends Activity{
    limit=Math.max(1,Math.min(25,requested));minutes=Math.max(1,Math.min(60,mins));
    quiz=OfflineQuizCatalog.choose(level,code,topic,difficulty,limit);
    if(quiz.isEmpty()){code=null;android.widget.Toast.makeText(this,"This topic/difficulty has no questions. Choose another filter.",1).show();draw();return;}
-   limit=quiz.size();index=0;correct=0;weak.clear();wrongIds.clear();answered=false;
+   limit=quiz.size();index=0;correct=0;weak.clear();wrongIds.clear();answers=new JSONArray();answered=false;
    deadline=android.os.SystemClock.elapsedRealtime()+minutes*60000L;draw();
   }).setNegativeButton("Cancel",(d,w)->{code=null;draw();}).show();
  }
@@ -134,6 +137,16 @@ public class OfflineQuizActivity extends Activity{
     "offline_revise_"+code,"Quiz Revision");
   });
   button("Start new quiz",()->configure());
+  button("🎯 Retry previously missed questions",()->{
+   java.util.List<String> ids=QuestionInsightEngine.wrongQuestionIds(history[0].all(),level,code);
+   java.util.ArrayList<OfflineQuestionBank.Question> selected=new java.util.ArrayList<>();
+   for(OfflineQuestionBank.Question x:OfflineQuizCatalog.all())if(x.level.equals(level)&&x.code.equals(code)&&ids.contains(x.id))selected.add(x);
+   if(selected.isEmpty()){android.widget.Toast.makeText(this,"No saved missed questions for this subject",1).show();return;}
+   java.util.Collections.shuffle(selected);quiz=selected;limit=quiz.size();minutes=Math.max(5,quiz.size()*2);
+   index=0;correct=0;weak.clear();wrongIds.clear();answers=new JSONArray();answered=false;
+   topic=OfflineQuizCatalog.ALL;difficulty=OfflineQuizCatalog.ANY;
+   deadline=android.os.SystemClock.elapsedRealtime()+minutes*60000L;draw();
+  });
   button("📊 Detailed Score Dashboard",()->dashboard());
   button("All subjects",()->{code=null;draw();});
  }
