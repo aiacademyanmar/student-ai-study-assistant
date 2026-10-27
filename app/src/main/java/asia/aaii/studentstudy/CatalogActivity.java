@@ -241,7 +241,7 @@ public class CatalogActivity extends Activity {
             card.addView(tv(icons[i]+"  "+names[i],19,INK,true));
             card.addView(tv(labels[i],15,BLUE,true));
             margin(tv(notes[i],13,MUTED,false),card,0,10,0,12);
-            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->{Intent i=new Intent(this,AcademyWebViewActivity.class);i.putExtra("target_url",ACADEMY_COURSES[at]);startActivity(i);}),card,0,0,0,0);
+            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->{Intent courseIntent=new Intent(this,AcademyWebViewActivity.class);courseIntent.putExtra("target_url",ACADEMY_COURSES[at]);startActivity(courseIntent);}),card,0,0,0,0);
             margin(card,body,0,0,0,12);
         }
         LinearLayout warning=card(0xFFF1F4FA);
