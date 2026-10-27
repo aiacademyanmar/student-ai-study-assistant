@@ -58,7 +58,7 @@ public final class StudyPromptComposer {
    "At the end provide realistic next steps for the student, without fabricated personal scores or official attainment claims.";
  }
  private static String safe(String s){
-  if(s==null)return "";return s.trim().replace('\r',' ').replace('\n',' ').substring(0,Math.min(240,s.trim().length()));
+  if(s==null)return "";String x=s.trim().replace('\r',' ').replace('\n',' ');return x.substring(0,Math.min(240,x.length()));
  }
  private static String task(int task,int d){
   switch(task){
