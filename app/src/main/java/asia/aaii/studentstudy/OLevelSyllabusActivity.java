@@ -74,13 +74,14 @@ public class OLevelSyllabusActivity extends Activity{
   if(subject<0){
    add("Subject → Topic → Subtopic → Lesson → Exercises → Exam Practice",16,true,4);
    add(OLevel2026.SUBJECTS.length+" Subjects · "+OLevel2026.topicCount()+" Topic groups · "+OLevel2026.subtopicCount()+" Study subtopics · "+OLevel2026.lessonCount()+" Lesson stages",13,false,9);
-   add("ဤအကြောင်းအရာများသည် 2026 Cambridge O Level ကို ရည်ညွှန်းသော Study Map များဖြစ်ပြီး Official Syllabus အပြည့်အစုံ ဟု မဆိုပါ။ Topic နှင့် Assessment Scope ကို official PDF ဖြင့် စစ်ပါ။",13,false,12);
-   for(int x=0;x<OLevel2026.SUBJECTS.length;x++){final int i=x;OLevel2026.Subject s=OLevel2026.SUBJECTS[i];btn("📚 "+s.name+" · "+s.code+"\n"+s.topics.length+" Topic groups · syllabus "+s.years,()->{subject=i;draw();});}
+   add("Official heading အတည်ပြုထားသည့်ဘာသာ ၅ ခု၊ Study Map / အသေးစိတ်စစ်ဆေးရန် ကျန်ရှိသည့်ဘာသာ ၇ ခု။ Subtopic/Lesson များသည် App ရဲ့ ကိုယ်ပိုင်သင်ယူရေးခွဲခြားမှုများဖြစ်သည်။",13,false,12);
+   for(int x=0;x<OLevel2026.SUBJECTS.length;x++){final int i=x;OLevel2026.Subject s=OLevel2026.SUBJECTS[i];btn("📚 "+s.name+" · "+s.code+"\n"+s.topics.length+" Topic groups · syllabus "+s.years+"\n"+(s.officialTopicHeadings?"✓ Verified top-level headings":"◷ Study Map · Verify PDF"),()->{subject=i;draw();});}
   }else if(topic<0){
    OLevel2026.Subject s=OLevel2026.SUBJECTS[subject];
    Cambridge2026Audit.Source audit=Cambridge2026Audit.byCode(s.code);
    add(s.name+" · "+s.code,22,true,0);
    add("Exam Year 2026 · PDF Validity: "+(audit==null?s.years:audit.validYears),12,false,6);
+   add(s.officialTopicHeadings?"✓ Topic heading list checked against official PDF":"◷ Topic study map; official heading-by-heading audit pending",13,false,8);
    if(audit!=null){
      add("ASSESSMENT STRUCTURE",16,true,16);
      add(audit.examPapers,13,false,8);
@@ -92,7 +93,7 @@ public class OLevelSyllabusActivity extends Activity{
    for(int x=0;x<s.topics.length;x++){final int i=x;OLevel2026.Topic t=s.topics[i];btn("Topic "+(x+1)+" · "+t.name+"\n"+t.subtopics.length+" Study subtopics",()->{topic=i;draw();});}
   }else if(subtopic<0){
    OLevel2026.Topic t=OLevel2026.SUBJECTS[subject].topics[topic];
-   add(t.name,22,true,4);add("သင်ခန်းစာအဖြစ် ခွဲထားသော Subtopics",12,false,8);
+   add(t.name,22,true,4);add("App-created Study Subtopics — Official Syllabus learning outcomes မဟုတ်သေးပါ",12,false,8);
    for(int x=0;x<t.subtopics.length;x++){final int i=x;btn("Subtopic "+(x+1)+" · "+t.subtopics[i],()->{subtopic=i;draw();});}
   }else if(stage<0){
    OLevel2026.Topic t=OLevel2026.SUBJECTS[subject].topics[topic];
