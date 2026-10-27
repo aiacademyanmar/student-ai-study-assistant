@@ -94,10 +94,10 @@ public final class StudyDesign {
     public static LinearLayout navigation(Activity a,Class<?> selected){
         LinearLayout nav=row(a);nav.setPadding(dp(a,4),dp(a,6),dp(a,4),dp(a,6));
         nav.setBackground(stroked(a,WHITE,BORDER,20));nav.setElevation(dp(a,9));
-        String[] labels={"ပင်မ","O Level","Study Plan","Coverage"};
-        String[] emojis={"⌂","📘","◷","✓"};
+        String[] labels={"ပင်မ","O Level","A Level","Audit"};
+        String[] emojis={"⌂","📘","🎓","✓"};
         Class<?>[] destinations={CatalogActivity.class,OLevelSyllabusActivity.class,
-            PriorityStudyActivity.class,SyllabusCoverageActivity.class};
+            ALevelSyllabusActivity.class,SyllabusAuditActivity.class};
         for(int i=0;i<destinations.length;i++){
             final Class<?> destination=destinations[i], current=selected;
             boolean active=selected==destination;
