@@ -20,6 +20,7 @@
         <activity android:name=".OLevelSyllabusActivity" android:exported="false" />
         <activity android:name=".ALevelSyllabusActivity" android:exported="false" />
         <activity android:name=".ALevelExamCoverageActivity" android:exported="false" />
+        <activity android:name=".ALevelResultsActivity" android:exported="false" />
         <activity android:name=".SyllabusCoverageActivity" android:exported="false" />
         <activity android:name=".PriorityStudyActivity" android:exported="false" />
         <activity android:name=".TeacherRentActivity" android:exported="false" />
