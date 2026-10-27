@@ -66,14 +66,10 @@ public class GceStudyActivity extends Activity {
   return kind<0?GcePromptFactory.explain(s,c,lesson):GcePromptFactory.practice(s,c,lesson,kind);
  }
  private void copy(String prompt){ClipboardManager c=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);c.setPrimaryClip(ClipData.newPlainText("GCE AI Tutor Prompt",prompt));Toast.makeText(this,"AI Prompt Copy ပြီးပါပြီ",Toast.LENGTH_SHORT).show();}
- private void chat(String prompt){Intent i=new Intent(this,NativeChatActivity.class);i.putExtra("draft",prompt);startActivity(i);}
+ private void chat(String prompt){AiProviderRouter.chooseAndRun(this,prompt,"gce_"+lv()+"_"+currentSubject().code+"_"+chapter+"_"+lesson+"_lesson","GCE Lesson");}
  private void startInteractive(String name,String title,String prompt){
   GceCurriculum.Subject s=currentSubject();
-  Intent next=new Intent(this,NativeChatActivity.class);
-  next.putExtra("draft",prompt);
-  next.putExtra("chat_title",title);
-  next.putExtra("chat_session","gce_"+lv()+"_"+s.code+"_"+chapter+"_"+lesson+"_"+name);
-  startActivity(next);
+  AiProviderRouter.chooseAndRun(this,prompt,"gce_"+lv()+"_"+s.code+"_"+chapter+"_"+lesson+"_"+name,title);
  }
  private void browserPractice(String text){
   copy(text);
@@ -95,7 +91,7 @@ public class GceStudyActivity extends Activity {
   add(card,t(detail,13,NAVY,false),9);
   add(card,button("🤖  AI နှင့် အပြန်အလှန် စမ်းမည်",()->startInteractive(name,title,prompt)),13);
   add(card,button("📋  Prompt Copy",()->copy(prompt)),9);
-  add(card,button("🌐  ChatGPT Study Mode ဖြင့် လေ့ကျင့်မည်",()->browserPractice(prompt)),9);
+  add(card,button("⭐ AI Provider ရွေးချယ်၍ သုံးမည်",()->AiProviderRouter.chooseAndRun(this,prompt,"gce_"+lv()+"_"+currentSubject().code+"_"+chapter+"_"+lesson+"_"+name,title)),9);
   add(card,button("👁  Prompt အပြည့်ကြည့်ရန်",()->new AlertDialog.Builder(this)
       .setTitle(title).setMessage(prompt)
       .setPositiveButton("Copy",(dialog,which)->copy(prompt))
@@ -132,7 +128,7 @@ public class GceStudyActivity extends Activity {
   String[] names={"ပင်မ","GCE","AI ဆရာ","သင်တန်း","ပိုမို"};String[] icons={"⌂","▤","✦","▣","☰"};
   for(int i=0;i<5;i++){final int n=i;LinearLayout tile=new LinearLayout(this);tile.setOrientation(1);tile.setGravity(Gravity.CENTER);TextView icon=t(icons[i],22,i==1?BLUE:MUTED,true);icon.setGravity(Gravity.CENTER);tile.addView(icon);TextView label=t(names[i],10,i==1?BLUE:MUTED,i==1);label.setGravity(Gravity.CENTER);tile.addView(label);tile.setOnClickListener(v->nav(n));bar.addView(tile,new LinearLayout.LayoutParams(0,d(62),1));}root.addView(bar);
  }
- private void nav(int n){if(n==1){level=1;subject=-1;chapter=-1;lesson=-1;draw();return;}if(n==3){AcademyBrowser.openCourses(this);return;}Intent i=n==2?new Intent(this,NativeChatActivity.class):new Intent(this,CatalogActivity.class);if(n==4)i.putExtra("open_page","profile");startActivity(i);finish();}
+ private void nav(int n){if(n==1){level=1;subject=-1;chapter=-1;lesson=-1;draw();return;}if(n==3){AcademyBrowser.openCourses(this);return;}if(n==2){AiProviderRouter.openMain(this);return;}Intent i=new Intent(this,CatalogActivity.class);if(n==4)i.putExtra("open_page","profile");startActivity(i);finish();}
  private void back(){if(lesson>=0)lesson=-1;else if(chapter>=0)chapter=-1;else if(subject>=0)subject=-1;else {finish();return;}draw();}
  @Override public void onBackPressed(){back();}
 }
