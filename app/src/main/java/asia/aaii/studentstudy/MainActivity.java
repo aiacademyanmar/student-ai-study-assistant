@@ -204,7 +204,8 @@ public class MainActivity extends Activity {
             tab.setFocusable(true);
             tab.setClickable(true);
             tab.setOnClickListener(v->{
-                if("chat".equals(route)) show(route);
+                if("chat".equals(route)){startActivity(new Intent(this,NativeChatActivity.class));finish();}
+                else if("courses".equals(route)){startActivity(new Intent(this,AcademyWebViewActivity.class));finish();}
                 else {
                     Intent intent=new Intent(this,CatalogActivity.class);
                     intent.putExtra("open_page",route);
@@ -383,7 +384,7 @@ public class MainActivity extends Activity {
         margin(surface,text("သိချင်သော မေးခွန်း",14,INK,true),8,8);
         questionInput=input("ဥပမာ: အပိုင်းကိန်းပေါင်းနည်းကို အဆင့်လိုက် ရှင်းပြပေးပါ။");questionInput.setMinLines(3);
         questionInput.setText(prefs.getString("chat_prompt",""));margin(surface,questionInput,0,10);
-        mainButton(surface,"မေးခွန်း Copy + Study Mode ဖွင့်မည်  ↗",()->openStudyWithPrompt());
+        mainButton(surface,"Native AI ဆရာနှင့် မေးမည်  →",()->{Intent i=new Intent(this,NativeChatActivity.class);i.putExtra("draft",questionInput.getText().toString());startActivity(i);});
         margin(surface,button("Study Mode ကို တိုက်ရိုက်ဖွင့်မည်",0xFFE5EDFF,SKY,()->openLink(STUDY_URL)),7,9);
         LinearLayout note=panel(surface);margin(note,text("သိထားရန်",15,INK,true),0,5);
         margin(note,text("ဤ App သည် OpenAI ၏တရားဝင် App မဟုတ်ပါ။ ChatGPT Login ကို ဒီ App ထဲတွင် မတောင်းခံပါ။ Copy လုပ်ထားသော မေးခွန်းကို ChatGPT ထဲမှာ Paste လုပ်ပြီး ပို့ရပါမည်။",13,MUTED,false),0,0);
