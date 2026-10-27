@@ -36,7 +36,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Student-AI-Study-Assistant-V2.22-A-Level-Scores-Revision-debug
+          name: Student-AI-Study-Assistant-V2.23-Native-Offline-Quiz-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
