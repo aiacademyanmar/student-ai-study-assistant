@@ -145,7 +145,9 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
-        section("🧠 Native Offline Quiz · Auto Scoring","O Level + A Level · 144 Original MCQs ›",()->startActivity(new Intent(this,OfflineQuizActivity.class)));
+        section("✍ Native Written Answer · Self-Review","48 original exercises · Model answers ›",()->startActivity(new Intent(this,WrittenPracticeActivity.class)));
+        section("📈 Topic Learning Analytics","Weak topics & Written self-review ›",()->startActivity(new Intent(this,TopicAnalyticsActivity.class)));
+        section("🧠 Native Offline Quiz · Auto Scoring","O Level + A Level · 192 Original MCQs ›",()->startActivity(new Intent(this,OfflineQuizActivity.class)));
         margin(StudyDesign.action(this,"📝 Start Offline Quiz & Score Dashboard",true,()->startActivity(new Intent(this,OfflineQuizActivity.class))),body,0,8,0,11);
         section("📊 A Level Mock Score History & AI Revision","Weak subjects · Recorded marks · Personalized revision ›",()->startActivity(new Intent(this,ALevelResultsActivity.class)));
         section("📝 A Level Mock Exam & Coverage","12 subjects · 53 paper practice routes ›",()->startActivity(new Intent(this,ALevelExamCoverageActivity.class)));
@@ -263,12 +265,14 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.24");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.25");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
+        margin(button("✍ Native Written Practice",BLUE,WHITE,()->startActivity(new Intent(this,WrittenPracticeActivity.class))),body,0,0,0,12);
+        margin(button("📈 Topic Learning Analytics",BLUE,WHITE,()->startActivity(new Intent(this,TopicAnalyticsActivity.class))),body,0,0,0,12);
         margin(button("🧠 Offline Quiz · Auto Score",BLUE,WHITE,()->startActivity(new Intent(this,OfflineQuizActivity.class))),body,0,0,0,12);
         margin(button("📊 A Level Mock Scores & AI Revision",BLUE,WHITE,()->startActivity(new Intent(this,ALevelResultsActivity.class))),body,0,0,0,12);
         margin(button("✅  A Level Coverage & Paper Mock Exam",BLUE,WHITE,()->startActivity(new Intent(this,ALevelExamCoverageActivity.class))),body,0,0,0,12);
