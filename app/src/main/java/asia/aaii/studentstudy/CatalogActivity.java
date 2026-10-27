@@ -59,7 +59,7 @@ public class CatalogActivity extends Activity {
         getWindow().setNavigationBarColor(WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         String requested = getIntent() == null ? null : getIntent().getStringExtra("open_page");
-        if (!"list".equals(requested) && !"saved".equals(requested) && !"courses".equals(requested) && !"profile".equals(requested)) requested="home";
+        if (!"list".equals(requested) && !"saved".equals(requested) && !"profile".equals(requested)) requested="home";
         show(requested);
     }
     private int d(float n){ return (int)(getResources().getDisplayMetrics().density*n+.5f); }
@@ -95,7 +95,6 @@ public class CatalogActivity extends Activity {
         else if(screen.equals("detail")) detail();
         else if(screen.equals("compose")) compose();
         else if(screen.equals("saved")) favorites();
-        else if(screen.equals("courses")) {startActivity(new Intent(this,AcademyWebViewActivity.class));show("home");}
         else profile();
         bottomBar();
     }
@@ -145,11 +144,11 @@ public class CatalogActivity extends Activity {
         offline.addView(tv("အင်တာနက်မလိုဘဲ ဖတ်နိုင်သော မြန်မာဘာသာ သင်ခန်းစာ ၁၅ ခု၊ လေ့ကျင့်ခန်းများနှင့် ဖတ်ပြီးမှတ်သားခြင်း",13,MUTED,false));
         margin(button("Offline သင်ခန်းစာများ ဖတ်ရန်",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),offline,0,12,0,0);
         margin(offline,body,0,0,0,6);
-        section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->startActivity(new Intent(this,AcademyWebViewActivity.class)));
+        section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->AcademyBrowser.openCourses(this));
         LinearLayout academy=card(0xFFE9F4FF);
         academy.addView(tv("AI Foundations · Applied AI · Agents & Workflows",15,NAVY,true));
         academy.addView(tv("အခြေခံမှ လက်တွေ့အသုံးချသင်တန်းအထိ တရားဝင် OpenAI Academy မှ လေ့လာနိုင်ပါသည်။",12,MUTED,false));
-        margin(button("သင်တန်းစာရင်း ဖွင့်ရန်  ›",BLUE,WHITE,()->show("courses")),academy,0,12,0,0);
+        margin(button("သင်တန်းစာရင်း ဖွင့်ရန်  ›",BLUE,WHITE,()->AcademyBrowser.openCourses(this)),academy,0,12,0,0);
         margin(academy,body,0,0,0,4);
         section("AI Study Mode","သင်ခန်းစာများ  ›",()->startActivity(new Intent(this,MainActivity.class)));
         LinearLayout study=card(WHITE);study.addView(tv("🎓  ကိုယ်တိုင်စဉ်းစားပြီး သင်ယူပါ",16,INK,true));study.addView(tv("AI ကို အဖြေချက်ချင်းမပေးစေဘဲ အဆင့်လိုက် မေးခွန်းများဖြင့် လေ့လာနိုင်ပါတယ်။",13,MUTED,false));
@@ -226,42 +225,13 @@ public class CatalogActivity extends Activity {
         if(count==0){LinearLayout t=card(WHITE);t.addView(tv("♡  စကားဝိုင်း မသိမ်းရသေးပါ",18,INK,true));t.addView(tv("AI စကားဝိုင်း ၁၀၀ ထဲက နှစ်သက်ရာ Prompt များကို ♥ နှိပ်ပြီး သိမ်းထားနိုင်ပါတယ်။",14,MUTED,false));margin(t,body,0,20,0,0);
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
-    private void courses(){
-        pageHeader("AI သင်တန်းများ","OpenAI Academy Courses");
-        LinearLayout header=card(0xFFE8F2FF);
-        header.addView(tv("🎓  OpenAI Academy",23,NAVY,true));
-        header.addView(tv("AI ကို အခြေခံမှ စတင်ပြီး လက်တွေ့အသုံးချရန် သင်ယူနိုင်သော တရားဝင်သင်တန်းများ",14,MUTED,false));
-        margin(button("Academy သင်တန်းအားလုံး ဖွင့်ရန် ↗",BLUE,WHITE,()->openUrl(ACADEMY_URL)),header,0,12,0,0);
-        margin(header,body,0,0,0,16);
-        String[] names={"AI Foundations","Applied AI Foundations","Agents and Workflows"};
-        String[] labels={"AI အခြေခံ","လက်တွေ့ AI အသုံးချခြင်း","AI Agent နှင့် Workflow များ"};
-        String[] icons={"📘","🧩","🤖"};
-        String[] notes={
-            "AI နှင့် ChatGPT အခြေခံများ၊ Prompt ရေးသားခြင်း၊ AI အဖြေများကို စနစ်တကျ ပြန်စစ်ခြင်း",
-            "နေ့စဉ်လေ့လာမှုနှင့် အလုပ်များတွင် AI ကို လက်တွေ့အသုံးချခြင်း၊ Workflow စီစဉ်ခြင်း",
-            "AI Agents၊ လုပ်ငန်းစဉ်များ ချိတ်ဆက်ခြင်းနှင့် လုပ်ဆောင်ချက်များကို စစ်ဆေးခြင်း"
-        };
-        for(int i=0;i<names.length;i++){
-            final int at=i;
-            LinearLayout card=card(WHITE);
-            card.addView(tv(icons[i]+"  "+names[i],19,INK,true));
-            card.addView(tv(labels[i],15,BLUE,true));
-            margin(tv(notes[i],13,MUTED,false),card,0,10,0,12);
-            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->{Intent courseIntent=new Intent(this,AcademyWebViewActivity.class);courseIntent.putExtra("target_url",ACADEMY_COURSES[at]);startActivity(courseIntent);}),card,0,0,0,0);
-            margin(card,body,0,0,0,12);
-        }
-        LinearLayout warning=card(0xFFF1F4FA);
-        warning.addView(tv("သတိပြုရန်",15,INK,true));
-        warning.addView(tv("သင်တန်းဖွင့်ရန် အင်တာနက် လိုအပ်ပါသည်။ သင်တန်းအကြောင်းအရာနှင့် လက်မှတ်များကို OpenAI Academy ဝဘ်ဆိုက်ကသာ စီမံပါသည်။ ဤ App သည် OpenAI ၏ တရားဝင် App မဟုတ်ပါ။",12,MUTED,false));
-        margin(warning,body,0,0,0,12);
-    }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.4");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.5");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
-        margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->show("courses")),body,0,0,0,12);
+        margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->AcademyBrowser.openCourses(this)),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
         margin(button("ChatGPT Study Mode သို့ သွားရန်",0xFFE8F2FF,NAVY,()->openUrl(STUDY_URL)),body,0,0,0,12);
         LinearLayout privacy=card(WHITE);privacy.addView(tv("အသုံးပြုမှုနှင့် ကိုယ်ရေးလုံခြုံမှု",16,INK,true));
@@ -304,7 +274,7 @@ public class CatalogActivity extends Activity {
                     Intent intent=new Intent(this,NativeChatActivity.class);
                     startActivity(intent);
                 }else if("courses".equals(route)){
-                    startActivity(new Intent(this,AcademyWebViewActivity.class));
+                    AcademyBrowser.openCourses(this);
                 }else {
                     if("list".equals(route)) filter=-1;
                     show(route);
