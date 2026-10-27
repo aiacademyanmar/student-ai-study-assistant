@@ -30,14 +30,6 @@
         <activity android:name=".SyllabusCoverageActivity" android:exported="false" />
         <activity android:name=".PriorityStudyActivity" android:exported="false" />
         <activity android:name=".TeacherRentActivity" android:exported="false" />
-        <activity
-            android:name=".CatalogActivity"
-            android:screenOrientation="unspecified"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".CatalogActivity" android:screenOrientation="unspecified" android:exported="false" />
     </application>
 </manifest>
