@@ -1,0 +1,127 @@
+package asia.aaii.studentstudy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+/** 96 ORIGINAL sample MCQs for offline practice. Not official Cambridge questions,
+ * not comprehensive syllabus coverage. Authored content must be reviewed before high-stakes use.
+ */
+public final class OfflineQuestionBank{
+ private OfflineQuestionBank(){}
+ public static final class Question{
+  public final String id,level,code,topic,prompt,explanation;
+  public final String[] options;public final int answer;
+  public Question(String id,String level,String code,String topic,String prompt,String[] opts,int correct,String why){
+   this.id=id;this.level=level;this.code=code;this.topic=topic;this.prompt=prompt;options=opts;answer=correct;explanation=why;
+  }
+ }
+ public static final Question[] ALL=new Question[]{
+    new Question("q001","O","1123","Reading comprehension","A passage says: 'The train left at six.' Which statement is explicitly stated?",new String[]{"The train was late","The train left at six","The station was crowded","The journey took six hours"},1,"The departure time is directly stated; other details are not given."),
+    new Question("q002","O","1123","Inference","'Mia checked the empty mailbox for the third time.' What can most reasonably be inferred?",new String[]{"Mia was waiting for a message","Mia works at a post office","Mia dislikes letters","Mia has already received the package"},0,"Repeated checking suggests anticipation, not the unsupported alternatives."),
+    new Question("q003","O","1123","Writing purpose","Which sentence is most suitable for a formal request?",new String[]{"Hey, send that form now!","I would be grateful if you could provide the form.","Give me the thing ASAP.","You gotta send it."},1,"The formal sentence uses polite and appropriate register."),
+    new Question("q004","O","1123","Summary writing","Which approach best improves a short summary?",new String[]{"Add new personal opinions","Copy entire paragraphs","Include key points briefly in your own words","Repeat one point many times"},2,"Summaries should be concise, accurate and focused on relevant points."),
+    new Question("q005","O","4024","Algebra","Solve 3x + 7 = 22.",new String[]{"x = 3","x = 4","x = 5","x = 7"},2,"Subtract 7 to obtain 3x=15, then divide by 3."),
+    new Question("q006","O","4024","Percentages","A price of 200 increases by 15%. What is the new price?",new String[]{"215","225","230","240"},2,"15% of 200 is 30, so 200+30=230."),
+    new Question("q007","O","4024","Probability","A fair six-sided die is rolled. What is P(even number)?",new String[]{"1/6","1/3","1/2","2/3"},2,"The even outcomes 2,4,6 are 3 of 6 equally likely outcomes."),
+    new Question("q008","O","4024","Coordinate geometry","What is the gradient of the line through (1,2) and (3,8)?",new String[]{"2","3","4","6"},1,"Gradient=(8−2)/(3−1)=6/2=3."),
+    new Question("q009","O","4037","Differentiation","Differentiate y = 4x³ − 2x.",new String[]{"12x² − 2","4x² − 2","12x³ − 2","3x² − 2"},0,"Use the power rule d(xⁿ)/dx=n x^(n−1)."),
+    new Question("q010","O","4037","Quadratic functions","For f(x)=x²−6x+8, where is the vertex located?",new String[]{"x=−3","x=2","x=3","x=6"},2,"Vertex x-coordinate is −b/(2a)=6/2=3."),
+    new Question("q011","O","4037","Logarithms","If log₁₀(1000)=k, find k.",new String[]{"2","3","10","100"},1,"10³=1000."),
+    new Question("q012","O","4037","Trigonometry","Which identity holds for every angle θ?",new String[]{"sin²θ + cos²θ = 1","sinθ + cosθ = 1","tanθ = sinθ cosθ","cos²θ − sin²θ = 1"},0,"The Pythagorean identity is sin²θ+cos²θ=1."),
+    new Question("q013","O","5090","Cell biology","Which organelle is the main site of aerobic respiration in eukaryotic cells?",new String[]{"Chloroplast","Mitochondrion","Ribosome","Nucleus"},1,"Mitochondria perform much of the aerobic respiration process."),
+    new Question("q014","O","5090","Photosynthesis","Which gas is taken up during photosynthesis?",new String[]{"Oxygen","Nitrogen","Carbon dioxide","Hydrogen"},2,"Carbon dioxide provides carbon for glucose synthesis."),
+    new Question("q015","O","5090","Transport","What is osmosis?",new String[]{"Movement of ions against a gradient","Diffusion of water through a partially permeable membrane","Movement of blood in arteries","Diffusion of oxygen only"},1,"Osmosis is net movement of water through a partially permeable membrane."),
+    new Question("q016","O","5090","Genetics","A heterozygous genotype for alleles B and b is:",new String[]{"BB","bb","Bb","B only"},2,"Heterozygous means two different alleles."),
+    new Question("q017","O","5070","Atomic structure","Which particle has a negative charge?",new String[]{"Proton","Neutron","Electron","Nucleus"},2,"Electrons carry negative electric charge."),
+    new Question("q018","O","5070","Stoichiometry","How many moles are in 18 g of H₂O? (Mr = 18)",new String[]{"0.5 mol","1 mol","2 mol","18 mol"},1,"Moles = mass / molar mass =18/18=1."),
+    new Question("q019","O","5070","Acids and bases","Which pH most likely represents a strong acid solution?",new String[]{"2","7","9","12"},0,"At typical concentrations, strongly acidic solutions have low pH."),
+    new Question("q020","O","5070","Chemical bonding","Sodium chloride consists mainly of:",new String[]{"Metallic bonds","Ionic attractions","Covalent molecules","Hydrogen bonds"},1,"Oppositely charged Na⁺ and Cl⁻ ions attract electrostatically."),
+    new Question("q021","O","5054","Kinematics","A cyclist travels 100 m in 20 s. What is the average speed?",new String[]{"2 m/s","5 m/s","20 m/s","120 m/s"},1,"Average speed = total distance / total time =100/20=5 m/s."),
+    new Question("q022","O","5054","Electricity","A 12 V supply drives 3 A through a resistor. Find resistance.",new String[]{"4 Ω","9 Ω","15 Ω","36 Ω"},0,"Ohm's law R=V/I=12/3=4 Ω."),
+    new Question("q023","O","5054","Waves","Which quantity is measured in hertz?",new String[]{"Amplitude","Frequency","Wavelength","Wave speed"},1,"Frequency is measured in hertz (Hz)."),
+    new Question("q024","O","5054","Energy","A 10 N force moves an object 3 m in its own direction. Work done is:",new String[]{"3 J","10 J","13 J","30 J"},3,"Work = force × distance in the force direction =10×3=30 J."),
+    new Question("q025","O","2210","Data representation","How is decimal 5 represented in binary?",new String[]{"100","101","110","111"},1,"5 = 4+1, so the binary representation is 101."),
+    new Question("q026","O","2210","Programming","What does a Boolean variable hold?",new String[]{"Only integers","True or false","Any string","A picture"},1,"Boolean data has logical values true/false."),
+    new Question("q027","O","2210","Algorithms","What is a loop used for?",new String[]{"Repeating instructions","Naming a file","Storing permanent data","Encrypting every message"},0,"A loop repeats a sequence according to a condition or count."),
+    new Question("q028","O","2210","Security","Which is an example of two-factor authentication?",new String[]{"Password twice","Password plus one-time code","Two usernames","Two passwords written together"},1,"Two independent authentication factors improve security."),
+    new Question("q029","O","7115","Marketing","The 4 Ps of the marketing mix include:",new String[]{"People, profit, power, policy","Product, price, place, promotion","Plan, paper, purchase, public","Production, payment, profit, pension"},1,"Product, price, place and promotion are the traditional 4 Ps."),
+    new Question("q030","O","7115","Finance","What is cash flow?",new String[]{"Only yearly profit","Movement of money into and out of a business","Value of the owner's house","Number of employees"},1,"Cash flow refers to cash inflows and outflows."),
+    new Question("q031","O","7115","Stakeholders","Which group is an internal stakeholder?",new String[]{"Local government","Competitor","Employee","Supplier"},2,"Employees work within the business and are internal stakeholders."),
+    new Question("q032","O","7115","Operations","What does break-even mean?",new String[]{"Revenue equals total costs","Costs are zero","Profit is always highest","Sales are zero"},0,"At break-even, total revenue equals total costs, so profit is zero."),
+    new Question("q033","O","2281","Basic economic problem","Opportunity cost is:",new String[]{"The money price of every product","The next-best alternative given up","Total government spending","An unavoidable production loss"},1,"Opportunity cost is the benefit of the next best alternative foregone."),
+    new Question("q034","O","2281","Demand and supply","If demand rises while supply stays constant, equilibrium price generally:",new String[]{"Falls","Rises","Must remain zero","Becomes negative"},1,"A demand shift right usually raises price, other things equal."),
+    new Question("q035","O","2281","Inflation","Inflation is:",new String[]{"A sustained general rise in price level","A fall in total population","Any one price increase","A rise in real output alone"},0,"Inflation is a sustained increase in the overall price level."),
+    new Question("q036","O","2281","Elasticity","If demand changes 20% after a 10% price change, the absolute PED equals:",new String[]{"0.2","0.5","2","10"},2,"|PED|=20%/10%=2."),
+    new Question("q037","O","7707","Accounting equation","Assets = Liabilities + ?",new String[]{"Expenses","Capital / equity","Revenue only","Tax only"},1,"The accounting equation is assets=liabilities+equity."),
+    new Question("q038","O","7707","Double-entry bookkeeping","A cash purchase of equipment normally increases:",new String[]{"Cash and expenses","Equipment and decreases cash","Liabilities and cash","Sales and cash"},1,"An asset (equipment) increases while cash decreases."),
+    new Question("q039","O","7707","Profit calculation","Revenue 900 and expenses 650 give profit of:",new String[]{"150","200","250","1550"},2,"Profit = revenue − expenses = 900−650=250."),
+    new Question("q040","O","7707","Trial balance","A trial balance mainly checks:",new String[]{"Every error has been removed","Arithmetic equality of debit and credit balances","Cash flow will grow","Inventory is valued correctly"},1,"Equal totals do not guarantee all accounting errors are absent."),
+    new Question("q041","O","2147","Source evaluation","Why does a historian consider who produced a source?",new String[]{"To identify its colour","To consider perspective and purpose","To determine the paper size","To avoid reading it"},1,"Provenance helps evaluate purpose, perspective and reliability."),
+    new Question("q042","O","2147","Causation","Which is a long-term cause?",new String[]{"An immediate triggering incident","An underlying factor developing over years","A consequence after the event","An invented rumour"},1,"Long-term causes develop over a prolonged period."),
+    new Question("q043","O","2147","Evidence","Which claim is strongest in an evidence-based essay?",new String[]{"A claim without support","A supported argument with specific context","An emotional slogan","An unrelated anecdote"},1,"Historical arguments need relevant contextual evidence."),
+    new Question("q044","O","2147","Interpretation","Different historians may interpret events differently because they:",new String[]{"Have access to different evidence or analytical perspectives","Always make errors","Must agree on all causes","Never use sources"},0,"Evidence, questions and methods can shape interpretations."),
+    new Question("q045","O","2217","Geography","What is population density?",new String[]{"Population × area","Population ÷ land area","Area ÷ birth rate","Population ÷ rainfall"},1,"Population density is usually people per unit area."),
+    new Question("q046","O","2217","Fieldwork","A representative sample helps reduce:",new String[]{"Sampling bias","All rainfall","Distance","Population"},0,"Representative sampling can limit bias in conclusions."),
+    new Question("q047","O","2217","Rivers","Which process transports river sediment?",new String[]{"Evaporation","Traction","Photosynthesis","Condensation"},1,"Traction is rolling larger material along a river bed."),
+    new Question("q048","O","2217","Maps","What do close contour lines usually indicate?",new String[]{"Gentle slope","Steep slope","No elevation","A constant temperature"},1,"Tightly spaced contours show elevation changes rapidly over a short distance."),
+    new Question("q049","A","9093","Language analysis","What is register in language study?",new String[]{"The choice of language suitable to context","The number of pages","A type of punctuation","An alphabet list"},0,"Register varies with context, audience, situation and purpose."),
+    new Question("q050","A","9093","Discourse","Which is an example of a discourse marker?",new String[]{"However","Mountain","Blue","Running"},0,"'However' signals a contrast and helps organise discourse."),
+    new Question("q051","A","9093","Writing","An effective commentary on your own writing should:",new String[]{"Only retell the plot","Explain language choices and their effects","Ignore the intended audience","List spelling errors only"},1,"Reflective commentary analyses choices, audience and intended effects."),
+    new Question("q052","A","9093","Language variation","Code-switching refers to:",new String[]{"Changing between languages or varieties in interaction","Translating every word wrongly","Never adapting language","Deleting punctuation"},0,"Code-switching is movement between codes/languages/varieties."),
+    new Question("q053","A","9709","Calculus","If f(x)=3x², find f'(x).",new String[]{"3x","6x","x³","6"},1,"Differentiate 3x² to obtain 6x."),
+    new Question("q054","A","9709","Integration","Evaluate ∫₀² x dx.",new String[]{"1","2","3","4"},1,"Antiderivative x²/2, giving 4/2=2."),
+    new Question("q055","A","9709","Probability","For independent events A and B, P(A∩B) equals:",new String[]{"P(A)+P(B)","P(A)−P(B)","P(A)×P(B)","P(A)/P(B)"},2,"Independence implies multiplication of their probabilities."),
+    new Question("q056","A","9709","Trigonometry","What is sin(π/2)?",new String[]{"0","1","−1","1/2"},1,"π/2 radians equals 90°, and sin 90°=1."),
+    new Question("q057","A","9231","Matrices","What is the determinant of [[2,1],[3,4]]?",new String[]{"5","6","8","11"},0,"For 2×2, determinant=ad−bc=8−3=5."),
+    new Question("q058","A","9231","Complex numbers","i² equals:",new String[]{"1","−1","i","−i"},1,"The imaginary unit satisfies i²=−1."),
+    new Question("q059","A","9231","Series","Evaluate Σ from k=1 to 4 of k.",new String[]{"6","8","10","16"},2,"1+2+3+4=10."),
+    new Question("q060","A","9231","Vectors","What is the magnitude of vector (3,4)?",new String[]{"4","5","6","7"},1,"Magnitude=√(3²+4²)=5."),
+    new Question("q061","A","9700","Molecular biology","During DNA replication, each new double helix usually contains:",new String[]{"Two entirely old strands","One original strand and one new strand","No template strand","Two RNA strands"},1,"Replication is semiconservative."),
+    new Question("q062","A","9700","Photosynthesis","Which stage directly uses light energy to generate ATP and reduced NADP?",new String[]{"Light-dependent reactions","Krebs cycle","Glycolysis","Fermentation"},0,"Light-dependent reactions use light to energise electrons and make ATP/reduced NADP."),
+    new Question("q063","A","9700","Cell membranes","Which structure permits selective movement across cell membranes?",new String[]{"Phospholipid bilayer and transport proteins","Cell wall only","Chromosomes","Ribosomes"},0,"The bilayer and embedded proteins affect membrane permeability."),
+    new Question("q064","A","9700","Inheritance","For Aa × Aa, what is the expected dominant phenotype proportion with full dominance?",new String[]{"1/4","1/2","3/4","All"},2,"The offspring genotype ratio 1:2:1 yields 3 dominant to 1 recessive."),
+    new Question("q065","A","9701","Chemical equilibrium","If Kc is much greater than 1 at a fixed temperature, equilibrium generally favours:",new String[]{"Reactants","Products","Neither side exists","Catalysts"},1,"A large Kc indicates products are favoured at equilibrium."),
+    new Question("q066","A","9701","Reaction kinetics","What is the effect of a catalyst on activation energy?",new String[]{"Increases it","Reduces it","Eliminates it entirely","Changes ΔH"},1,"A catalyst provides an alternative pathway with lower activation energy."),
+    new Question("q067","A","9701","Organic chemistry","Which functional group is present in ethanol?",new String[]{"Carboxyl","Hydroxyl","Aldehyde","Ketone"},1,"Ethanol is an alcohol with a −OH group."),
+    new Question("q068","A","9701","Acid-base chemistry","A Brønsted–Lowry base is:",new String[]{"A proton donor","A proton acceptor","An electron pair acceptor only","Always neutral"},1,"A Brønsted–Lowry base accepts H⁺."),
+    new Question("q069","A","9702","Electric fields","Electric field strength is defined as force per:",new String[]{"Unit charge","Unit mass","Unit length","Unit time"},0,"E=F/q for a small positive test charge."),
+    new Question("q070","A","9702","Oscillations","In simple harmonic motion, acceleration is proportional to:",new String[]{"Displacement with opposite direction","Velocity in same direction","Time only","Mass only"},0,"For SHM, a=−ω²x."),
+    new Question("q071","A","9702","Mechanics","A constant force of 6 N acts on 2 kg. Find acceleration.",new String[]{"2 m/s²","3 m/s²","8 m/s²","12 m/s²"},1,"Newton's second law a=F/m=6/2=3 m/s²."),
+    new Question("q072","A","9702","Nuclear physics","After two half-lives, what fraction of undecayed nuclei remains?",new String[]{"1/2","1/3","1/4","1/8"},2,"Each half-life halves remaining nuclei: (1/2)²=1/4."),
+    new Question("q073","A","9618","Data structures","Which data structure follows FIFO?",new String[]{"Stack","Queue","Binary tree","Heap"},1,"A queue follows First-In First-Out."),
+    new Question("q074","A","9618","Algorithms","Binary search requires input data to be:",new String[]{"Sorted","Randomly ordered","Encrypted","Duplicated"},0,"Binary search relies on ordered data to discard half each iteration."),
+    new Question("q075","A","9618","Databases","A primary key must:",new String[]{"Allow duplicate records","Uniquely identify each row","Store only numbers","Be a password"},1,"The primary key uniquely identifies each table record."),
+    new Question("q076","A","9618","Programming","Which statement best describes recursion?",new String[]{"A function calling itself","A program that cannot stop","A variable without a type","An input device"},0,"Recursion is a function invoking itself, typically with a base case."),
+    new Question("q077","A","9609","Finance","A business has current assets 80,000 and current liabilities 40,000. Current ratio?",new String[]{"0.5:1","1:1","2:1","4:1"},2,"Current ratio = current assets/current liabilities =2:1."),
+    new Question("q078","A","9609","Strategy","A SWOT analysis evaluates:",new String[]{"Strengths weaknesses opportunities threats","Only sales revenue","Prices wages orders taxes","Only market size"},0,"SWOT assesses internal strengths/weaknesses and external opportunities/threats."),
+    new Question("q079","A","9609","Operations","Which technique schedules activities to identify the longest dependent path?",new String[]{"Critical path analysis","Market segmentation","Ratio analysis","Random sampling"},0,"Critical path analysis identifies the project path determining minimum completion time."),
+    new Question("q080","A","9609","Marketing","Market segmentation is:",new String[]{"Dividing a market into groups with shared characteristics","Selling only abroad","Setting every price the same","Stopping all promotion"},0,"Segmentation groups consumers with similar needs/traits."),
+    new Question("q081","A","9708","Market failure","A negative externality of production occurs when:",new String[]{"Social costs exceed private costs","Private benefits exceed social benefits","All producers close","Demand is perfectly elastic"},0,"Third parties bear uncompensated costs, so marginal social cost exceeds marginal private cost."),
+    new Question("q082","A","9708","National income","GDP generally measures:",new String[]{"Total value of final goods/services produced domestically","All household savings","Only government tax revenue","Total overseas assets"},0,"GDP measures market value of final goods and services produced within a country."),
+    new Question("q083","A","9708","Elasticity","If demand is price inelastic, absolute PED is:",new String[]{"Greater than 1","Exactly infinite","Less than 1","Always zero"},2,"For inelastic demand the percentage quantity change is smaller than percentage price change."),
+    new Question("q084","A","9708","Monetary policy","A central bank raising policy interest rates may tend to:",new String[]{"Reduce borrowing and aggregate demand","Always eliminate inflation immediately","Guarantee higher exports","Increase real GDP every time"},0,"Higher interest rates often discourage borrowing/spending; outcomes depend on context."),
+    new Question("q085","A","9706","Cost accounting","Fixed cost is 3,000, unit contribution 15. Break-even units?",new String[]{"45","150","200","300"},2,"Break-even output = fixed costs / contribution per unit =3000/15=200."),
+    new Question("q086","A","9706","Management accounting","Contribution per unit equals:",new String[]{"Selling price minus variable cost per unit","Selling price minus fixed costs","Variable cost plus total assets","Total revenue divided by tax"},0,"Contribution = selling price−variable cost per unit."),
+    new Question("q087","A","9706","Financial accounting","Depreciation is generally:",new String[]{"Allocation of an asset's cost over useful life","Immediate increase in cash","Always the same as market value","A cash receipt"},0,"Depreciation allocates depreciable amount systematically across useful life."),
+    new Question("q088","A","9706","Investment appraisal","A positive NPV at the chosen discount rate suggests:",new String[]{"Project adds value under assumptions","Project has no cash flows","Costs must exceed benefits","Project is risk free"},0,"Positive NPV indicates discounted expected benefits exceed discounted costs under model assumptions."),
+    new Question("q089","A","9489","Historical interpretations","A strong evaluation of a historian's argument should consider:",new String[]{"Evidence and reasoning in context","Only font size","The historian's popularity alone","Whether you personally agree without evidence"},0,"Evaluation weighs evidence, method, argument and context."),
+    new Question("q090","A","9489","Source provenance","A source created during an event is:",new String[]{"Automatically unbiased","A primary source but not necessarily reliable","Always less useful than a textbook","Impossible to interpret"},1,"Proximity in time does not remove bias or limitations."),
+    new Question("q091","A","9489","Causation","How should long-term and short-term factors be compared?",new String[]{"Rank their significance and explain interactions","List dates without explanation","Assume all have equal effect","Ignore supporting examples"},0,"Argument weighs relative significance and relationships among causes."),
+    new Question("q092","A","9489","Essay structure","Which paragraph structure is strongest for an analytical history essay?",new String[]{"Claim, evidence, explanation, link to question","Opinion, unrelated story, conclusion","Dates alone","Quotation without context"},0,"A focused paragraph connects a historical argument to grounded evidence."),
+    new Question("q093","A","9990","Research methods","Random allocation to conditions primarily reduces:",new String[]{"Participant differences as a confounding variable","All measurement error","Research cost to zero","The need for ethics"},0,"Random assignment distributes participant variables between groups on average."),
+    new Question("q094","A","9990","Correlation","Correlation between stress and sleep duration by itself proves:",new String[]{"Stress causes less sleep","Sleep causes stress","Neither direction of causation","Both directions of causation"},2,"Correlation alone cannot establish causation."),
+    new Question("q095","A","9990","Psychological ethics","Informed consent means participants:",new String[]{"Know relevant information and agree voluntarily","Must always be paid","Are prevented from withdrawing","Cannot ask questions"},0,"Voluntary participation needs sufficient information and free agreement."),
+    new Question("q096","A","9990","Study design","A longitudinal study measures:",new String[]{"Different unrelated groups once","The same sample over time","Only historical documents","One person one minute"},1,"Longitudinal designs follow the same people or units across multiple time points.")
+ };
+ public static int count(String level,String code){
+  int n=0;for(Question x:ALL)if(x.level.equals(level)&&(code==null||code.isEmpty()||x.code.equals(code)))n++;
+  return n;
+ }
+ public static List<Question> choose(String level,String code,int limit){
+  List<Question> output=new ArrayList<>();
+  for(Question x:ALL)if(x.level.equals(level)&&x.code.equals(code))output.add(x);
+  Collections.shuffle(output,new Random());
+  if(limit>0&&output.size()>limit)return new ArrayList<>(output.subList(0,limit));
+  return output;
+ }
+}
