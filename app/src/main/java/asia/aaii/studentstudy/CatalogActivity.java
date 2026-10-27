@@ -127,9 +127,19 @@ public class CatalogActivity extends Activity {
         LinearLayout quick=StudyDesign.card(this);
         quick.addView(StudyDesign.text(this,"YOUR LEARNING SPACE",12,StudyDesign.BLUE,true));
         LinearLayout shortcuts=StudyDesign.row(this);
-        String[] titles={"📘 O Level","🎓 A Level","📅 Planner","✅ Progress"};
-        Class<?>[] pages={OLevelSyllabusActivity.class,ALevelSyllabusActivity.class,PriorityStudyActivity.class,SyllabusCoverageActivity.class};
-        for(int x=0;x<4;x++){final Class<?> dest=pages[x];TextView view=StudyDesign.chip(this,titles[x],StudyDesign.PALE,StudyDesign.INK);view.setGravity(Gravity.CENTER);view.setOnClickListener(v->startActivity(new Intent(this,dest)));LinearLayout.LayoutParams q=new LinearLayout.LayoutParams(0,d(48),1);if(x>0)q.leftMargin=d(5);shortcuts.addView(view,q);}
+        String[] titles={"📘","🎓","📝","✅"};
+        String[] captions={"O Level","A Level","Quiz","Audit"};
+        Class<?>[] pages={OLevelSyllabusActivity.class,ALevelSyllabusActivity.class,OfflineQuizActivity.class,SyllabusAuditActivity.class};
+        for(int x=0;x<4;x++){
+            final Class<?> dest=pages[x];LinearLayout tile=col();tile.setGravity(Gravity.CENTER);
+            tile.setBackground(StudyDesign.stroked(this,StudyDesign.PALE,StudyDesign.BORDER,14));padding(tile,1,10,1,10);
+            TextView symbol=tv(titles[x],32,BLUE,true);symbol.setGravity(Gravity.CENTER);tile.addView(symbol);
+            TextView label=tv(captions[x],11,INK,true);label.setGravity(Gravity.CENTER);tile.addView(label);
+            tile.setOnClickListener(v->startActivity(new Intent(this,dest)));
+            tile.setContentDescription(captions[x]);
+            LinearLayout.LayoutParams box=new LinearLayout.LayoutParams(0,d(84),1);
+            if(x>0)box.leftMargin=d(6);shortcuts.addView(tile,box);
+        }
         LinearLayout.LayoutParams qp=lp(-1,-2);qp.topMargin=d(12);quick.addView(shortcuts,qp);margin(quick,body,0,0,0,15);
         TextView find=click("⌕   စကားဝိုင်း / အကြောင်းအရာ ရှာရန်...",14,MUTED,false,()->show("list"));
         padding(find,16,15,12,15);find.setBackground(outline(WHITE,17,LINE));margin(find,body,0,1,0,3);
@@ -145,6 +155,7 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("📋 Syllabus Outcome Audit · O & A Level","24 subjects · Manual PDF mapping · Pending & Gaps ›",()->startActivity(new Intent(this,SyllabusAuditActivity.class)));
         section("✍ Native Written Answer · Self-Review","48 original exercises · AI review & model answers ›",()->startActivity(new Intent(this,WrittenPracticeActivity.class)));
         section("📈 Topic Learning Analytics","Weak topics & Written self-review ›",()->startActivity(new Intent(this,TopicAnalyticsActivity.class)));
         section("🧠 Native Offline Quiz · Auto Scoring","O Level + A Level · 192 Original MCQs ›",()->startActivity(new Intent(this,OfflineQuizActivity.class)));
@@ -265,12 +276,13 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.26");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.27");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
+        margin(button("📋 O / A Level Syllabus Audit",BLUE,WHITE,()->startActivity(new Intent(this,SyllabusAuditActivity.class))),body,0,0,0,12);
         margin(button("✍ Native Written Practice",BLUE,WHITE,()->startActivity(new Intent(this,WrittenPracticeActivity.class))),body,0,0,0,12);
         margin(button("📈 Topic Learning Analytics",BLUE,WHITE,()->startActivity(new Intent(this,TopicAnalyticsActivity.class))),body,0,0,0,12);
         margin(button("🧠 Offline Quiz · Auto Score",BLUE,WHITE,()->startActivity(new Intent(this,OfflineQuizActivity.class))),body,0,0,0,12);
@@ -300,9 +312,9 @@ public class CatalogActivity extends Activity {
         wrapper.addView(hairline,new LinearLayout.LayoutParams(-1,d(1)));
         LinearLayout bar=row();
         padding(bar,2,3,2,4);
-        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သင်တန်း","ဆရာငှား","ပိုမို"};
-        String[] icons={"⌂","▤","✦","▣","♙","☰"};
-        String[] routes={"home","list","tutor","courses","teacher","profile"};
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","ပိုမို"};
+        String[] icons={"⌂","▤","✦","☰"};
+        String[] routes={"home","list","tutor","profile"};
         for(int i=0;i<routes.length;i++){
             final String route=routes[i];
             boolean active=page.equals(route)
