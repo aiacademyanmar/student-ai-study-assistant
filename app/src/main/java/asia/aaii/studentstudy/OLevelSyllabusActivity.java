@@ -45,6 +45,10 @@ public class OLevelSyllabusActivity extends Activity{
       mode.equals("exam")?
       "Exam practice ၂၀ မိနစ်စာ ကိုယ်ပိုင်မေးခွန်း ၅ ခု ပြုစုပါ။ ပထမ Q1 တစ်ခုတည်းမေးပြီး အဖြေစောင့်ပါ။ တစ်ခုပြီးတစ်ခု အမှတ်ပေး၍ နောက်ဆုံး model solutions, exam command words, mark allocation သရုပ်ပြ, improvement plan ပြပါ။ မူရင်း Cambridge past paper ဟု မဆိုပါနှင့်။":
       "Revision summary ကို မြန်မာလို တန်းရှင်းပြပါ။ ၅ ချက် summary, keyword/definition ၅ ခု, exam tips ၅ ခု, mistake checklist, memory trick ပြီးရင် active recall Q1 တစ်ခုတည်းမေးပါ။ Q1–Q4 ကို အဖြေပြန်လာမှ ဆက်မေးပြီး ၈ မှတ်အထိ အမှတ်ပေးပါ။";
+  OLevel2026.Subject syllabus=OLevel2026.SUBJECTS[subject];
+  if(OLevelLearningOutcomes.examConstraints(syllabus.code)!=null){
+    return OLevelLearningOutcomes.lessonPrompt(syllabus,syllabus.topics[topic],subtopic,stage,mode);
+  }
   return "သင်သည် GCE O Level အတွက် မြန်မာဘာသာ AI ဆရာ ဖြစ်သည်။\n"+
       context()+"\n"+
       "ဤ Subtopic သည် လေ့လာရေးအတွက် အဖွဲ့အစည်းက ခွဲထားသောလမ်းကြောင်းဖြစ်သည်။ Official Cambridge topic/subtopic/assessment scope ကို syllabus PDF နှင့်သာ တိုက်ဆိုင်စစ်ဆေးပါ။ Official past papers, mark schemes, exam year-specific claims မဖန်တီးပါနှင့်။\n"+
@@ -81,6 +85,7 @@ public class OLevelSyllabusActivity extends Activity{
    Cambridge2026Audit.Source audit=Cambridge2026Audit.byCode(s.code);
    add(s.name+" · "+s.code,22,true,0);
    add("Exam Year 2026 · PDF Validity: "+(audit==null?s.years:audit.validYears),12,false,6);
+   add("Exam Focus: "+OLevelLearningOutcomes.examConstraints(s.code),13,false,8);
    add(s.officialTopicHeadings?"✓ Topic heading list checked against official PDF":"◷ Topic study map; official heading-by-heading audit pending",13,false,8);
    if(audit!=null){
      add("ASSESSMENT STRUCTURE",16,true,16);
@@ -101,6 +106,7 @@ public class OLevelSyllabusActivity extends Activity{
    for(int x=0;x<OLevel2026.LESSON_STAGES.length;x++){final int i=x;btn("Lesson "+(x+1)+" · "+OLevel2026.LESSON_STAGES[x],()->{stage=i;draw();});}
   }else{
    add(context(),19,true,4);
+   add(OLevelLearningOutcomes.contentOutcome(OLevel2026.SUBJECTS[subject],OLevel2026.SUBJECTS[subject].topics[topic],subtopic),13,false,10);
    add("AI Provider: "+AiProviderRouter.mainLabel(this)+" (App AI / ChatGPT / Gemini)",13,false,12);
    btn("🤖 Lesson ကို မြန်မာလို AI တန်းရှင်းပြရန်",()->run("teach"));
    btn("✍ Practice & Answers — AI ဖြင့် အပြန်အလှန်လေ့ကျင့်ရန်",()->run("practice"));
