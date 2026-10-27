@@ -1,48 +1,28 @@
-# Student AI Study Assistant — Native Android V1.0
+# Student AI Study Assistant — Native Android V2.0
 
-ကျောင်းသား/ကျောင်းသူများအတွက် Native Android Study Assistant.
+Independent educational Android app, inspired by general student-learning workflows and the public [OpenAI 100 chats for college students](https://chatgpt.com/use-cases/students/) page. Not affiliated with or endorsed by OpenAI. Uses ChatGPT Study Mode as an **external destination**, not an embedded AI model.
 
-## ✅ Features
-- 6 subjects (မြန်မာစာ, English, Math, Science, History, ICT)
-- 12 offline lesson cards with examples
-- 12 quiz questions with feedback, scoring and saved best score
-- 12 interactive flashcards
-- Offline study planner saved privately on device
-- Study Teacher: compose a prompt and copy it to clipboard, then **open official ChatGPT Study Mode** in app/browser
-- Burmese/English interface; Android phone portrait-friendly scroll UI
+## V2.0 — New Myanmar UI
 
-## Important transparency
-- This is an independent educational companion, **not the official ChatGPT app**.
-- AI generation is **not embedded** in the APK. The external Study Mode page needs a network connection and the user's own ChatGPT sign-in; the generated prompt must be pasted there.
-- No API key, user password, or login information is stored by this Android app.
-- The shared Google link was not accessible from the project generation environment; features are built from the general student-study request and official OpenAI Study Mode documentation, not a claimed exact reproduction of that page.
-- The app and its included lessons are an educational starter; content should be reviewed by teachers before broad distribution.
+- Custom app logo (robot with graduation cap and book) and hero banner
+- Native Material-inspired mobile UI with rounded cards and Myanmar labels
+- 100 **original Myanmar-language** chat starters: Study 50, Career 25, Life 25
+- Search/filter all prompts, open prompt details and guidance
+- Edit prompt before use, copy prompt to clipboard, launch official ChatGPT Study Mode in browser
+- Offline browsing and private favorites stored with Android SharedPreferences
+- Legacy V1 features retained: 12 lessons, quiz, flashcards, study planner; available from Profile
+- Java Android SDK native project. No WebView wrapper or hidden API keys.
 
-## Build in GitHub Actions (recommended)
-1. Create a **new** GitHub repository, for example `student-ai-study-assistant`.
-2. Upload the **contents** of this folder to repository root, including `.github/workflows/build-apk.yml`.
-3. In the repository open **Actions → Build Native Android APK → Run workflow**. `push` on `main`/`master` also triggers a build.
-4. When run succeeds, download **Student-AI-Study-Assistant-V1-debug** under Artifacts.
-5. Unzip the artifact to get `app-debug.apk`; install it on your Android phone, allowing installation from trusted sources when prompted.
+## Security / privacy
 
-## Build with Android Studio
-- Install Android Studio with JDK 17 and Android SDK Platform 35 / Build Tools.
-- Open this folder as a Gradle project, let the dependencies sync.
-- Select Build → Build Bundle(s)/APK(s) → Build APK(s).
-- Debug APK is output to `app/build/outputs/apk/debug/app-debug.apk`.
-- CLI with Gradle 8.10.2: `gradle :app:assembleDebug`.
+- No OpenAI account/password collected by this app. Authentication happens on chatgpt.com.
+- Saved favorites are local device state.
+- Prompts are copied locally to the clipboard before opening ChatGPT. User must paste them in ChatGPT.
+- This app does NOT directly generate AI answers or access ChatGPT conversation history.
+- Use of ChatGPT is subject to service availability and applicable minimum age requirements.
 
-## Package
-- Application ID: `asia.aaii.studentstudy`
-- `minSdk` 23 (Android 6), `targetSdk` 35 (Android 15)
-- Java 17, Android Gradle Plugin 8.7.3, Gradle 8.10.2
-- No third-party Android libraries or INTERNET permission needed (browser handles ChatGPT link).
+## Build
 
-## Structure
-- `app/src/main/java/asia/aaii/studentstudy/MainActivity.java`: all native UI, lessons, quiz, planner and external AI link
-- `app/src/main/AndroidManifest.xml`: launcher activity metadata
-- `app/src/main/res/mipmap-*/ic_launcher.png`: APK icon
-- `.github/workflows/build-apk.yml`: GitHub Actions build
+Run GitHub Actions workflow: `.github/workflows/build-apk.yml`. Download the `Student-AI-Study-Assistant-V2-debug` artifact, extract the APK, and install on Android 6.0+.
 
-## Safety
-Offline planner data is stored with Android SharedPreferences locally; removing app may erase it. This app is a study aid, not a substitute for teacher guidance. AI responses can be inaccurate.
+Source project under `app/src/main/java/asia/aaii/studentstudy/`.
