@@ -138,6 +138,12 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("📘 O Level 2026 · Syllabus Study Map","အပြည့်အစုံ Topics ကြည့်ရန်  ›",()->startActivity(new Intent(this,OLevelSyllabusActivity.class)));
+        LinearLayout official=card(0xFFE7F4FF);
+        official.addView(tv("Subject → Topic → Subtopic → Lesson → Exercises → Exam",15,NAVY,true));
+        official.addView(tv("Cambridge 2026-oriented Expanded Learning Map · AI App/ChatGPT/Gemini Prompt",13,MUTED,false));
+        margin(button("O Level Study Map ဖွင့်ရန်",BLUE,WHITE,()->startActivity(new Intent(this,OLevelSyllabusActivity.class))),official,0,12,0,0);
+        margin(official,body,0,0,0,6);
         section("🎓 GCE O & A Level AI Tutor","ဘာသာရပ်ရွေးရန်  ›",()->startActivity(new Intent(this,GceStudyActivity.class)));
         LinearLayout gce=card(0xFFE7F0FF);
         gce.addView(tv("O Level • A Level",19,NAVY,true));
@@ -238,12 +244,13 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.10");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.11");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
+        margin(button("📘  O Level 2026 Syllabus Study Map",BLUE,WHITE,()->startActivity(new Intent(this,OLevelSyllabusActivity.class))),body,0,0,0,12);
         margin(button("🎓  GCE O & A Level AI Tutor",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),body,0,0,0,12);
         margin(button("👩‍🏫  TEACHER RENT · ဆရာ/ဆရာမ ငှားရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),body,0,0,0,12);
         margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
