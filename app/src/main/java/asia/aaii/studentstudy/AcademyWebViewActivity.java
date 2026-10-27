@@ -43,6 +43,8 @@ public class AcademyWebViewActivity extends Activity {
   back.setOnClickListener(v->{if(browser.canGoBack())browser.goBack();else navigate("home");});
   TextView title=label("🎓 OpenAI Academy",19);title.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
   toolbar.addView(title,new LinearLayout.LayoutParams(0,dp(44),1));
+  TextView offline=label("📖 ဖတ်",12);toolbar.addView(offline,new LinearLayout.LayoutParams(dp(65),dp(44)));
+  offline.setOnClickListener(v->startActivity(new Intent(this,OfflineReaderActivity.class)));
   TextView refresh=label("↻",25);toolbar.addView(refresh,new LinearLayout.LayoutParams(dp(44),dp(44)));refresh.setOnClickListener(v->browser.reload());
   TextView external=label("↗",24);toolbar.addView(external,new LinearLayout.LayoutParams(dp(44),dp(44)));
   external.setOnClickListener(v->startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(browser.getUrl()==null?HOME:browser.getUrl()))));

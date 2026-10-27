@@ -26,3 +26,14 @@ Independent educational Android app, inspired by general student-learning workfl
 Run GitHub Actions workflow: `.github/workflows/build-apk.yml`. Download the `Student-AI-Study-Assistant-V2-debug` artifact, extract the APK, and install on Android 6.0+.
 
 Source project under `app/src/main/java/asia/aaii/studentstudy/`.
+
+
+## V2.4 — Offline Myanmar Work Users Reader
+- 15 **original Myanmar-language** mini-lessons about practical AI usage at work.
+- No web connection required to read the bundled lesson texts and exercises.
+- Built-in browse, keyword search, bookmarks, read-completion tracking, and adjustable font sizes.
+- Accessible from Home, More and Academy WebView's top 'ဖတ်' shortcut.
+- The original Work Users community remains online at https://academy.openai.com/home/clubs/work-users-ynjqu
+- This is **not** a cache, download, transcript, translation, or redistribution of OpenAI Academy's full proprietary courses or recordings.
+- Academy videos and gated site content remain online-only; online Academy login may still need an external browser.
+- Native Chat remains dependent on a separately deployed HTTPS backend; its API keys are never bundled in the APK.

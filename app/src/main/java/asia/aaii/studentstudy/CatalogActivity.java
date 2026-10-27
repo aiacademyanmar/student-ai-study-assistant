@@ -139,6 +139,12 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("📖  Offline မြန်မာစာဖတ်ခန်း","ဖတ်ရန်  ›",()->startActivity(new Intent(this,OfflineReaderActivity.class)));
+        LinearLayout offline=card(0xFFE3F6EC);
+        offline.addView(tv("AI at Work · Work Users",16,NAVY,true));
+        offline.addView(tv("အင်တာနက်မလိုဘဲ ဖတ်နိုင်သော မြန်မာဘာသာ သင်ခန်းစာ ၁၅ ခု၊ လေ့ကျင့်ခန်းများနှင့် ဖတ်ပြီးမှတ်သားခြင်း",13,MUTED,false));
+        margin(button("Offline သင်ခန်းစာများ ဖတ်ရန်",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),offline,0,12,0,0);
+        margin(offline,body,0,0,0,6);
         section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->startActivity(new Intent(this,AcademyWebViewActivity.class)));
         LinearLayout academy=card(0xFFE9F4FF);
         academy.addView(tv("AI Foundations · Applied AI · Agents & Workflows",15,NAVY,true));
@@ -250,10 +256,11 @@ public class CatalogActivity extends Activity {
         margin(warning,body,0,0,0,12);
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.2");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.4");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
+        margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
         margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->show("courses")),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
         margin(button("ChatGPT Study Mode သို့ သွားရန်",0xFFE8F2FF,NAVY,()->openUrl(STUDY_URL)),body,0,0,0,12);
