@@ -40,6 +40,8 @@ public class OLevelSyllabusActivity extends Activity{
       "မြန်မာလို အခြေခံသဘောတရားကို တန်းရှင်းပြပါ။ Learning objectives, English exam terms, definitions, worked examples ၂ ခု, common errors, ၃ မေးခွန်းနှင့် model answers, exam tips နဲ့ lesson summary ကို တစ်ကြိမ်တည်း ရှင်းပြပါ။":
       mode.equals("practice")?
       "Practice mode ကို ယခုစတင်ပါ။ မူရင်းလေ့ကျင့်ခန်း ၆ ခု (Concept ၂, MCQ ၂, Structured ၂) ကို တစ်ခုချင်းစီမေးပါ။ ကျောင်းသားဖြေမှ မှန်/မှား၊ ၀–၂ မှတ်၊ hint၊ correction၊ worked answer ပြပါ။ ၁၂ မှတ်အထိ Score စု၍ လိုအပ်သော revision နည်းကို အဆုံးတွင်ပြပါ။":
+      mode.equals("practical")?
+      "သက်ဆိုင်ရာ syllabus paper အရ Practical/Alternative-to-Practical/Map Skills/Source Evaluation/Applied Data Task လေ့ကျင့်ခန်း ၄ ခု စီစဉ်ပါ။ Subject နှင့်မဆိုင်သော practical ကို အတင်းမဖန်တီးပါနှင့်။ Marking criteria နမူနာ၊ safety (သက်ဆိုင်လျှင်), error analysis နှင့် feedback ထည့်ပါ။":
       mode.equals("exam")?
       "Exam practice ၂၀ မိနစ်စာ ကိုယ်ပိုင်မေးခွန်း ၅ ခု ပြုစုပါ။ ပထမ Q1 တစ်ခုတည်းမေးပြီး အဖြေစောင့်ပါ။ တစ်ခုပြီးတစ်ခု အမှတ်ပေး၍ နောက်ဆုံး model solutions, exam command words, mark allocation သရုပ်ပြ, improvement plan ပြပါ။ မူရင်း Cambridge past paper ဟု မဆိုပါနှင့်။":
       "Revision summary ကို မြန်မာလို တန်းရှင်းပြပါ။ ၅ ချက် summary, keyword/definition ၅ ခု, exam tips ၅ ခု, mistake checklist, memory trick ပြီးရင် active recall Q1 တစ်ခုတည်းမေးပါ။ Q1–Q4 ကို အဖြေပြန်လာမှ ဆက်မေးပြီး ၈ မှတ်အထိ အမှတ်ပေးပါ။";
@@ -58,6 +60,7 @@ public class OLevelSyllabusActivity extends Activity{
   if(clipboard!=null)clipboard.setPrimaryClip(ClipData.newPlainText("O Level prompt",s));
   Toast.makeText(this,"Prompt ကို Copy ပြီးပါပြီ",Toast.LENGTH_SHORT).show();
  }
+ void openOfficial(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception ex){Toast.makeText(this,"Browser မတွေ့ပါ",Toast.LENGTH_SHORT).show();}}
  void back(){if(stage>=0)stage=-1;else if(subtopic>=0)subtopic=-1;else if(topic>=0)topic=-1;else if(subject>=0)subject=-1;else{finish();return;}draw();}
  void draw(){
   root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(0xFFF2F6FD);
@@ -75,8 +78,17 @@ public class OLevelSyllabusActivity extends Activity{
    for(int x=0;x<OLevel2026.SUBJECTS.length;x++){final int i=x;OLevel2026.Subject s=OLevel2026.SUBJECTS[i];btn("📚 "+s.name+" · "+s.code+"\n"+s.topics.length+" Topic groups · syllabus "+s.years,()->{subject=i;draw();});}
   }else if(topic<0){
    OLevel2026.Subject s=OLevel2026.SUBJECTS[subject];
-   add(s.name+" · "+s.code,22,true,0);add("Reference period: "+s.years,12,false,6);
-   btn("🌐 Cambridge Subject Page / Official PDF",()->{try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(s.officialUrl)));}catch(Exception ex){Toast.makeText(this,"Browser မတွေ့ပါ",Toast.LENGTH_SHORT).show();}});
+   Cambridge2026Audit.Source audit=Cambridge2026Audit.byCode(s.code);
+   add(s.name+" · "+s.code,22,true,0);
+   add("Exam Year 2026 · PDF Validity: "+(audit==null?s.years:audit.validYears),12,false,6);
+   if(audit!=null){
+     add("ASSESSMENT STRUCTURE",16,true,16);
+     add(audit.examPapers,13,false,8);
+     add("EXAM / PRACTICAL GUIDANCE",16,true,15);
+     add(audit.notes,13,false,8);
+     btn("📄 Official Cambridge Syllabus PDF",()->openOfficial(audit.pdfUrl));
+   }
+   btn("🌐 Cambridge Subject Page",()->openOfficial(s.officialUrl));
    for(int x=0;x<s.topics.length;x++){final int i=x;OLevel2026.Topic t=s.topics[i];btn("Topic "+(x+1)+" · "+t.name+"\n"+t.subtopics.length+" Study subtopics",()->{topic=i;draw();});}
   }else if(subtopic<0){
    OLevel2026.Topic t=OLevel2026.SUBJECTS[subject].topics[topic];
@@ -93,12 +105,16 @@ public class OLevelSyllabusActivity extends Activity{
    btn("✍ Practice & Answers — AI ဖြင့် အပြန်အလှန်လေ့ကျင့်ရန်",()->run("practice"));
    btn("📝 Exam Practice — Timed Questions",()->run("exam"));
    btn("⭐ Exam Tips & Summary — Active Recall",()->run("revision"));
+   btn("🧪 Practical / Source / Data Skills AI Prompt",()->run("practical"));
    btn("📋 Teaching Prompt Copy",()->copy(instruction("teach")));
    btn("📋 Practice Prompt Copy",()->copy(instruction("practice")));
    btn("📋 Exam Prompt Copy",()->copy(instruction("exam")));
    btn("📋 Revision Prompt Copy",()->copy(instruction("revision")));
+   btn("📋 Practical / Source Prompt Copy",()->copy(instruction("practical")));
    String key="complete_"+subject+"_"+topic+"_"+subtopic+"_"+stage;
    btn(prefs.getBoolean(key,false)?"✓ Lesson ပြီးဆုံးပြီး":"✓ Lesson လေ့လာပြီး မှတ်သားရန်",()->{prefs.edit().putBoolean(key,true).apply();draw();});
+   Cambridge2026Audit.Source audit=Cambridge2026Audit.byCode(OLevel2026.SUBJECTS[subject].code);
+   if(audit!=null)add("Paper Structure: "+audit.examPapers+"\n"+audit.notes,12,false,12);
    add("AI အဖြေများရရှိရန် App AI အတွက် HTTPS Backend လိုအပ်သည်။ ChatGPT/Gemini ရွေးလျှင် ဖုန်းထဲရှိ App တွင် Prompt ကို Paste ပြီး Send နှိပ်ပါ။",12,false,17);
   }
   TextView footer=text("Main AI: "+AiProviderRouter.mainLabel(this)+"   ·   ပြောင်းရန် ⚙",13,true);footer.setPadding(dp(15),dp(14),dp(15),dp(17));footer.setBackgroundColor(WHITE);footer.setOnClickListener(v->AiProviderRouter.selectMain(this));root.addView(footer);
