@@ -60,7 +60,7 @@ public final class OfflineQuizCatalog {
  };
  public static List<OfflineQuestionBank.Question> all(){
   List<OfflineQuestionBank.Question> a=new ArrayList<>();
-  Collections.addAll(a,OfflineQuestionBank.ALL);Collections.addAll(a,NEW);return a;
+  Collections.addAll(a,OfflineQuestionBank.ALL);Collections.addAll(a,NEW);Collections.addAll(a,OfflineQuizV225Bank.ITEMS);return a;
  }
  public static String difficulty(OfflineQuestionBank.Question q){
   try{
