@@ -157,6 +157,8 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("✦ Build My Prompt · AI Prompt Studio","24 subjects · 8 AI teaching and exam prompt modes ›",()->startActivity(new Intent(this,PromptStudioActivity.class)));
+        margin(StudyDesign.action(this,"✦ Build My Study Prompt",true,()->startActivity(new Intent(this,PromptStudioActivity.class))),body,0,9,0,12);
         section("🎨 Student AI Promotional Page","ကောင်လေး/ကောင်မလေး Illustration · Share ›",()->startActivity(new Intent(this,PromotionActivity.class)));
         section("📋 Syllabus Outcome Audit · O & A Level","24 subjects · Manual PDF mapping · Pending & Gaps ›",()->startActivity(new Intent(this,SyllabusAuditActivity.class)));
         section("✍ Native Written Answer · Self-Review","48 original exercises · AI review & model answers ›",()->startActivity(new Intent(this,WrittenPracticeActivity.class)));
@@ -279,13 +281,14 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.28");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.29");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📋 O / A Level Syllabus Audit",BLUE,WHITE,()->startActivity(new Intent(this,SyllabusAuditActivity.class))),body,0,0,0,12);
+        margin(button("✦ Build My Prompt · AI Studio",BLUE,WHITE,()->startActivity(new Intent(this,PromptStudioActivity.class))),body,0,0,0,12);
         margin(button("✍ Native Written Practice",BLUE,WHITE,()->startActivity(new Intent(this,WrittenPracticeActivity.class))),body,0,0,0,12);
         margin(button("📈 Topic Learning Analytics",BLUE,WHITE,()->startActivity(new Intent(this,TopicAnalyticsActivity.class))),body,0,0,0,12);
         margin(button("🧠 Offline Quiz · Auto Score",BLUE,WHITE,()->startActivity(new Intent(this,OfflineQuizActivity.class))),body,0,0,0,12);
