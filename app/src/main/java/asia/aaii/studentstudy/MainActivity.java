@@ -179,9 +179,9 @@ public class MainActivity extends Activity {
         bottom.addView(line,new LinearLayout.LayoutParams(-1,dp(1)));
         LinearLayout tabsRow=horizontal();
         pad(tabsRow,2,3,2,4);
-        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သိမ်းထား","ပိုမို"};
-        String[] icons={"⌂","▤","✦","♥","☰"};
-        String[] routes={"home","list","chat","saved","about"};
+        String[] titles={"ပင်မ","စကားဝိုင်း","AI ဆရာ","သင်တန်း","ပိုမို"};
+        String[] icons={"⌂","▤","✦","▣","☰"};
+        String[] routes={"home","list","chat","courses","profile"};
         for(int i=0;i<routes.length;i++){
             final String route=routes[i];
             boolean active=page.equals(route)||(page.equals("quiz")&&route.equals("chat"))
@@ -204,7 +204,7 @@ public class MainActivity extends Activity {
             tab.setFocusable(true);
             tab.setClickable(true);
             tab.setOnClickListener(v->{
-                if("chat".equals(route)||"about".equals(route)) show(route);
+                if("chat".equals(route)) show(route);
                 else {
                     Intent intent=new Intent(this,CatalogActivity.class);
                     intent.putExtra("open_page",route);
