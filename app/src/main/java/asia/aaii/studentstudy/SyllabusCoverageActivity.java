@@ -60,8 +60,7 @@ public final class SyllabusCoverageActivity extends Activity {
     }
     private TextView button(String value,Runnable action,boolean primary){
         TextView v=text(value,14,primary?WHITE:NAVY,true);
-        v.setBackground(shape(primary?BLUE:WHITE,14));v.setPadding(dp(13),dp(14),dp(13),dp(14));
-        v.setOnClickListener(view->action.run());return v;
+        return StudyDesign.action(this,value,primary,action);
     }
     private void toast(String message){Toast.makeText(this,message,Toast.LENGTH_SHORT).show();}
     private OLevel2026.Subject sub(){return OLevel2026.SUBJECTS[subject];}
@@ -99,7 +98,7 @@ public final class SyllabusCoverageActivity extends Activity {
         draw();
     }
     private void draw(){
-        root=column();root.setBackgroundColor(BG);setContentView(root);
+        root=column();root.setBackgroundColor(StudyDesign.BG);setContentView(root);
         getWindow().setStatusBarColor(WHITE);getWindow().setNavigationBarColor(WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         if(Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,insets)->{
@@ -127,6 +126,7 @@ public final class SyllabusCoverageActivity extends Activity {
         TextView foot=text("📘 Original app targets · Official PDF clauses must be checked",11,MUTED,false);
         foot.setGravity(Gravity.CENTER);foot.setPadding(dp(9),dp(10),dp(9),dp(14));foot.setBackgroundColor(WHITE);
         root.addView(foot);
+        root.addView(StudyDesign.navigation(this,SyllabusCoverageActivity.class));
     }
     private void warning(){
         LinearLayout box=column();box.setPadding(dp(14),dp(13),dp(14),dp(13));box.setBackground(shape(0xFFFFF3DF,14));
@@ -137,13 +137,14 @@ public final class SyllabusCoverageActivity extends Activity {
         add(body,box,0);
     }
     private void subjectIndex(){
-        add(body,text("O LEVEL · 2026 Coverage",22,NAVY,true),3);
+        add(body,StudyDesign.hero(this,"SYLLABUS COVERAGE","Track Your Learning","PDF references • Practice • Exam Progress"),3);
         warning();
         int total=0,learned=0,practice=0,exam=0,mapped=0;
         for(int i=0;i<OLevel2026.SUBJECTS.length;i++){
             int[] a=stats(i,-1);
             total+=a[0];learned+=a[1];practice+=a[2];exam+=a[3];mapped+=a[4];
         }
+        add(body,StudyDesign.progress(this,learned,total),12);
         add(body,text("App Study Subtopics: "+total+"\n"+
             "သင်ပြီး "+learned+" ("+percent(learned,total)+") · Practice "+practice+
             " · Exam "+exam+"\nPDF Page/Clause မှတ်တမ်း "+mapped+" ခု",14,NAVY,true),15);
