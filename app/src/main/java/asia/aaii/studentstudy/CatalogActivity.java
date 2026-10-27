@@ -145,6 +145,7 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
+        section("📊 A Level Mock Score History & AI Revision","Weak subjects · Recorded marks · Personalized revision ›",()->startActivity(new Intent(this,ALevelResultsActivity.class)));
         section("📝 A Level Mock Exam & Coverage","12 subjects · 53 paper practice routes ›",()->startActivity(new Intent(this,ALevelExamCoverageActivity.class)));
         section("🎓 GCE AS & A Level · 2026 Syllabus","12 subjects · Lessons · Exam Practice ›",()->startActivity(new Intent(this,ALevelSyllabusActivity.class)));
         LinearLayout aLevelPanel=StudyDesign.card(this);
@@ -260,12 +261,13 @@ public class CatalogActivity extends Activity {
             margin(button("စကားဝိုင်းများ ကြည့်ရန်",BLUE,WHITE,()->show("list")),body,0,15,0,0);}
     }
     private void profile(){
-        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.21");
+        pageHeader("ပိုမို / အကောင့်","Student AI Study Assistant V2.22");
         LinearLayout c=card(WHITE);c.addView(tv("🎓  Student AI",21,INK,true));
         c.addView(tv("မြန်မာကျောင်းသားများအတွက် AI စကားဝိုင်း ၁၀၀ နှင့် မိမိကိုယ်တိုင် သင်ယူနိုင်သည့် Native Android App",14,MUTED,false));margin(c,body,0,0,0,15);
         margin(button("⚙ MAIN AI ရွေးရန်",BLUE,WHITE,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
         margin(button("📚  သင်ခန်းစာ၊ Quiz နှင့် Flashcards",BLUE,WHITE,()->startActivity(new Intent(this,MainActivity.class))),body,0,0,0,12);
         margin(button("🤖 AI Provider: App AI / ChatGPT / Gemini",0xFFE8F2FF,NAVY,()->AiProviderRouter.selectMain(this)),body,0,0,0,12);
+        margin(button("📊 A Level Mock Scores & AI Revision",BLUE,WHITE,()->startActivity(new Intent(this,ALevelResultsActivity.class))),body,0,0,0,12);
         margin(button("✅  A Level Coverage & Paper Mock Exam",BLUE,WHITE,()->startActivity(new Intent(this,ALevelExamCoverageActivity.class))),body,0,0,0,12);
         margin(button("🎓  GCE AS & A Level 2026 Syllabus",BLUE,WHITE,()->startActivity(new Intent(this,ALevelSyllabusActivity.class))),body,0,0,0,12);
         margin(button("📅  O Level Priority Study Plan",BLUE,WHITE,()->startActivity(new Intent(this,PriorityStudyActivity.class))),body,0,0,0,12);
