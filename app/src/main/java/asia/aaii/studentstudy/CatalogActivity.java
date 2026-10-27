@@ -95,7 +95,7 @@ public class CatalogActivity extends Activity {
         else if(screen.equals("detail")) detail();
         else if(screen.equals("compose")) compose();
         else if(screen.equals("saved")) favorites();
-        else if(screen.equals("courses")) courses();
+        else if(screen.equals("courses")) {startActivity(new Intent(this,AcademyWebViewActivity.class));show("home");}
         else profile();
         bottomBar();
     }
@@ -139,7 +139,7 @@ public class CatalogActivity extends Activity {
         section("🔥 လူကြိုက်များသော စကားဝိုင်းများ","၁၀၀ ခုလုံး ကြည့်ရန်  ›",()->{filter=-1;show("list");});
         int[] picks={1,14,22,51,55,76};
         for(int id:picks){PromptLibrary.Item item=PromptLibrary.ALL[id-1]; chatRow(item,body);}
-        section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->show("courses"));
+        section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->startActivity(new Intent(this,AcademyWebViewActivity.class)));
         LinearLayout academy=card(0xFFE9F4FF);
         academy.addView(tv("AI Foundations · Applied AI · Agents & Workflows",15,NAVY,true));
         academy.addView(tv("အခြေခံမှ လက်တွေ့အသုံးချသင်တန်းအထိ တရားဝင် OpenAI Academy မှ လေ့လာနိုင်ပါသည်။",12,MUTED,false));
@@ -241,7 +241,7 @@ public class CatalogActivity extends Activity {
             card.addView(tv(icons[i]+"  "+names[i],19,INK,true));
             card.addView(tv(labels[i],15,BLUE,true));
             margin(tv(notes[i],13,MUTED,false),card,0,10,0,12);
-            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->openUrl(ACADEMY_COURSES[at])),card,0,0,0,0);
+            margin(button("တရားဝင် သင်တန်းဖွင့်ရန် ↗",BLUE,WHITE,()->{Intent i=new Intent(this,AcademyWebViewActivity.class);i.putExtra("target_url",ACADEMY_COURSES[at]);startActivity(i);}),card,0,0,0,0);
             margin(card,body,0,0,0,12);
         }
         LinearLayout warning=card(0xFFF1F4FA);
@@ -294,9 +294,10 @@ public class CatalogActivity extends Activity {
             tab.setFocusable(true);
             tab.setOnClickListener(v->{
                 if("tutor".equals(route)){
-                    Intent intent=new Intent(this,MainActivity.class);
-                    intent.putExtra("open_page","chat");
+                    Intent intent=new Intent(this,NativeChatActivity.class);
                     startActivity(intent);
+                }else if("courses".equals(route)){
+                    startActivity(new Intent(this,AcademyWebViewActivity.class));
                 }else {
                     if("list".equals(route)) filter=-1;
                     show(route);
