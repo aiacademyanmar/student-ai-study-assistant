@@ -59,7 +59,7 @@ public final class OutcomeCrosswalkStore {
     JSONObject result=new JSONObject();
     try{
       result.put("app","Student AI Study Assistant");
-      result.put("schema","gce-o-level-manual-crosswalk-v2.16");
+      result.put("schema","gce-o-level-manual-crosswalk-v2.17");
       result.put("exam_year",2026);
       result.put("disclaimer","USER-ENTERED source notes and assessments. Not verified or endorsed by Cambridge International; not complete official syllabus mapping.");
       JSONArray records=new JSONArray();
@@ -75,6 +75,7 @@ public final class OutcomeCrosswalkStore {
             o.put("syllabus_years",s.years);
             o.put("official_pdf",audit==null?s.officialUrl:audit.pdfUrl);
             o.put("manual_outcome_reference",row.optString("reference"));
+            o.put("manual_outcome_id",row.optString("outcome_id"));
             o.put("manual_outcome_summary",row.optString("summary"));
             o.put("manual_mapping_status",row.optString("status"));
             o.put("review_notes",row.optString("notes"));
