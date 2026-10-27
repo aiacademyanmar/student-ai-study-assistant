@@ -51,6 +51,11 @@ public class ALevelSyllabusActivity extends Activity {
   String prompt=ALevelPromptFactory.create(s(),m(),m().subtopics[subtopic],lesson,mode);
   AiProviderRouter.chooseAndRun(this,prompt,"a2026_"+s().code+"_"+module+"_"+subtopic+"_"+mode,"AS/A Level "+mode);
  }
+ private void openTracking(String mode){
+  Intent x=new Intent(this,ALevelExamCoverageActivity.class);
+  x.putExtra("subject_index",subject);x.putExtra("module_index",module);
+  x.putExtra("subtopic_index",subtopic);x.putExtra("mode",mode);startActivity(x);
+ }
  private void browser(String uri){
   try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(uri)));}
   catch(Exception e){Toast.makeText(this,"Browser not found",Toast.LENGTH_SHORT).show();}
@@ -99,6 +104,8 @@ public class ALevelSyllabusActivity extends Activity {
    label(item.examNotes,13,false,9);
    btn("📄 Official syllabus PDF / reference",true,()->browser(item.pdfUrl));
    btn("🌐 Official Cambridge subject page",false,()->browser(item.pageUrl));
+   btn("✅ A Level Syllabus Coverage Checklist",true,()->openTracking("coverage"));
+   btn("📝 AS/A Paper-specific Mock Exam",false,()->openTracking("exam"));
    label("Select AS/A level or optional route",16,true,17);
    LinearLayout modes=StudyDesign.row(this);
    String[] fs={"ALL","AS","A","OPTIONS","ROUTES"};
@@ -146,6 +153,8 @@ public class ALevelSyllabusActivity extends Activity {
    btn("📋 Copy Teaching Prompt",false,()->copy(ALevelPromptFactory.create(
      s(),m(),m().subtopics[subtopic],lesson,"teach")));
    btn("📄 Official Cambridge PDF",false,()->browser(s().pdfUrl));
+   btn("✅ Lesson Coverage / PDF References",false,()->openTracking("coverage"));
+   btn("📝 Subject Paper Mock Exam",false,()->openTracking("exam"));
    btn(progress.getBoolean(progressKey(),false)?"✓ Completed · tap to undo":
       "○ Mark lesson completed (self report)",false,()->{
         String key=progressKey();progress.edit().putBoolean(key,!progress.getBoolean(key,false)).apply();draw();
