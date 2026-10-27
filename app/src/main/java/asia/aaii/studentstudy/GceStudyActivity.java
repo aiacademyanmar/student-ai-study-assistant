@@ -1,6 +1,8 @@
 package asia.aaii.studentstudy;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -65,6 +67,41 @@ public class GceStudyActivity extends Activity {
  }
  private void copy(String prompt){ClipboardManager c=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);c.setPrimaryClip(ClipData.newPlainText("GCE AI Tutor Prompt",prompt));Toast.makeText(this,"AI Prompt Copy ပြီးပါပြီ",Toast.LENGTH_SHORT).show();}
  private void chat(String prompt){Intent i=new Intent(this,NativeChatActivity.class);i.putExtra("draft",prompt);startActivity(i);}
+ private void startInteractive(String name,String title,String prompt){
+  GceCurriculum.Subject s=currentSubject();
+  Intent next=new Intent(this,NativeChatActivity.class);
+  next.putExtra("draft",prompt);
+  next.putExtra("chat_title",title);
+  next.putExtra("chat_session","gce_"+lv()+"_"+s.code+"_"+chapter+"_"+lesson+"_"+name);
+  startActivity(next);
+ }
+ private void browserPractice(String text){
+  copy(text);
+  try{
+   Intent i=new Intent(Intent.ACTION_VIEW,Uri.parse("https://chatgpt.com/studymode"));
+   i.addCategory(Intent.CATEGORY_BROWSABLE);
+   startActivity(i);
+   Toast.makeText(this,"ChatGPT တွင် Prompt Paste လုပ်ပြီး စလေ့ကျင့်ပါ",Toast.LENGTH_LONG).show();
+  }catch(Exception ex){
+   Toast.makeText(this,"Browser မတွေ့ပါ။ Copy ပြီးသော Prompt ကို AI Chat မှာ Paste လုပ်နိုင်သည်။",Toast.LENGTH_LONG).show();
+  }
+ }
+ private void modeCard(String name,String title,String detail,String prompt,int tint){
+  LinearLayout card=new LinearLayout(this);
+  card.setOrientation(LinearLayout.VERTICAL);
+  card.setBackground(bg(tint));
+  card.setPadding(d(14),d(17),d(14),d(15));
+  add(card,t(title,19,NAVY,true),0);
+  add(card,t(detail,13,NAVY,false),9);
+  add(card,button("🤖  AI နှင့် အပြန်အလှန် စမ်းမည်",()->startInteractive(name,title,prompt)),13);
+  add(card,button("📋  Prompt Copy",()->copy(prompt)),9);
+  add(card,button("🌐  ChatGPT Study Mode ဖြင့် လေ့ကျင့်မည်",()->browserPractice(prompt)),9);
+  add(card,button("👁  Prompt အပြည့်ကြည့်ရန်",()->new AlertDialog.Builder(this)
+      .setTitle(title).setMessage(prompt)
+      .setPositiveButton("Copy",(dialog,which)->copy(prompt))
+      .setNegativeButton("ပိတ်မည်",null).show()),9);
+  add(body,card,14);
+ }
  private void lessonView(){
   GceCurriculum.Chapter c=currentSubject().chapters[chapter];add(body,t(GcePromptFactory.lessonTitle(c,lesson),21,NAVY,true),0);add(body,t(c.title+" · "+c.focus,14,MUTED,false),12);
   add(body,t("AI က တန်းရှင်းပြမည့် Lesson Prompt",19,NAVY,true),20);
@@ -73,6 +110,17 @@ public class GceStudyActivity extends Activity {
   add(body,button("📋  Lesson Prompt Copy",()->copy(prompt(-1))),9);
   add(body,t("PROMPT PREVIEW · AI က အောက်ပါညွှန်ကြားချက်အတိုင်း မြန်မာလို တန်းရှင်းပြပါမည်။",13,BLUE,true),16);
   TextView preview=t(prompt(-1),13,NAVY,false);preview.setPadding(d(13),d(13),d(13),d(13));preview.setBackground(bg(WHITE));add(body,preview,10);
+  add(body,t("📝 PRACTICE & ANSWERS",20,NAVY,true),25);
+  GceCurriculum.Subject subjectInfo=currentSubject();
+  String activePractice=GcePracticeModes.practiceAndAnswers(subjectInfo,c,lesson);
+  modeCard("practice","Practice & Answers · ၆ မေးခွန်း",
+    "မေးခွန်းတစ်ခုချင်း ဖြေ၊ Hint ယူ၊ အမှားရှင်း၊ ၁၂ မှတ်အထိ Score စစ်နိုင်မည့် AI Practice Prompt ဖြစ်သည်။",
+    activePractice,0xFFEAF5FF);
+  add(body,t("⭐ EXAM TIPS & SUMMARY",20,NAVY,true),25);
+  String activeRevision=GcePracticeModes.examTipsAndSummary(subjectInfo,c,lesson);
+  modeCard("revision","Exam Tips & Summary · Revision",
+    "မြန်မာလို Summary၊ Exam Tips ၅ ခု၊ Active Recall ၄ ခု၊ အဖြေစစ်ပြီး ၅ မိနစ် Revision Plan ရမည်။",
+    activeRevision,0xFFEBF8F2);
   add(body,t("EXERCISES · စမ်းသပ်လေ့ကျင့်ရေး",19,NAVY,true),24);
   for(int i=0;i<GceCurriculum.EXERCISES.length;i++){final int x=i;add(body,button((i+1)+". "+GceCurriculum.EXERCISES[i],()->chat(prompt(x))),9);}
   String key=lv()+":"+subject+":"+chapter+":"+lesson;
