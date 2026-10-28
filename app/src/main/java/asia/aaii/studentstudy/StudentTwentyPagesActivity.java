@@ -835,12 +835,17 @@ public final class StudentTwentyPagesActivity extends Activity {
   PremiumDesign.add(form,nickname,7);
   String[] levels={"GCE O Level","AS / A Level","General Student AI"};
   int current=prefs.getInt("profile_study_level",0);
+  Spinner selection=new Spinner(this);
+  android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
+    this,android.R.layout.simple_spinner_dropdown_item,levels);
+  selection.setAdapter(adapter);selection.setSelection(Math.max(0,Math.min(current,2)));
+  PremiumDesign.add(form,text("Study Level",14,PremiumDesign.INK,true),12);
+  PremiumDesign.add(form,selection,6);
   new AlertDialog.Builder(this).setTitle("Student Profile")
-    .setView(form).setSingleChoiceItems(levels,current,(dialog,index)->{
-      prefs.edit().putInt("profile_study_level",index).apply();
-    }).setPositiveButton("Save Profile",(dialog,which)->{
+    .setView(form).setPositiveButton("Save Profile",(dialog,which)->{
       String name=nickname.getText().toString().trim();
-      prefs.edit().putString("student_nickname",name).apply();
+      prefs.edit().putString("student_nickname",name)
+        .putInt("profile_study_level",selection.getSelectedItemPosition()).apply();
       Toast.makeText(this,"Profile saved on device",Toast.LENGTH_SHORT).show();
       render();
     }).setNegativeButton("Cancel",null).show();
