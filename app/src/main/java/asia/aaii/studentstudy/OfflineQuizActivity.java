@@ -26,7 +26,16 @@ public class OfflineQuizActivity extends Activity{
  private int dp(int v){return StudyDesign.dp(this,v);}
  private void label(String s,int size){TextView t=StudyDesign.text(this,s,size,StudyDesign.INK,size>=18);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(12);body.addView(t,p);}
  private void button(String s,Runnable a){TextView t=StudyDesign.action(this,s,false,a);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(9);body.addView(t,p);}
- @Override public void onCreate(Bundle b){super.onCreate(b);history[0]=new OfflineQuizHistory(this);draw();}
+ @Override public void onCreate(Bundle b){super.onCreate(b);history[0]=new OfflineQuizHistory(this);
+ String requestedLevel=getIntent().getStringExtra("study_level");
+ String requestedCode=getIntent().getStringExtra("study_code");
+ if(("O".equals(requestedLevel)||"A".equals(requestedLevel))&&requestedCode!=null){
+  level=requestedLevel;
+  boolean found=false;
+  for(OfflineQuestionBank.Question q:OfflineQuizCatalog.all())if(q.level.equals(level)&&q.code.equals(requestedCode)){found=true;break;}
+  if(found){code=requestedCode;draw();configure();return;}
+ }
+ draw();}
  @Override protected void onPause(){super.onPause();clock.removeCallbacksAndMessages(null);}
  @Override protected void onResume(){super.onResume();if(!quiz.isEmpty())updateClock();}
  private void updateClock(){
