@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextWatcher;
 import android.text.Editable;
 import org.json.*;
@@ -31,6 +33,8 @@ public final class StudentTwentyPagesActivity extends Activity {
  private String subjectName(){return level==0?OLevel2026.SUBJECTS[subject].name:ALevel2026.SUBJECTS[subject].name;}
  private void hero(String title,String caption,int height){
   FrameLayout art=PremiumDesign.illustratedHero(this,title,caption,height);
+  int res=getResources().getIdentifier(String.format(java.util.Locale.US,"ui_hero_%02d",Math.max(1,Math.min(20,page))),"drawable",getPackageName());
+  if(res!=0){art.setBackgroundResource(res);art.setClipToOutline(true);}
   PremiumDesign.addHeight(body,art,height,8);
  }
  private void header(){
@@ -95,12 +99,13 @@ public final class StudentTwentyPagesActivity extends Activity {
  private void splash(){
   FrameLayout banner=new FrameLayout(this);banner.setBackground(PremiumDesign.grad(this,PremiumDesign.BLUE,PremiumDesign.PURPLE,25));
   PremiumRobotView bot=new PremiumRobotView(this);banner.addView(bot);
+  int res=getResources().getIdentifier("ui_hero_01","drawable",getPackageName());if(res!=0)banner.setBackgroundResource(res);
   PremiumDesign.addHeight(body,banner,280,7);
   add("Learn Smarter with AI",27);add("Student AI Study Assistant\nO Level · AS/A Level · Myanmar",16);
   action("Get Started →",()->go(2));link("Explore the 20-page Learning App",()->go(2));
  }
  private void home(){
-  hero("Learn • Practice\nAchieve Together","Original Student AI + GCE O/A Level",176);
+  hero("Learn • Practice\nAchieve Together","Original Student AI + GCE O/A Level",210);
   add("Choose Your Learning Space",19);
   action("🤖 Original Student AI · 100 Prompts / Case Studies / Courses",()->go(9));
   action("🎓 GCE O Level & A Level · 24 Subject Tracks",()->go(3));
@@ -108,7 +113,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   tiles(new String[]{"Practice","Written","Audit","Progress"},new String[]{"✓","✎","PDF","▥"},new int[]{6,14,13,16});
  }
  private void subjects(){
-  hero("Explore Subjects","Cambridge 2026 learning guides",130);
+  hero("Explore Subjects","Cambridge 2026 learning guides",175);
   link(level==0?"Switch to AS/A Level":"Switch to O Level",()->{level=1-level;render();});
   for(int i=0;i<12;i++){
    int chosen=i;String name=level==0?OLevel2026.SUBJECTS[i].name:ALevel2026.SUBJECTS[i].name;
