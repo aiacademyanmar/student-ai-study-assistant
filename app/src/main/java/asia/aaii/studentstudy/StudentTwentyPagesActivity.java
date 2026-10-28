@@ -21,6 +21,7 @@ public final class StudentTwentyPagesActivity extends Activity {
  private int page=1,level=0,subject=1,topic=0,question=0,selected=-1,caseIndex=-1,quizCorrect=0;
  private String search="",language="MM";
  private LinearLayout root,body;private SharedPreferences prefs;
+ private final ArrayDeque<Integer> pageHistory=new ArrayDeque<>();
  private final ArrayList<Boolean> quizAnswers=new ArrayList<>();
  private int dp(int n){return StudyDesign.dp(this,n);}
  private TextView text(String s,int size,int color,boolean bold){
@@ -31,7 +32,13 @@ public final class StudentTwentyPagesActivity extends Activity {
  private void action(String s,Runnable run){PremiumDesign.add(body,PremiumDesign.action(this,s,run,true),11);}
  private void link(String s,Runnable run){PremiumDesign.add(body,PremiumDesign.action(this,s,run,false),8);}
  private void launch(Class<?> c){startActivity(new Intent(this,c));}
- private void go(int n){if(n==11&&page!=11)caseIndex=-1;page=n;render();}
+ private void go(int n){
+  if(n==page)return;
+  if(n==11&&page!=11)caseIndex=-1;
+  if(pageHistory.size()>=30)pageHistory.removeFirst();
+  pageHistory.addLast(page);
+  page=n;render();
+ }
  private String code(){return level==0?OLevel2026.SUBJECTS[subject].code:ALevel2026.SUBJECTS[subject].code;}
  private String subjectName(){return level==0?OLevel2026.SUBJECTS[subject].name:ALevel2026.SUBJECTS[subject].name;}
  private void hero(String title,String caption,int height){
@@ -108,56 +115,131 @@ public final class StudentTwentyPagesActivity extends Activity {
   }
   PremiumDesign.add(body,row,12);
  }
- private void header(){
-  LinearLayout h=PremiumDesign.row(this);h.setPadding(dp(10),dp(10),dp(10),dp(10));
-  h.setBackground(PremiumDesign.grad(this,PremiumDesign.NAVY,PremiumDesign.BLUE,0));
-  TextView back=text(page==1?"✦":"‹",27,-1,true);back.setGravity(Gravity.CENTER);
-  h.addView(back,new LinearLayout.LayoutParams(dp(42),dp(46)));back.setOnClickListener(v->onBackPressed());
-  TextView brand=text("Student AI\nStudy Assistant",17,-1,true);brand.setGravity(Gravity.CENTER_VERTICAL);
-  h.addView(brand,new LinearLayout.LayoutParams(0,dp(49),1));
-  TextView indicator=text(String.format(java.util.Locale.US,"%02d / 20",page),11,-1,true);
-  indicator.setGravity(Gravity.CENTER);h.addView(indicator);
-  root.addView(h);
+ private String pageTitle(){
+  final String[] names={"","Welcome","Home","Subjects","Subject Detail","Lessons",
+    "Practice & Quiz","Results","AI Tutor","AI Prompt 100","Build My Prompt",
+    "Offline Case Studies","Online Courses","Syllabus Audit","Written Practice",
+    "Mock Exam","Learning Progress","Study Plan","Settings & Profile",
+    "Help & Community","About App"};
+  return names[Math.max(1,Math.min(20,page))];
  }
- @Override public void onCreate(Bundle b){
-  super.onCreate(b);prefs=getSharedPreferences("student_twenty_pages_v231",MODE_PRIVATE);
+ private int selectedTab(){
+  if(page==2||page==1)return 0;
+  if(page==9||page==10||page==11||page==12||page==8)return 1;
+  if(page==3||page==4||page==5||page==6||page==7||page==13||page==14||page==15||page==17)return 2;
+  if(page==16)return 3;
+  return 4;
+ }
+ private void header(){
+  LinearLayout bar=PremiumDesign.row(this);
+  bar.setGravity(Gravity.CENTER_VERTICAL);
+  bar.setPadding(dp(8),dp(8),dp(12),dp(8));
+  bar.setBackground(PremiumDesign.grad(this,PremiumDesign.NAVY,PremiumDesign.BLUE,0));
+  TextView back=text(page==1?"✦":"‹",26,0xFFFFFFFF,true);
+  back.setGravity(Gravity.CENTER);back.setFocusable(true);
+  back.setContentDescription("Back to previous page");
+  bar.addView(back,new LinearLayout.LayoutParams(dp(51),dp(53)));
+  back.setOnClickListener(v->onBackPressed());
+  LinearLayout labels=PremiumDesign.column(this);
+  TextView title=text(pageTitle(),17,0xFFFFFFFF,true);
+  title.setMaxLines(1);title.setEllipsize(android.text.TextUtils.TruncateAt.END);
+  labels.addView(title);
+  TextView subtitle=text("Student AI Study Assistant",10,0xFFE0F3FF,false);
+  labels.addView(subtitle);
+  bar.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
+  TextView pageNum=text(String.format(java.util.Locale.US,"%02d / 20",page),
+    12,0xFFFFFFFF,true);pageNum.setGravity(Gravity.CENTER);
+  pageNum.setContentDescription("Screen "+page+" of 20");
+  bar.addView(pageNum,new LinearLayout.LayoutParams(dp(66),dp(51)));
+  root.addView(bar);
+ }
+ @Override public void onCreate(Bundle state){
+  super.onCreate(state);
+  prefs=getSharedPreferences("student_twenty_pages_v231",MODE_PRIVATE);
   language=prefs.getString("interface_language","MM");
-  page=getIntent().getIntExtra("page",1);render();
+  if(state!=null){
+   page=state.getInt("page",2);level=state.getInt("level",0);
+   subject=state.getInt("subject",1);topic=state.getInt("topic",0);
+   caseIndex=state.getInt("caseIndex",-1);
+   int[] previous=state.getIntArray("navigation_stack");
+   if(previous!=null)for(int n:previous)pageHistory.addLast(n);
+  }else page=getIntent().getIntExtra("page",1);
+  render();
+ }
+ @Override protected void onSaveInstanceState(Bundle state){
+  super.onSaveInstanceState(state);
+  state.putInt("page",page);state.putInt("level",level);
+  state.putInt("subject",subject);state.putInt("topic",topic);
+  state.putInt("caseIndex",caseIndex);
+  int[] route=new int[pageHistory.size()];int i=0;
+  for(Integer n:pageHistory)route[i++]=n;
+  state.putIntArray("navigation_stack",route);
  }
  private void render(){
-  root=PremiumDesign.column(this);root.setBackground(PremiumDesign.grad(this,0xFFECF7FF,0xFFF7F0FF,0));setContentView(root);
+  root=PremiumDesign.column(this);
+  root.setBackground(PremiumDesign.grad(this,0xFFECF7FF,0xFFF7F0FF,0));
+  setContentView(root);
+  getWindow().setStatusBarColor(PremiumDesign.NAVY);
+  getWindow().setNavigationBarColor(0xFFF9FBFF);
   if(android.os.Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,insets)->{
    android.graphics.Insets z=insets.getInsets(android.view.WindowInsets.Type.systemBars());
-   v.setPadding(z.left,z.top,z.right,z.bottom);return insets;
+   v.setPadding(z.left,z.top,z.right,z.bottom);
+   return insets;
   });
-  header();ScrollView sc=new ScrollView(this);sc.setFillViewport(false);
-  body=PremiumDesign.column(this);body.setPadding(dp(13),dp(11),dp(13),dp(30));sc.addView(body);
+  header();
+  ScrollView sc=new ScrollView(this);
+  sc.setFillViewport(false);sc.setVerticalScrollBarEnabled(false);
+  body=PremiumDesign.column(this);
+  body.setPadding(dp(13),dp(11),dp(13),dp(30));
+  sc.addView(body);
   root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
   switch(page){
-   case 1:splash();break;case 2:home();break;case 3:subjects();break;case 4:detail();break;
-   case 5:lesson();break;case 6:practice();break;case 7:result();break;case 8:tutor();break;
-   case 9:prompts();break;case 10:builder();break;case 11:cases();break;case 12:courses();break;
-   case 13:audit();break;case 14:written();break;case 15:mock();break;case 16:progress();break;
-   case 17:planner();break;case 18:settings();break;case 19:help();break;default:about();
+   case 1:splash();break;case 2:home();break;case 3:subjects();break;
+   case 4:detail();break;case 5:lesson();break;case 6:practice();break;
+   case 7:result();break;case 8:tutor();break;case 9:prompts();break;
+   case 10:builder();break;case 11:cases();break;case 12:courses();break;
+   case 13:audit();break;case 14:written();break;case 15:mock();break;
+   case 16:progress();break;case 17:planner();break;case 18:settings();break;
+   case 19:help();break;default:about();
   }
   footer();
  }
  private void footer(){
   LinearLayout nav=PremiumDesign.row(this);
-  nav.setPadding(dp(5),dp(4),dp(5),dp(4));nav.setBackground(PremiumDesign.fill(this,-1,18));
+  nav.setGravity(Gravity.CENTER_VERTICAL);
+  nav.setPadding(dp(5),dp(5),dp(5),dp(6));
+  nav.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,
+    PremiumDesign.BORDER,20));
+  nav.setElevation(dp(7));
   String[] labels="MM".equals(language)?
-   new String[]{"ပင်မ","Original AI","GCE","တိုးတက်မှု","ထပ်မံ"}:
+   new String[]{"ပင်မ","Original AI","GCE Study","တိုးတက်မှု","ထပ်မံ"}:
    new String[]{"Home","Original AI","GCE Study","Progress","More"};
+  String[] icons={"⌂","✦","▤","▥","⊞"};
   int[] destinations={2,9,3,16,18};
-  String[] icons={"⌂","🤖","🎓","▥","⊞"};
+  int active=selectedTab();
   for(int i=0;i<labels.length;i++){
-   int dest=destinations[i];LinearLayout cell=PremiumDesign.column(this);cell.setGravity(Gravity.CENTER);
-   TextView icon=text(icons[i],23,page==dest?PremiumDesign.BLUE:PremiumDesign.MUTED,true);
-   TextView label=text(labels[i],10,page==dest?PremiumDesign.BLUE:PremiumDesign.MUTED,page==dest);
-   icon.setGravity(Gravity.CENTER);label.setGravity(Gravity.CENTER);
-   cell.addView(icon);cell.addView(label);cell.setOnClickListener(v->go(dest));
-   nav.addView(cell,new LinearLayout.LayoutParams(0,dp(54),1));
-  }root.addView(nav);
+   final int target=destinations[i];
+   boolean selected=i==active;
+   LinearLayout cell=PremiumDesign.column(this);
+   cell.setGravity(Gravity.CENTER);
+   cell.setPadding(dp(2),dp(7),dp(2),dp(5));
+   cell.setBackground(selected?
+      PremiumDesign.grad(this,PremiumDesign.BLUE,PremiumDesign.PURPLE,16):
+      PremiumDesign.fill(this,0xFFFFFFFF,16));
+   TextView icon=text(icons[i],24,selected?0xFFFFFFFF:PremiumDesign.BLUE,true);
+   TextView title=text(labels[i],10,selected?0xFFFFFFFF:PremiumDesign.INK,true);
+   icon.setGravity(Gravity.CENTER);title.setGravity(Gravity.CENTER);
+   title.setSingleLine(true);
+   title.setEllipsize(android.text.TextUtils.TruncateAt.END);
+   cell.addView(icon);cell.addView(title);
+   cell.setMinimumHeight(dp(61));cell.setClickable(true);cell.setFocusable(true);
+   cell.setContentDescription(labels[i]+(selected?", selected":""));
+   cell.setOnClickListener(v->go(target));
+   LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(64),1);
+   if(i>0)lp.leftMargin=dp(3);
+   nav.addView(cell,lp);
+  }
+  root.addView(nav,new LinearLayout.LayoutParams(-1,-2));
  }
  private void tiles(String[] labels,String[] icons,int[] dest){
   int i=0;
@@ -756,6 +838,11 @@ public final class StudentTwentyPagesActivity extends Activity {
  private void open(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception e){Toast.makeText(this,"Browser unavailable",Toast.LENGTH_SHORT).show();}}
  @Override public void onBackPressed(){
   if(page==11&&caseIndex>=0){caseIndex=-1;render();return;}
-  if(page==1||page==2)super.onBackPressed();else go(2);
+  if(!pageHistory.isEmpty()){
+   page=pageHistory.removeLast();
+   if(page==11)caseIndex=-1;
+   render();
+  }else if(page==1||page==2){super.onBackPressed();}
+  else{page=2;render();}
  }
 }
