@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".StudentTwentyPagesActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".PremiumStudyActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".CatalogActivity" android:screenOrientation="unspecified" android:exported="false" />
     </application>
