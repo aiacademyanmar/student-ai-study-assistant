@@ -75,48 +75,68 @@ public final class StudentTwentyPagesActivity extends Activity {
  private void section(String heading){
   PremiumDesign.add(body,text(heading,18,PremiumDesign.INK,true),17);
  }
- private void zoneCard(String icon,String title,String subtitle,String buttonLabel,
+ /** V2.40: one-tap premium section tile; avoids duplicate CTAs and tiny hit areas. */
+ private void zoneCard(String icon,String title,String subtitle,String actionLabel,
    int tint,int from,int to,Runnable open){
   LinearLayout panel=PremiumDesign.column(this);
-  panel.setPadding(dp(14),dp(14),dp(14),dp(12));
-  panel.setBackground(PremiumDesign.outline(this,tint,0xFFDFE9F7,19));
-  panel.setElevation(dp(2));panel.setClickable(true);panel.setFocusable(true);
-  panel.setContentDescription(title+" "+buttonLabel);
-  LinearLayout head=PremiumDesign.row(this);head.setGravity(Gravity.CENTER_VERTICAL);
-  TextView mark=text(icon,25,from,true);mark.setGravity(Gravity.CENTER);
-  mark.setBackground(PremiumDesign.fill(this,0xFFFFFFFF,14));
-  head.addView(mark,new LinearLayout.LayoutParams(dp(52),dp(55)));
-  LinearLayout labels=PremiumDesign.column(this);labels.setPadding(dp(11),0,0,0);
-  TextView t=text(title,19,from,true);t.setMaxLines(2);labels.addView(t);
-  TextView desc=text(subtitle,12,PremiumDesign.INK,false);desc.setMaxLines(3);
-  PremiumDesign.add(labels,desc,5);
-  head.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
-  panel.addView(head);
-  TextView openButton=PremiumDesign.action(this,buttonLabel+"  ›",open,true);
-  PremiumDesign.add(panel,openButton,10);
+  panel.setPadding(dp(16),dp(16),dp(14),dp(15));
+  android.graphics.drawable.GradientDrawable bg=PremiumDesign.grad(this,from,to,23);
+  panel.setBackground(new android.graphics.drawable.RippleDrawable(
+     android.content.res.ColorStateList.valueOf(0x44FFFFFF),bg,null));
+  panel.setElevation(dp(4));
+  panel.setClickable(true);panel.setFocusable(true);
+  panel.setMinHeight(dp(118));
+  panel.setContentDescription(title+". "+subtitle.replace('\n',' ')+". Open");
+  LinearLayout row=PremiumDesign.row(this);
+  row.setGravity(Gravity.CENTER_VERTICAL);
+  TextView symbol=text(icon,28,0xFFFFFFFF,true);
+  symbol.setGravity(Gravity.CENTER);
+  symbol.setBackground(PremiumDesign.outline(this,0x445DF1FF,0x60FFFFFF,17));
+  row.addView(symbol,new LinearLayout.LayoutParams(dp(64),dp(67)));
+  LinearLayout content=PremiumDesign.column(this);
+  content.setPadding(dp(14),0,dp(4),0);
+  TextView heading=text(title,18,0xFFFFFFFF,true);
+  heading.setMaxLines(2);content.addView(heading);
+  TextView desc=text(subtitle,12,0xFFF6FAFF,false);
+  desc.setMaxLines(3);
+  PremiumDesign.add(content,desc,7);
+  row.addView(content,new LinearLayout.LayoutParams(0,-2,1));
+  TextView arrow=text("›",31,0xFFFFFFFF,true);
+  arrow.setGravity(Gravity.CENTER);
+  arrow.setBackground(PremiumDesign.fill(this,0x4447DAFF,20));
+  row.addView(arrow,new LinearLayout.LayoutParams(dp(36),dp(46)));
+  panel.addView(row);
   panel.setOnClickListener(v->open.run());
-  PremiumDesign.add(body,panel,11);
+  PremiumDesign.add(body,panel,12);
  }
+ /** Four accessible native shortcuts per row, fixed responsive 4-column rhythm. */
  private void shortcutRow(String[] titles,String[] symbols,int[] destinations){
   LinearLayout row=PremiumDesign.row(this);
+  int[] accent={0xFF1C71EF,0xFF9546F3,0xFF0AB98F,0xFFFFA928};
+  int[] backgrounds={0xFFECF4FF,0xFFF5EDFF,0xFFE5FFF5,0xFFFFF7E4};
   for(int i=0;i<titles.length&&i<4;i++){
-   final int d=destinations[i];
-   LinearLayout card=PremiumDesign.column(this);
-   card.setGravity(Gravity.CENTER);
-   card.setPadding(dp(3),dp(10),dp(3),dp(8));
-   card.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,0xFFD7E3F8,17));
-   card.setElevation(dp(1));
-   TextView symbol=text(symbols[i],27,new int[]{PremiumDesign.BLUE,PremiumDesign.PURPLE,
-    PremiumDesign.GREEN,PremiumDesign.AMBER}[i],true);
-   symbol.setGravity(Gravity.CENTER);card.addView(symbol,new LinearLayout.LayoutParams(-1,dp(39)));
-   TextView title=text(titles[i],11,PremiumDesign.NAVY,true);
-   title.setGravity(Gravity.CENTER);title.setMaxLines(2);card.addView(title);
-   card.setOnClickListener(v->go(d));card.setContentDescription(titles[i]);
-   LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(83),1);
-   if(i>0)lp.leftMargin=dp(5);
-   row.addView(card,lp);
+   final int target=destinations[i];
+   LinearLayout tile=PremiumDesign.column(this);
+   tile.setPadding(dp(2),dp(11),dp(2),dp(7));
+   tile.setGravity(Gravity.CENTER);
+   tile.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,0xFFDCE8FC,18));
+   tile.setElevation(dp(2));
+   TextView sym=text(symbols[i],27,accent[i],true);
+   sym.setGravity(Gravity.CENTER);
+   sym.setBackground(PremiumDesign.fill(this,backgrounds[i],16));
+   tile.addView(sym,new LinearLayout.LayoutParams(dp(55),dp(51)));
+   TextView title=text(titles[i],11,PremiumDesign.INK,true);
+   title.setGravity(Gravity.CENTER);
+   title.setMaxLines(2);title.setMinHeight(dp(31));
+   PremiumDesign.add(tile,title,5);
+   tile.setClickable(true);tile.setFocusable(true);
+   tile.setContentDescription(titles[i]);
+   tile.setOnClickListener(v->go(target));
+   LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(106),1);
+   if(i>0)lp.leftMargin=dp(6);
+   row.addView(tile,lp);
   }
-  PremiumDesign.add(body,row,12);
+  PremiumDesign.add(body,row,11);
  }
  private String pageTitle(){
   final String[] names={"","Welcome","Home","Subjects","Subject Detail","Lessons",
@@ -136,7 +156,7 @@ public final class StudentTwentyPagesActivity extends Activity {
  private void header(){
   LinearLayout bar=PremiumDesign.row(this);
   bar.setGravity(Gravity.CENTER_VERTICAL);
-  bar.setPadding(dp(8),dp(8),dp(12),dp(8));
+  bar.setPadding(dp(8),dp(7),dp(12),dp(7));
   bar.setBackground(PremiumDesign.grad(this,PremiumDesign.NAVY,PremiumDesign.BLUE,0));
   TextView back=text(page==1?"✦":"‹",26,0xFFFFFFFF,true);
   back.setGravity(Gravity.CENTER);back.setFocusable(true);
@@ -144,7 +164,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   bar.addView(back,new LinearLayout.LayoutParams(dp(51),dp(53)));
   back.setOnClickListener(v->onBackPressed());
   LinearLayout labels=PremiumDesign.column(this);
-  TextView title=text(pageTitle(),17,0xFFFFFFFF,true);
+  TextView title=text(pageTitle(),18,0xFFFFFFFF,true);
   title.setMaxLines(1);title.setEllipsize(android.text.TextUtils.TruncateAt.END);
   labels.addView(title);
   TextView subtitle=text("Student AI Study Assistant",10,0xFFE0F3FF,false);
@@ -277,18 +297,20 @@ public final class StudentTwentyPagesActivity extends Activity {
   action("Get Started →",()->go(2));link("Explore the 20-page Learning App",()->go(2));
  }
  private void home(){
-  hero("Home Dashboard","Choose your learning journey",185);
-  section("Choose a learning space");
+  String nickname=prefs.getString("student_nickname","").trim();
+  section(nickname.isEmpty()?"Welcome to Student AI":"မင်္ဂလာပါ • "+nickname);
+  hero("Learn Smarter\nwith AI","မြန်မာလို AI အကူအညီဖြင့်\nတစ်ဆင့်ချင်း သင်ယူပါ",174);
+  section("Choose Your Learning Space");
   zoneCard("✦","Original Student AI",
-   "100 AI Prompts • Offline Case Studies\nBuild My Prompt • OpenAI Courses",
-   "Open Original Student AI",0xFFF0E9FF,0xFF7A37E9,PremiumDesign.BLUE,()->go(9));
+    "AI Prompt 100 • Offline Cases\nBuild My Prompt • OpenAI Courses",
+    "Open AI Tools",0xFFF0E9FF,0xFF7D39EE,0xFF285DF3,()->go(9));
   zoneCard("🎓","GCE O Level & A Level",
-   "24 Subjects • Lessons • Quiz\nWritten Practice • Syllabus Audit",
-   "Open GCE Study",0xFFE5F4FF,PremiumDesign.BLUE,PremiumDesign.PURPLE,()->go(3));
+    "24 Subjects • Lessons • Quizzes\nWritten Practice • Syllabus Audit",
+    "Open GCE Study",0xFFE5F4FF,0xFF087DDC,0xFF4653ED,()->go(3));
   section("Quick Access");
-  shortcutRow(new String[]{"Prompt 100","Offline Case","Quiz","AI Tutor"},
-    new String[]{"100","▤","✓","✦"},new int[]{9,11,6,8});
-  link("▶   Continue GCE Lessons",()->go(3));
+  shortcutRow(new String[]{"Prompt 100","Case Studies","Quiz","AI Tutor"},
+     new String[]{"100","▤","✓","✦"},new int[]{9,11,6,8});
+  link("Browse GCE Subjects  ›",()->go(3));
  }
  private void subjects(){
   hero("GCE Study","O Level & AS/A Level · 2026 syllabuses",149);
