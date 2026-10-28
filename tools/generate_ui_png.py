@@ -1,71 +1,69 @@
 #!/usr/bin/env python3
-"""Generate original bundled Android PNG illustration banners from existing repo's mascot.
-No network, no runtime dependency: images produced during APK compile."""
-from PIL import Image, ImageDraw, ImageFilter, ImageOps
+"""Generate 20 distinct, original blue/cyan/purple hero assets for native Android.
+
+Design-aligned, not pixel-perfect replicas of the user's full screen mockups.
+The existing bundled study_robot.webp mascot is drawn on a bright white ellipse
+at right, leaving the left side available for real native, accessible text.
+"""
+from PIL import Image, ImageDraw, ImageFilter
 from pathlib import Path
-import math, random
+import math, random, colorsys
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "app/src/main/res/drawable-nodpi"
-OUT.mkdir(parents=True, exist_ok=True)
-SOURCE = OUT / "study_robot.webp"
-palette = [
- ("#0956F1","#722DEB"), ("#0356F0","#10BFEB"),("#1237DE","#A52FE5"),
- ("#0465F0","#AA35F0"),("#006BDA","#33D2F5"),("#123EE0","#4CBBF8"),
- ("#2255F3","#9D3FF1"),("#0B61ED","#933DF3"),("#532FE6","#B741F5"),
- ("#065CF6","#9B38EA"),("#075CCF","#00C8C1"),("#3855E8","#8733EA"),
- ("#2B53E6","#46C2E9"),("#093CDD","#A63DF5"),("#1556F0","#FF4E9C"),
- ("#075EE7","#09C9DB"),("#1555E4","#8B36EC"),("#1435CE","#742EBA"),
- ("#0457DD","#9036E8"),("#0D37B4","#26B5EC")
+ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/"app/src/main/res/drawable-nodpi"
+OUT.mkdir(parents=True,exist_ok=True)
+SOURCE=OUT/"study_robot.webp"
+palette=[
+("#1767FF","#733FF5"),("#1767FF","#8138EF"),("#2366FF","#14C5EA"),
+("#2562F8","#7442F4"),("#115DFA","#A844EC"),("#057AF5","#743FED"),
+("#2170FC","#A746EA"),("#1456E7","#7D43F4"),("#155CF4","#8B42F0"),
+("#185FF1","#9D39F0"),("#1174EF","#18C9E8"),("#245FF4","#8A45EC"),
+("#165EE8","#8052F4"),("#176AFC","#9D42EE"),("#2B60FA","#F34FA0"),
+("#0B72E5","#16BBE7"),("#175EE9","#8440EF"),("#1958D9","#9A4CED"),
+("#2367F8","#8646F2"),("#174EDA","#16B8E8")
 ]
-def rgb(h):return tuple(bytes.fromhex(h.lstrip("#")))
-def make(page,color1,color2):
+icons=["✦","AI","∑","▤","✎","✓","★","AI","100","✦","▣","▶","PDF","✎","◷","▥","✓","⚙","?","AI"]
+def rgb(s):return tuple(bytes.fromhex(s.lstrip("#")))
+def blend(a,b,t):return tuple(round(a[i]*(1-t)+b[i]*t) for i in range(3))
+def make(page,left,right):
  W,H=1000,460
- base=Image.new("RGB",(W,H))
- d=ImageDraw.Draw(base)
- c1,c2=rgb(color1),rgb(color2)
- for y in range(H):
-  t=y/(H-1)
-  a=tuple(int(c1[i]*(1-t)+c2[i]*t) for i in range(3))
-  d.line((0,y,W,y),fill=a)
- # Aurora light strips, star glows and school-inspired cloud layers
- bloom=Image.new("RGBA",(W,H),(0,0,0,0))
- bd=ImageDraw.Draw(bloom,"RGBA")
- bd.ellipse((-250,-350,520,460), fill=(3,222,244,80))
- bd.ellipse((520,-80,1200,600),fill=(190,109,255,92))
- bd.ellipse((330,220,800,580),fill=(235,247,255,33))
- bloom=bloom.filter(ImageFilter.GaussianBlur(48))
- base=Image.alpha_composite(base.convert("RGBA"),bloom)
- design=ImageDraw.Draw(base,"RGBA")
- rng=random.Random(page*499)
- for i in range(21):
-  x,y=rng.randrange(20,W-20),rng.randrange(16,H-23)
-  radius=rng.randrange(2,9)
-  design.ellipse((x-radius,y-radius,x+radius,y+radius), fill=(245,250,255,rng.randrange(70,150)))
-  if i%3==0:
-   design.line((x-12,y,x+12,y),fill=(225,252,255,90),width=2)
-   design.line((x,y-12,x,y+12),fill=(225,252,255,90),width=2)
- # math/science / study decorations (background)
- for i in range(3):
-  x=140+i*180; y=100+i*75
-  design.arc((x,y,x+115,y+100), 30,290,fill=(255,255,255,35),width=4)
- # notebook and original school building
- design.rounded_rectangle((720,240,917,478),radius=22,fill=(16,44,142,115),outline=(230,249,255,80),width=3)
- design.polygon([(830,213),(932,272),(728,272)],fill=(255,194,87,130))
- for x in (754,800,846,892):
-  design.rectangle((x,287,x+19,347),fill=(191,233,255,85))
- # mascot is a reusable existing repo asset, included in binary APK as PNG
+ bg=Image.new("RGBA",(W,H),(*rgb(left),255))
+ px=bg.load();a,b=rgb(left),rgb(right)
+ for x in range(W):
+  t=x/max(1,W-1)
+  c=blend(a,b,t)
+  for y in range(H):px[x,y]=(*c,255)
+ d=ImageDraw.Draw(bg,"RGBA")
+ # White circular mascot backdrop, as in the 20-screen UI reference.
+ d.ellipse((630,-115,1114,375),fill=(255,255,255,253))
+ d.ellipse((664,-80,1072,337),fill=(243,249,255,245))
+ # Soft cyan accent rings, intentionally behind illustration.
+ d.arc((602,-142,1160,414),160,346,fill=(127,240,255,125),width=7)
+ d.arc((602,-142,1160,414),18,140,fill=(234,212,255,135),width=5)
+ # Subtle sparkles in the text-safe band at far left.
+ rng=random.Random(page*815)
+ for i in range(10):
+  x=rng.randint(30,590);y=rng.randint(25,H-30);r=rng.choice([2,3,4])
+  d.ellipse((x-r,y-r,x+r,y+r),fill=(255,255,255,rng.randint(60,150)))
+ # Short study symbols on the right only; never rasterize UI labels.
+ for x,y in [(685,90),(950,220)]:
+  d.line((x-8,y,x+8,y),fill=(73,217,255,130),width=3)
+  d.line((x,y-8,x,y+8),fill=(73,217,255,130),width=3)
  if SOURCE.exists():
-  logo=Image.open(SOURCE).convert("RGBA")
-  logo.thumbnail((450,410),Image.Resampling.LANCZOS)
-  alpha=logo.getchannel("A")
-  # Soft mask for backgrounds (not required when original has transparency).
-  base.alpha_composite(logo,(W-logo.width-45,max(0,(H-logo.height)//2)))
- # one-pixel safe padding; Android rounds clip in native frame.
+  mascot=Image.open(SOURCE).convert("RGBA")
+  mascot.thumbnail((395,350),Image.Resampling.LANCZOS)
+  # Source is already a composited reusable artwork; alpha composite preserves transparency.
+  bx=695+(360-mascot.width)//2
+  by=43+(340-mascot.height)//2
+  bg.alpha_composite(mascot,(bx,by))
+ # V2.37 generated assets must be reproducible and not depend on network.
  out=OUT/f"ui_hero_{page:02d}.png"
- base.convert("RGB").save(out,optimize=True)
+ bg.convert("RGB").save(out,optimize=True)
  return out
-
-for number,(a,b) in enumerate(palette,1):
- make(number,a,b)
-print("Generated",len(palette),"illustration PNG assets in",OUT)
+if __name__=="__main__":
+ images=[make(i,*pair) for i,pair in enumerate(palette,1)]
+ assert len(images)==20
+ for file in images:
+  with Image.open(file) as im:
+   assert im.size==(1000,460) and im.mode=="RGB"
+ print("Generated 20 native hero assets with mascot and white backdrop",OUT)
