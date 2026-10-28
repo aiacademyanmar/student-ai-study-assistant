@@ -150,10 +150,14 @@ public final class StudentTwentyPagesActivity extends Activity {
   TextView subtitle=text("Student AI Study Assistant",10,0xFFE0F3FF,false);
   labels.addView(subtitle);
   bar.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
-  TextView pageNum=text(String.format(java.util.Locale.US,"%02d / 20",page),
-    12,0xFFFFFFFF,true);pageNum.setGravity(Gravity.CENTER);
-  pageNum.setContentDescription("Screen "+page+" of 20");
-  bar.addView(pageNum,new LinearLayout.LayoutParams(dp(66),dp(51)));
+  TextView help=text(page==19?"⚙":"?",22,0xFFFFFFFF,true);
+  help.setGravity(Gravity.CENTER);help.setFocusable(true);
+  help.setContentDescription(page==19?"Open Settings":"Open Help and Guide");
+  help.setBackground(PremiumDesign.fill(this,0xFF335BC8,16));
+  help.setOnClickListener(v->go(page==19?18:19));
+  LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(43),dp(43));
+  helpParams.leftMargin=dp(8);
+  bar.addView(help,helpParams);
   root.addView(bar);
  }
  @Override public void onCreate(Bundle state){
@@ -282,9 +286,9 @@ public final class StudentTwentyPagesActivity extends Activity {
    "24 Subjects • Lessons • Quiz\nWritten Practice • Syllabus Audit",
    "Open GCE Study",0xFFE5F4FF,PremiumDesign.BLUE,PremiumDesign.PURPLE,()->go(3));
   section("Quick Access");
-  shortcutRow(new String[]{"Prompt 100","AI Tutor","Quiz","Syllabus"},
-    new String[]{"100","🤖","✓","PDF"},new int[]{9,8,6,13});
-  link("▶   Continue Learning",()->go(3));
+  shortcutRow(new String[]{"Prompt 100","Offline Case","Quiz","AI Tutor"},
+    new String[]{"100","▤","✓","✦"},new int[]{9,11,6,8});
+  link("▶   Continue GCE Lessons",()->go(3));
  }
  private void subjects(){
   hero("GCE Study","O Level & AS/A Level · 2026 syllabuses",149);
@@ -614,7 +618,6 @@ public final class StudentTwentyPagesActivity extends Activity {
   PremiumDesign.add(work,PremiumDesign.action(this,"Open Academy Community  ↗",
        ()->open("https://academy.openai.com/home/clubs/work-users-ynjqu"),false),10);
   section("Continue Learning Offline");
-  link("📖  Original Myanmar Offline Reading Guide",()->launch(OfflineReaderActivity.class));
   link("✦  100 Student AI Prompts",()->go(9));
  }
  private void audit(){
@@ -824,13 +827,11 @@ public final class StudentTwentyPagesActivity extends Activity {
     quizzes[0]+" quiz attempts · "+written[0]+" written reviews. "+
     "These activity records are saved on this device. External AI interactions may transmit prompts.",
     PremiumDesign.GREEN);
-  link("Offline Myanmar Reading Library",()->launch(OfflineReaderActivity.class));
   link("Offline Case Studies",()->{caseIndex=-1;go(11);});
   link("Select Academy Courses (external browser)",()->AcademyBrowser.openCourses(this));
   section("Support & App");
   link("Help & Community Resources",()->go(19));
   link("About and Version",()->go(20));
-  link("Open Basic Interface",()->launch(CatalogActivity.class));
  }
  private void editProfile(){
   LinearLayout form=PremiumDesign.column(this);
@@ -871,7 +872,7 @@ public final class StudentTwentyPagesActivity extends Activity {
    {"How do I use AI Prompt 100?",
      "Open Original Student AI → Prompt Library. Choose one of the original prompts, select App AI, ChatGPT or Gemini, and use the generated text. ChatGPT/Gemini may require Paste & Send."},
    {"Can I read without Internet?",
-     "Yes. The original fictional case studies, Myanmar offline guide and included original quiz questions are bundled on the device. AI requests, Academy courses and syllabus PDF links require a network."},
+     "Yes. The original fictional case studies and included original quiz questions are bundled on the device. AI requests, Academy courses and syllabus PDF links require a network."},
    {"How do I save quiz progress?",
      "Complete a native offline quiz. The result is saved locally and shown in Progress. Scores are for original practice questions, not official Cambridge marks."},
    {"How does AI Teacher work?",
