@@ -31,6 +31,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
+      - name: Generate PNG illustrations
+        run: |
+          python -m pip install --quiet pillow
+          python tools/generate_ui_png.py
+          test "$(find app/src/main/res/drawable-nodpi -name 'ui_hero_*.png' | wc -l)" -eq 20
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - name: Verify Android launcher
@@ -38,10 +43,14 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | tee apk-badging.txt
           grep -q "launchable-activity: name='asia.aaii.studentstudy.StartActivity'" apk-badging.txt
           grep -q "package: name='asia.aaii.studentstudy'" apk-badging.txt
+      - name: Verify embedded PNG resources
+        run: |
+          unzip -l app/build/outputs/apk/debug/app-debug.apk | grep -q ui_hero_01
+          unzip -l app/build/outputs/apk/debug/app-debug.apk | grep -q ui_hero_20
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Student-AI-Study-Assistant-V2.31-20-Screens-Native-debug
+          name: Student-AI-Study-Assistant-V2.32-Illustrated-20-Screens-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
