@@ -775,6 +775,14 @@ public final class StudentTwentyPagesActivity extends Activity {
  }
  private void settings(){
   hero("Settings & Profile","Real app preferences and local learning tools",166);
+  section("Student Profile");
+  String nickname=prefs.getString("student_nickname","").trim();
+  int profileLevel=prefs.getInt("profile_study_level",0);
+  String[] choices={"GCE O Level","AS / A Level","General Student AI"};
+  LinearLayout profile=studyPanel(nickname.isEmpty()?"Student (Local Profile)":nickname,
+    choices[Math.max(0,Math.min(2,profileLevel))]+" · Saved only on this device",PremiumDesign.BLUE);
+  PremiumDesign.add(profile,PremiumDesign.action(this,"✎  Edit Nickname & Study Level",()->
+     editProfile(),false),10);
   section("Learning Preferences");
   LinearLayout mainAI=studyPanel("Main AI Provider",
       "Current: "+AiProviderRouter.mainLabel(this),PremiumDesign.BLUE);
@@ -812,27 +820,90 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("Offline Case Studies",()->{caseIndex=-1;go(11);});
   link("Select Academy Courses (external browser)",()->AcademyBrowser.openCourses(this));
   section("Support & App");
-  link("Help & FAQ",()->go(19));
+  link("Help & Community Resources",()->go(19));
   link("About and Version",()->go(20));
   link("Open Basic Interface",()->launch(CatalogActivity.class));
  }
+ private void editProfile(){
+  LinearLayout form=PremiumDesign.column(this);
+  form.setPadding(dp(20),dp(10),dp(20),dp(10));
+  EditText nickname=new EditText(this);
+  nickname.setSingleLine(true);nickname.setTextSize(17);
+  nickname.setHint("Nickname (saved only on this phone)");
+  nickname.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(40)});
+  nickname.setText(prefs.getString("student_nickname",""));
+  PremiumDesign.add(form,nickname,7);
+  String[] levels={"GCE O Level","AS / A Level","General Student AI"};
+  int current=prefs.getInt("profile_study_level",0);
+  new AlertDialog.Builder(this).setTitle("Student Profile")
+    .setView(form).setSingleChoiceItems(levels,current,(dialog,index)->{
+      prefs.edit().putInt("profile_study_level",index).apply();
+    }).setPositiveButton("Save Profile",(dialog,which)->{
+      String name=nickname.getText().toString().trim();
+      prefs.edit().putString("student_nickname",name).apply();
+      Toast.makeText(this,"Profile saved on device",Toast.LENGTH_SHORT).show();
+      render();
+    }).setNegativeButton("Cancel",null).show();
+ }
  private void help(){
-  hero("Help & Community","Guides • Questions • Responsible AI",152);
-  String[][] faqs={{"How to use AI prompts?","Choose an original prompt, select AI provider and paste/send the copied prompt."},
-    {"How to practice offline?","Select Practice > Native Offline Quiz. Original questions and scores work without internet."},
-    {"Where is my progress?","Scores are stored locally on this device. No server synchronization is enabled."},
-    {"How do I find 2026 syllabuses?","Use GCE Study > Subject > Syllabus Audit, then check the official PDF."}};
-  for(String[] f:faqs)link(f[0],()->new AlertDialog.Builder(this).setTitle(f[0]).setMessage(f[1]).setPositiveButton("OK",null).show());
-  link("Official OpenAI Academy",()->AcademyBrowser.openCourses(this));
-  link("About App",()->go(20));
+  hero("Help & Community","Offline FAQs • guides • trusted resources",165);
+  section("How can we help?");
+  studyPanel("Quick Start",
+    "Choose Original Student AI for prompts & case studies, or GCE Study for syllabus guides and exam practice.",
+    PremiumDesign.BLUE);
+  shortcutRow(new String[]{"100 Prompts","AI Tutor","Offline","Quiz"},
+    new String[]{"100","✦","▤","✓"},new int[]{9,8,11,6});
+  section("Frequently Asked Questions");
+  String[][] faqs={
+   {"How do I use AI Prompt 100?",
+     "Open Original Student AI → Prompt Library. Choose one of the original prompts, select App AI, ChatGPT or Gemini, and use the generated text. ChatGPT/Gemini may require Paste & Send."},
+   {"Can I read without Internet?",
+     "Yes. The original fictional case studies, Myanmar offline guide and included original quiz questions are bundled on the device. AI requests, Academy courses and syllabus PDF links require a network."},
+   {"How do I save quiz progress?",
+     "Complete a native offline quiz. The result is saved locally and shown in Progress. Scores are for original practice questions, not official Cambridge marks."},
+   {"How does AI Teacher work?",
+     "Choose your preferred provider. App AI requires a configured server API. For ChatGPT or Gemini the app can launch the installed app and copy the prompt for you to paste."},
+   {"Where can I find official syllabus PDFs?",
+     "Open GCE Study → Subject → Syllabus Audit → official PDF link. Manual crosswalk statuses are not verified by Cambridge."},
+   {"Can I change my student name?",
+     "Open More → Settings & Profile → Edit Student Profile. Nickname and study level are saved only on this phone; this is not a cloud account."}
+  };
+  for(String[] item:faqs){
+   LinearLayout card=studyPanel(item[0],"Tap to read the answer",PremiumDesign.BLUE);
+   PremiumDesign.add(card,PremiumDesign.action(this,"Read Answer  ›",()->
+     new AlertDialog.Builder(this).setTitle(item[0]).setMessage(item[1])
+       .setPositiveButton("Close",null).show(),false),8);
+  }
+  section("Online Help / Community Resources");
+  studyPanel("Community Chat",
+    "No in-app community server is connected yet. Do not share private data in public groups.",
+    PremiumDesign.PURPLE);
+  link("Open Official OpenAI Academy (Browser)",()->AcademyBrowser.openCourses(this));
+  link("View App Information & Privacy Notes",()->go(20));
  }
  private void about(){
-  hero("Student AI Study Assistant","Independent Myanmar learning companion",160);
-  add("Version 2.35.0 · Enhanced 20-screen native UI",19);
-  add("100 original AI Prompts · 8 offline fictional case studies · 24 GCE tracks · 192 MCQs · 48 written tasks",14);
-  add("Not affiliated with or endorsed by Cambridge International or OpenAI.",12);
-  link("Official Academy Courses",()->AcademyBrowser.openCourses(this));
-  link("GitHub Project",()->open("https://github.com/aiacademyanmar/student-ai-study-assistant"));
+  hero("About Student AI","Independent educational companion",172);
+  section("App Information");
+  String version=BuildConfig.VERSION_NAME;
+  studyPanel("Student AI Study Assistant  ·  V"+version,
+    "Native Android · Original Student AI + GCE O / AS & A Level",PremiumDesign.BLUE);
+  LinearLayout features=studyPanel("Included Study Resources",
+    "100 Original AI Prompts\n8 Original Fictional Offline Cases\n24 Subject Study Tracks\n192 Original Offline MCQs\n48 Original Written Exercises",
+    PremiumDesign.PURPLE);
+  PremiumDesign.add(features,text("Content totals describe starter materials; not complete Cambridge syllabus verification.",12,
+    PremiumDesign.MUTED,false),8);
+  section("Data, Identity & Attribution");
+  studyPanel("Offline & Privacy",
+    "Quiz results, case checklists, nicknames and written drafts are saved on this device. "+
+    "External AI providers may receive prompts that you choose to send. No cloud profile sync is enabled.",
+    PremiumDesign.GREEN);
+  studyPanel("Independent Study Product",
+    "Not affiliated with or endorsed by Cambridge International or OpenAI. "+
+    "Exam questions are original practice content, NOT official past papers or mark schemes.",
+    PremiumDesign.PURPLE);
+  section("Official Resources");
+  link("OpenAI Academy Courses  ↗",()->AcademyBrowser.openCourses(this));
+  link("GitHub Source Repository  ↗",()->open("https://github.com/aiacademyanmar/student-ai-study-assistant"));
   action("Return to Home",()->go(2));
  }
  private void open(String url){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));}catch(Exception e){Toast.makeText(this,"Browser unavailable",Toast.LENGTH_SHORT).show();}}
