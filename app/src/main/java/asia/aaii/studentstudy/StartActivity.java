@@ -64,7 +64,7 @@ public final class StartActivity extends Activity {
   body.addView(label("GCE O Level  •  AS & A Level",16,false));
   body.addView(label("AI နဲ့အတူ ပိုမိုထိရောက်စွာ သင်ယူပါ",16,true));
   gap(body,32);
-  TextView open=PremiumDesign.action(this,"OPEN APP    ▶",()->open(PremiumStudyActivity.class,true),true);
+  TextView open=PremiumDesign.action(this,"OPEN APP    ▶",()->open(StudentTwentyPagesActivity.class,false),true);
   open.setTextSize(20);open.setMinHeight(dp(62));open.setContentDescription("Open Student AI Study Assistant");
   body.addView(open,new LinearLayout.LayoutParams(-1,-2));
   gap(body,13);
@@ -72,7 +72,7 @@ public final class StartActivity extends Activity {
   fallback.setMinHeight(dp(55));
   body.addView(fallback,new LinearLayout.LayoutParams(-1,-2));
   gap(body,28);
-  body.addView(label("V2.30.1 · Native Android",13,false));
+  body.addView(label("V2.31.0 · 20-Screen Native Android",13,false));
   gap(body,9);
   body.addView(label("OPEN APP ကိုနှိပ်ပြီး စတင်ပါ။\nPremium Screen မှ ပြဿနာရှိလျှင် BASIC INTERFACE ကိုသုံးနိုင်ပါတယ်။",12,false));
  }
