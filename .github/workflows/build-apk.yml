@@ -41,7 +41,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Student-AI-Study-Assistant-V2.30.1-Open-App-Fix-debug
+          name: Student-AI-Study-Assistant-V2.31-20-Screens-Native-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
