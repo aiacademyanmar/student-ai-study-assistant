@@ -10,8 +10,8 @@ android {
         applicationId 'asia.aaii.studentstudy'
         minSdk 23
         targetSdk 35
-        versionCode 33
-        versionName '2.30.1'
+        versionCode 34
+        versionName '2.31.0'
     }
 
     buildTypes {
