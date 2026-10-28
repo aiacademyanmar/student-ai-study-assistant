@@ -140,6 +140,7 @@ public final class StudentLicenseActivity extends Activity {
         c.setConnectTimeout(12000);c.setReadTimeout(15000);c.setUseCaches(false);
         c.setRequestProperty("Accept","application/json");
         if(!authToken.isEmpty())c.setRequestProperty("Authorization","Bearer "+authToken);
+        c.setRequestProperty("X-Device-Id",deviceId(this));
         try {
             if(payload!=null){
                 c.setRequestMethod("POST");c.setDoOutput(true);
@@ -169,10 +170,10 @@ public final class StudentLicenseActivity extends Activity {
             try {
                 JSONObject response=request(action,body,"");
                 if(response.optString("token").isEmpty())throw new Exception("Cloud did not issue a login token");
-                saveToken(this,response.getString("token"));
                 long now=System.currentTimeMillis();
                 long licenseMs=response.optLong("expires_at_epoch",0)*1000L;
                 if(licenseMs<=now)throw new Exception("Activation is expired");
+                saveToken(this,response.getString("token"));
                 prefs.edit().putString("name",response.optString("name","Student"))
                     .putString("plan",response.optString("plan","free"))
                     .putLong("license_expires_ms",licenseMs)
