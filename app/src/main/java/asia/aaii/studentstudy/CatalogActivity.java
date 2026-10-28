@@ -193,12 +193,6 @@ public class CatalogActivity extends Activity {
         rent.addView(tv("ဘာသာရပ်အလိုက် Teacher Profile ရှာဖွေခြင်း၊ Online / In-person ရွေးချယ်ခြင်း၊ Booking Request Draft သိမ်းခြင်း",12,MUTED,false));
         margin(button("Teacher Rent Menu ဖွင့်ရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),rent,0,12,0,0);
         margin(rent,body,0,0,0,6);
-        section("📖  Offline မြန်မာစာဖတ်ခန်း","ဖတ်ရန်  ›",()->startActivity(new Intent(this,OfflineReaderActivity.class)));
-        LinearLayout offline=card(0xFFE3F6EC);
-        offline.addView(tv("AI at Work · Work Users",16,NAVY,true));
-        offline.addView(tv("အင်တာနက်မလိုဘဲ ဖတ်နိုင်သော မြန်မာဘာသာ သင်ခန်းစာ ၁၅ ခု၊ လေ့ကျင့်ခန်းများနှင့် ဖတ်ပြီးမှတ်သားခြင်း",13,MUTED,false));
-        margin(button("Offline သင်ခန်းစာများ ဖတ်ရန်",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),offline,0,12,0,0);
-        margin(offline,body,0,0,0,6);
         section("🎓  OpenAI Academy သင်တန်းများ","သင်တန်းကြည့်ရန်  ›",()->AcademyBrowser.openCourses(this));
         LinearLayout academy=card(0xFFE9F4FF);
         academy.addView(tv("AI Foundations · Applied AI · Agents & Workflows",15,NAVY,true));
@@ -300,7 +294,6 @@ public class CatalogActivity extends Activity {
         margin(button("📘  O Level 2026 Syllabus Study Map",BLUE,WHITE,()->startActivity(new Intent(this,OLevelSyllabusActivity.class))),body,0,0,0,12);
         margin(button("🎓  GCE O & A Level AI Tutor",BLUE,WHITE,()->startActivity(new Intent(this,GceStudyActivity.class))),body,0,0,0,12);
         margin(button("👩‍🏫  TEACHER RENT · ဆရာ/ဆရာမ ငှားရန်",BLUE,WHITE,()->startActivity(new Intent(this,TeacherRentActivity.class))),body,0,0,0,12);
-        margin(button("📖  Offline မြန်မာစာဖတ်ခန်း",GREEN,WHITE,()->startActivity(new Intent(this,OfflineReaderActivity.class))),body,0,0,0,12);
         margin(button("🎓  OpenAI Academy သင်တန်းများ",BLUE,WHITE,()->AcademyBrowser.openCourses(this)),body,0,0,0,12);
         margin(button("♡  သိမ်းထားသော Prompt များ",0xFFE8F2FF,NAVY,()->show("saved")),body,0,0,0,12);
         margin(button("ChatGPT Study Mode သို့ သွားရန်",0xFFE8F2FF,NAVY,()->openUrl(STUDY_URL)),body,0,0,0,12);
