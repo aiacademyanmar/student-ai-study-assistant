@@ -32,10 +32,78 @@ public final class StudentTwentyPagesActivity extends Activity {
  private String code(){return level==0?OLevel2026.SUBJECTS[subject].code:ALevel2026.SUBJECTS[subject].code;}
  private String subjectName(){return level==0?OLevel2026.SUBJECTS[subject].name:ALevel2026.SUBJECTS[subject].name;}
  private void hero(String title,String caption,int height){
-  FrameLayout art=PremiumDesign.illustratedHero(this,title,caption,height);
-  int res=getResources().getIdentifier(String.format(java.util.Locale.US,"ui_hero_%02d",Math.max(1,Math.min(20,page))),"drawable",getPackageName());
-  if(res!=0){art.setBackgroundResource(res);art.setClipToOutline(true);}
-  PremiumDesign.addHeight(body,art,height,8);
+  FrameLayout banner=new FrameLayout(this);
+  banner.setBackground(PremiumDesign.grad(this,PremiumDesign.BLUE,PremiumDesign.PURPLE,24));
+  banner.setClipToOutline(true);
+  int id=getResources().getIdentifier(String.format(java.util.Locale.US,"ui_hero_%02d",
+    Math.max(1,Math.min(20,page))),"drawable",getPackageName());
+  if(id!=0){
+   ImageView image=new ImageView(this);image.setImageResource(id);
+   image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+   banner.addView(image,new FrameLayout.LayoutParams(-1,-1));
+  }else{
+   banner.addView(new StudentsIllustrationView(this),new FrameLayout.LayoutParams(-1,-1));
+  }
+  View contrast=new View(this);
+  contrast.setBackground(new android.graphics.drawable.GradientDrawable(
+    android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+    new int[]{0xE90A2B83,0xA91F53B8,0x001B4EA9}));
+  banner.addView(contrast,new FrameLayout.LayoutParams(-1,-1));
+  LinearLayout overlay=PremiumDesign.column(this);
+  overlay.setPadding(dp(17),dp(17),dp(10),dp(8));
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(265),-2,Gravity.TOP|Gravity.LEFT);
+  banner.addView(overlay,lp);
+  TextView heading=text(title,21,0xFFFFFFFF,true);heading.setMaxLines(3);
+  overlay.addView(heading);
+  TextView supporting=text(caption,11,0xFFE0F5FF,false);supporting.setMaxLines(3);
+  PremiumDesign.add(overlay,supporting,8);
+  PremiumDesign.addHeight(body,banner,height,8);
+ }
+ private void section(String heading){
+  PremiumDesign.add(body,text(heading,18,PremiumDesign.INK,true),17);
+ }
+ private void zoneCard(String icon,String title,String subtitle,String buttonLabel,
+   int tint,int from,int to,Runnable open){
+  LinearLayout panel=PremiumDesign.column(this);
+  panel.setPadding(dp(14),dp(14),dp(14),dp(12));
+  panel.setBackground(PremiumDesign.outline(this,tint,0xFFDFE9F7,19));
+  panel.setElevation(dp(2));panel.setClickable(true);panel.setFocusable(true);
+  panel.setContentDescription(title+" "+buttonLabel);
+  LinearLayout head=PremiumDesign.row(this);head.setGravity(Gravity.CENTER_VERTICAL);
+  TextView mark=text(icon,25,from,true);mark.setGravity(Gravity.CENTER);
+  mark.setBackground(PremiumDesign.fill(this,0xFFFFFFFF,14));
+  head.addView(mark,new LinearLayout.LayoutParams(dp(52),dp(55)));
+  LinearLayout labels=PremiumDesign.column(this);labels.setPadding(dp(11),0,0,0);
+  TextView t=text(title,19,from,true);t.setMaxLines(2);labels.addView(t);
+  TextView desc=text(subtitle,12,PremiumDesign.INK,false);desc.setMaxLines(3);
+  PremiumDesign.add(labels,desc,5);
+  head.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
+  panel.addView(head);
+  TextView openButton=PremiumDesign.action(this,buttonLabel+"  ›",open,true);
+  PremiumDesign.add(panel,openButton,10);
+  panel.setOnClickListener(v->open.run());
+  PremiumDesign.add(body,panel,11);
+ }
+ private void shortcutRow(String[] titles,String[] symbols,int[] destinations){
+  LinearLayout row=PremiumDesign.row(this);
+  for(int i=0;i<titles.length&&i<4;i++){
+   final int d=destinations[i];
+   LinearLayout card=PremiumDesign.column(this);
+   card.setGravity(Gravity.CENTER);
+   card.setPadding(dp(3),dp(10),dp(3),dp(8));
+   card.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,0xFFD7E3F8,17));
+   card.setElevation(dp(1));
+   TextView symbol=text(symbols[i],27,new int[]{PremiumDesign.BLUE,PremiumDesign.PURPLE,
+    PremiumDesign.GREEN,PremiumDesign.AMBER}[i],true);
+   symbol.setGravity(Gravity.CENTER);card.addView(symbol,new LinearLayout.LayoutParams(-1,dp(39)));
+   TextView title=text(titles[i],11,PremiumDesign.NAVY,true);
+   title.setGravity(Gravity.CENTER);title.setMaxLines(2);card.addView(title);
+   card.setOnClickListener(v->go(d));card.setContentDescription(titles[i]);
+   LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(83),1);
+   if(i>0)lp.leftMargin=dp(5);
+   row.addView(card,lp);
+  }
+  PremiumDesign.add(body,row,12);
  }
  private void header(){
   LinearLayout h=PremiumDesign.row(this);h.setPadding(dp(10),dp(10),dp(10),dp(10));
@@ -109,21 +177,71 @@ public final class StudentTwentyPagesActivity extends Activity {
   action("Get Started →",()->go(2));link("Explore the 20-page Learning App",()->go(2));
  }
  private void home(){
-  hero("Learn • Practice\nAchieve Together","Original Student AI + GCE O/A Level",210);
-  add("Choose Your Learning Space",19);
-  action("🤖 Original Student AI · 100 Prompts / Case Studies / Courses",()->go(9));
-  action("🎓 GCE O Level & A Level · 24 Subject Tracks",()->go(3));
-  tiles(new String[]{"Prompt 100","Case Studies","Courses","AI Tutor"},new String[]{"✦","▤","▶","🤖"},new int[]{9,11,12,8});
-  tiles(new String[]{"Practice","Written","Audit","Progress"},new String[]{"✓","✎","PDF","▥"},new int[]{6,14,13,16});
+  hero("Home Dashboard","Choose your learning journey",185);
+  section("Choose a learning space");
+  zoneCard("✦","Original Student AI",
+   "100 AI Prompts • Offline Case Studies\nBuild My Prompt • OpenAI Courses",
+   "Open Original Student AI",0xFFF0E9FF,0xFF7A37E9,PremiumDesign.BLUE,()->go(9));
+  zoneCard("🎓","GCE O Level & A Level",
+   "24 Subjects • Lessons • Quiz\nWritten Practice • Syllabus Audit",
+   "Open GCE Study",0xFFE5F4FF,PremiumDesign.BLUE,PremiumDesign.PURPLE,()->go(3));
+  section("Quick Access");
+  shortcutRow(new String[]{"Prompt 100","AI Tutor","Quiz","Syllabus"},
+    new String[]{"100","🤖","✓","PDF"},new int[]{9,8,6,13});
+  link("▶   Continue Learning",()->go(3));
  }
  private void subjects(){
-  hero("Explore Subjects","Cambridge 2026 learning guides",175);
-  link(level==0?"Switch to AS/A Level":"Switch to O Level",()->{level=1-level;render();});
-  for(int i=0;i<12;i++){
-   int chosen=i;String name=level==0?OLevel2026.SUBJECTS[i].name:ALevel2026.SUBJECTS[i].name;
-   String cd=level==0?OLevel2026.SUBJECTS[i].code:ALevel2026.SUBJECTS[i].code;
-   link("📘 "+name+" ("+cd+") →",()->{subject=chosen;topic=0;go(4);});
+  hero("GCE Study","O Level & AS/A Level · 2026 syllabuses",149);
+  LinearLayout switches=PremiumDesign.row(this);
+  for(int i=0;i<2;i++){
+   final int n=i;
+   TextView pill=PremiumDesign.pill(this,i==0?"O Level (12)":"AS/A Level (12)",level==i);
+   pill.setGravity(Gravity.CENTER);pill.setOnClickListener(v->{level=n;render();});
+   LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(46),1);
+   if(i>0)lp.leftMargin=dp(8);switches.addView(pill,lp);
   }
+  PremiumDesign.add(body,switches,14);
+  EditText searchBox=new EditText(this);
+  searchBox.setSingleLine(true);searchBox.setTextSize(14);
+  searchBox.setHint("Search subject name / syllabus code");
+  searchBox.setPadding(dp(16),dp(9),dp(16),dp(9));
+  searchBox.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,PremiumDesign.BORDER,17));
+  PremiumDesign.add(body,searchBox,11);
+  section("Subjects & topics");
+  LinearLayout list=PremiumDesign.column(this);PremiumDesign.add(body,list,5);
+  final ArrayList<String> names=new ArrayList<>();final ArrayList<String> codes=new ArrayList<>();
+  for(int i=0;i<12;i++){
+   final int chosen=i;
+   String name=level==0?OLevel2026.SUBJECTS[i].name:ALevel2026.SUBJECTS[i].name;
+   String code=level==0?OLevel2026.SUBJECTS[i].code:ALevel2026.SUBJECTS[i].code;
+   names.add(name);codes.add(code);
+   LinearLayout row=PremiumDesign.row(this);row.setGravity(Gravity.CENTER_VERTICAL);
+   row.setPadding(dp(10),dp(9),dp(10),dp(9));
+   row.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,PremiumDesign.BORDER,17));
+   TextView icon=text(i%3==0?"A":i%3==1?"∑":"✦",24,
+     i%2==0?PremiumDesign.PURPLE:PremiumDesign.BLUE,true);
+   icon.setGravity(Gravity.CENTER);icon.setBackground(PremiumDesign.fill(this,0xFFECF1FF,13));
+   row.addView(icon,new LinearLayout.LayoutParams(dp(55),dp(55)));
+   LinearLayout center=PremiumDesign.column(this);center.setPadding(dp(12),0,dp(5),0);
+   TextView title=text(name,15,PremiumDesign.INK,true);title.setMaxLines(2);center.addView(title);
+   PremiumDesign.add(center,text("Syllabus "+code,11,PremiumDesign.MUTED,false),5);
+   row.addView(center,new LinearLayout.LayoutParams(0,-2,1));
+   int[] stats=new OfflineQuizHistory(this).totals(level==0?"O":"A",code);
+   View progress=PremiumDesign.progressCircle(this,stats[1],stats[2],PremiumDesign.GREEN,53);
+   row.addView(progress,new LinearLayout.LayoutParams(dp(56),dp(56)));
+   row.setOnClickListener(v->{subject=chosen;topic=0;go(4);});
+   PremiumDesign.add(list,row,7);
+  }
+  searchBox.addTextChangedListener(new TextWatcher(){
+   public void beforeTextChanged(CharSequence s,int st,int count,int after){}
+   public void onTextChanged(CharSequence s,int st,int before,int count){
+    String q=s.toString().trim().toLowerCase(java.util.Locale.ROOT);
+    for(int i=0;i<list.getChildCount();i++)
+      list.getChildAt(i).setVisibility(names.get(i).toLowerCase(java.util.Locale.ROOT).contains(q)||
+        codes.get(i).contains(q)?View.VISIBLE:View.GONE);
+   }
+   public void afterTextChanged(Editable e){}
+  });
  }
  private void detail(){
   hero(subjectName(),code()+" • 2026 Syllabus",155);
@@ -166,13 +284,36 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("Study a Cambridge Subject",()->go(3));
  }
  private void prompts(){
-  hero("AI Prompt 100","100 original prompts for student learning",144);
-  action("Build My Prompt",()->go(10));
-  link("Offline Case Studies",()->go(11));
-  link("OpenAI Academy Online Courses",()->go(12));
-  for(PromptLibrary.Item t:PromptLibrary.ALL){
-   link("#"+t.id+" "+t.title,()->AiProviderRouter.chooseAndRun(this,t.prompt(),"student_prompt_"+t.id,t.title));
+  hero("Original Student AI","100 student prompts • Offline learning",150);
+  section("Original Student AI Tools");
+  shortcutRow(new String[]{"100 Prompts","Offline Cases","OpenAI Courses","Build Prompt"},
+    new String[]{"100","▤","▶","✦"},new int[]{9,11,12,10});
+  link("🤖  AI Teacher — Choose App AI / ChatGPT / Gemini",()->go(8));
+  section("AI Prompt 100 Library");
+  EditText searchBox=new EditText(this);searchBox.setSingleLine(true);
+  searchBox.setTextSize(15);searchBox.setHint("Search prompt titles…");
+  searchBox.setPadding(dp(14),dp(10),dp(14),dp(10));
+  searchBox.setBackground(PremiumDesign.outline(this,0xFFFFFFFF,PremiumDesign.BORDER,17));
+  PremiumDesign.add(body,searchBox,10);
+  LinearLayout results=PremiumDesign.column(this);PremiumDesign.add(body,results,6);
+  for(PromptLibrary.Item prompt:PromptLibrary.ALL){
+   TextView item=PremiumDesign.action(this,"#"+prompt.id+"  "+prompt.title+"   ›",
+     ()->AiProviderRouter.chooseAndRun(this,prompt.prompt(),
+       "student_prompt_"+prompt.id,prompt.title),false);
+   PremiumDesign.add(results,item,6);
   }
+  searchBox.addTextChangedListener(new TextWatcher(){
+   public void beforeTextChanged(CharSequence s,int start,int count,int after){}
+   public void onTextChanged(CharSequence s,int start,int before,int count){
+    String q=s.toString().trim().toLowerCase(java.util.Locale.ROOT);
+    for(int i=0;i<results.getChildCount();i++){
+     View v=results.getChildAt(i);
+     String title=((TextView)v).getText().toString().toLowerCase(java.util.Locale.ROOT);
+     v.setVisibility(title.contains(q)?View.VISIBLE:View.GONE);
+    }
+   }
+   public void afterTextChanged(Editable e){}
+  });
  }
  private void builder(){
   hero("Build My Prompt","Ready-to-use student AI prompt composer",132);
