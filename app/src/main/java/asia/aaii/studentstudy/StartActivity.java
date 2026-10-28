@@ -72,7 +72,7 @@ public final class StartActivity extends Activity {
   fallback.setMinHeight(dp(55));
   body.addView(fallback,new LinearLayout.LayoutParams(-1,-2));
   gap(body,28);
-  body.addView(label("V2.35.0 · Native Android UI",13,false));
+  body.addView(label("V2.36.0 · Native Android UI",13,false));
   gap(body,9);
   body.addView(label("OPEN APP ကိုနှိပ်ပြီး စတင်ပါ။\nPremium Screen မှ ပြဿနာရှိလျှင် BASIC INTERFACE ကိုသုံးနိုင်ပါတယ်။",12,false));
  }
