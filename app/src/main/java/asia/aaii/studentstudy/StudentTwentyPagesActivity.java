@@ -141,7 +141,7 @@ public final class StudentTwentyPagesActivity extends Activity {
  private String pageTitle(){
   final String[] names={"","Welcome","Home","Subjects","Subject Detail","Lessons",
     "Practice & Quiz","Results","AI Tutor","AI Prompt 100","Build My Prompt",
-    "Offline Case Studies","Online Courses","Syllabus Audit","Written Practice",
+    "Offline Case Studies","Study Resources","Syllabus Audit","Written Practice",
     "Mock Exam","Learning Progress","Study Plan","Settings & Profile",
     "Help & Community","About App"};
   return names[Math.max(1,Math.min(20,page))];
@@ -228,7 +228,7 @@ public final class StudentTwentyPagesActivity extends Activity {
    case 1:splash();break;case 2:home();break;case 3:subjects();break;
    case 4:detail();break;case 5:lesson();break;case 6:practice();break;
    case 7:result();break;case 8:tutor();break;case 9:prompts();break;
-   case 10:builder();break;case 11:cases();break;case 12:courses();break;
+   case 10:builder();break;case 11:cases();break;case 12:lesson();break;
    case 13:audit();break;case 14:written();break;case 15:mock();break;
    case 16:progress();break;case 17:planner();break;case 18:settings();break;
    case 19:help();break;default:about();
@@ -807,6 +807,10 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("✦ Create an AI Revision Prompt",()->launch(PromptStudioActivity.class));
  }
  private void settings(){
+  link("Account · Registration / License / Sign Out",()->{
+    Intent i=new Intent(this,StudentLicenseActivity.class);
+    i.putExtra("account_menu",true);startActivity(i);
+  });
   hero("Settings & Profile","Real app preferences and local learning tools",166);
   section("Student Profile");
   String nickname=prefs.getString("student_nickname","").trim();
