@@ -85,7 +85,7 @@ public final class StudentTwentyPagesActivity extends Activity {
      android.content.res.ColorStateList.valueOf(0x44FFFFFF),bg,null));
   panel.setElevation(dp(4));
   panel.setClickable(true);panel.setFocusable(true);
-  panel.setMinHeight(dp(118));
+  panel.setMinimumHeight(dp(118));
   panel.setContentDescription(title+". "+subtitle.replace('\n',' ')+". Open");
   LinearLayout row=PremiumDesign.row(this);
   row.setGravity(Gravity.CENTER_VERTICAL);
