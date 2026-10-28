@@ -21,6 +21,7 @@ public final class StudentTwentyPagesActivity extends Activity {
  private int page=1,level=0,subject=1,topic=0,question=0,selected=-1,caseIndex=-1,quizCorrect=0;
  private String search="",language="MM";
  private LinearLayout root,body;private SharedPreferences prefs;
+ private LinearLayout bottomNavigation;
  private final ArrayDeque<Integer> pageHistory=new ArrayDeque<>();
  private final ArrayList<Boolean> quizAnswers=new ArrayList<>();
  private int dp(int n){return StudyDesign.dp(this,n);}
@@ -178,14 +179,18 @@ public final class StudentTwentyPagesActivity extends Activity {
   state.putIntArray("navigation_stack",route);
  }
  private void render(){
+  bottomNavigation=null;
   root=PremiumDesign.column(this);
   root.setBackground(PremiumDesign.grad(this,0xFFECF7FF,0xFFF7F0FF,0));
   setContentView(root);
   getWindow().setStatusBarColor(PremiumDesign.NAVY);
   getWindow().setNavigationBarColor(0xFFF9FBFF);
+  getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
   if(android.os.Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,insets)->{
-   android.graphics.Insets z=insets.getInsets(android.view.WindowInsets.Type.systemBars());
-   v.setPadding(z.left,z.top,z.right,z.bottom);
+   android.graphics.Insets sys=insets.getInsets(android.view.WindowInsets.Type.systemBars());
+   boolean keyboard=insets.isVisible(android.view.WindowInsets.Type.ime());
+   v.setPadding(sys.left,sys.top,sys.right,keyboard?0:sys.bottom);
+   if(bottomNavigation!=null)bottomNavigation.setVisibility(keyboard?View.GONE:View.VISIBLE);
    return insets;
   });
   header();
@@ -241,6 +246,7 @@ public final class StudentTwentyPagesActivity extends Activity {
    if(i>0)lp.leftMargin=dp(3);
    nav.addView(cell,lp);
   }
+  bottomNavigation=nav;
   root.addView(nav,new LinearLayout.LayoutParams(-1,-2));
  }
  private void tiles(String[] labels,String[] icons,int[] dest){
