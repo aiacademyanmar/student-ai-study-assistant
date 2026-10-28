@@ -1,0 +1,65 @@
+name: Student AI Standalone V1.9 — Build Native APK
+on:
+  push:
+    branches: [student-ai-standalone-v1.9-build]
+    paths:
+      - ".github/workflows/student-ai-v19-build.yml"
+      - "STUDENT_AI_V1_9_BUILD.md"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout build branch
+        uses: actions/checkout@v4
+      - name: Download original Student AI V1.9 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          file_id="1KDQhd5C3bRka3ExcawB_HW-VIgVTJ5jz"
+          curl -fLsS --retry 3 --connect-timeout 30 "https://drive.google.com/uc?export=download&id=${file_id}" -o /tmp/student-ai-source.zip
+          if ! unzip -tqq /tmp/student-ai-source.zip; then
+            curl -fLsS --retry 3 --connect-timeout 30 "https://drive.usercontent.google.com/download?id=${file_id}&export=download&confirm=t" -o /tmp/student-ai-source.zip
+          fi
+          unzip -tqq /tmp/student-ai-source.zip
+          mkdir -p "$GITHUB_WORKSPACE/standalone-v19"
+          unzip -q /tmp/student-ai-source.zip -d "$GITHUB_WORKSPACE/standalone-v19"
+          test -f standalone-v19/android/app/build.gradle.kts
+          grep -q 'versionName="1.9.0"' standalone-v19/android/app/build.gradle.kts
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Build standalone Android debug APK
+        env:
+          STUDENT_AI_BASE_URL: ${{ vars.STUDENT_AI_BASE_URL }}
+        shell: bash
+        working-directory: standalone-v19/android
+        run: |
+          set -euo pipefail
+          api_url="${STUDENT_AI_BASE_URL:-https://aaii.asia/studentai/}"
+          [[ "$api_url" == https://* ]] || { echo "::error::STUDENT_AI_BASE_URL must be HTTPS"; exit 1; }
+          if [[ -z "${STUDENT_AI_BASE_URL:-}" ]]; then
+            echo "::warning::Building against unverified default https://aaii.asia/studentai/. Configure repo Actions variable STUDENT_AI_BASE_URL with deployed API endpoint for live use."
+          fi
+          gradle --no-daemon --stacktrace assembleDebug "-PSTUDENT_AI_BASE_URL=$api_url"
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/STUDENT_AI_STANDALONE_V1_9_DEBUG.apk"
+          sha256sum "$GITHUB_WORKSPACE/STUDENT_AI_STANDALONE_V1_9_DEBUG.apk" > "$GITHUB_WORKSPACE/STUDENT_AI_STANDALONE_V1_9_DEBUG.sha256"
+      - name: Upload installable debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: STUDENT_AI_STANDALONE_V1_9_DEBUG_APK
+          path: |
+            STUDENT_AI_STANDALONE_V1_9_DEBUG.apk
+            STUDENT_AI_STANDALONE_V1_9_DEBUG.sha256
+          if-no-files-found: error
+          retention-days: 30
