@@ -69,7 +69,7 @@ public final class StartActivity extends Activity {
   body.addView(open,new LinearLayout.LayoutParams(-1,-2));
   gap(body,13);
   gap(body,25);
-  body.addView(label("V2.38.0 · Native Android UI",13,false));
+  body.addView(label("V2.39.0 · Native Android UI",13,false));
   gap(body,9);
   body.addView(label("OPEN APP ကိုနှိပ်ပြီး Student AI Home သို့ ဝင်ရောက်ပါ။",12,false));
  }
