@@ -45,6 +45,8 @@ public final class StudentTwentyPagesActivity extends Activity {
   FrameLayout banner=new FrameLayout(this);
   banner.setBackground(PremiumDesign.grad(this,PremiumDesign.BLUE,PremiumDesign.PURPLE,24));
   banner.setClipToOutline(true);
+  int availableDp=Math.round(getResources().getDisplayMetrics().widthPixels/getResources().getDisplayMetrics().density);
+  int safeWidth=Math.max(120,Math.min(230,(int)(availableDp*.57f)));
   int id=getResources().getIdentifier(String.format(java.util.Locale.US,"ui_hero_%02d",
     Math.max(1,Math.min(20,page))),"drawable",getPackageName());
   if(id!=0){
@@ -61,11 +63,11 @@ public final class StudentTwentyPagesActivity extends Activity {
   banner.addView(contrast,new FrameLayout.LayoutParams(-1,-1));
   LinearLayout overlay=PremiumDesign.column(this);
   overlay.setPadding(dp(17),dp(17),dp(10),dp(8));
-  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(265),-2,Gravity.TOP|Gravity.LEFT);
+  FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(safeWidth),-2,Gravity.TOP|Gravity.LEFT);
   banner.addView(overlay,lp);
-  TextView heading=text(title,21,0xFFFFFFFF,true);heading.setMaxLines(3);
+  TextView heading=text(title,availableDp<350?17:20,0xFFFFFFFF,true);heading.setMaxLines(3);
   overlay.addView(heading);
-  TextView supporting=text(caption,11,0xFFE0F5FF,false);supporting.setMaxLines(3);
+  TextView supporting=text(caption,availableDp<350?10:11,0xFFE0F5FF,false);supporting.setMaxLines(3);
   PremiumDesign.add(overlay,supporting,8);
   PremiumDesign.addHeight(body,banner,height,8);
  }
