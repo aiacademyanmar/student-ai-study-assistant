@@ -54,6 +54,10 @@ public final class StudentTwentyPagesActivity extends Activity {
  }
  private void render(){
   root=PremiumDesign.column(this);root.setBackground(PremiumDesign.grad(this,0xFFECF7FF,0xFFF7F0FF,0));setContentView(root);
+  if(android.os.Build.VERSION.SDK_INT>=35)root.setOnApplyWindowInsetsListener((v,insets)->{
+   android.graphics.Insets z=insets.getInsets(android.view.WindowInsets.Type.systemBars());
+   v.setPadding(z.left,z.top,z.right,z.bottom);return insets;
+  });
   header();ScrollView sc=new ScrollView(this);sc.setFillViewport(false);
   body=PremiumDesign.column(this);body.setPadding(dp(13),dp(11),dp(13),dp(30));sc.addView(body);
   root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
@@ -254,7 +258,7 @@ public final class StudentTwentyPagesActivity extends Activity {
  }
  private void about(){
   hero("Student AI Study Assistant","Independent Myanmar learning companion",160);
-  add("Version 2.31.0 · 20-screen native UI",19);
+  add("Version 2.32.0 · 20-screen illustrated native UI",19);
   add("100 original AI Prompts · 8 offline fictional case studies · 24 GCE tracks · 192 MCQs · 48 written tasks",14);
   add("Not affiliated with or endorsed by Cambridge International or OpenAI.",12);
   link("Official Academy Courses",()->AcademyBrowser.openCourses(this));
