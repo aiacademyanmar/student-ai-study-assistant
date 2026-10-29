@@ -1,6 +1,7 @@
 package asia.aaii.studentstudy;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -25,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * V2.45 authenticated read-only Cloud Dashboard.
+ * V2.46 authenticated Cloud Dashboard and deployment readiness checks.
  * Prompt progress reflects COPIED prompts, never academic completion or grades.
  */
 public final class StudentCloudDashboardActivity extends Activity {
@@ -95,6 +96,7 @@ public final class StudentCloudDashboardActivity extends Activity {
     add(root,label("Progress by Subject Category",18,true,INK),20);
     trackCards=column();add(root,trackCards,7);
     add(root,button("Refresh My Study Progress",this::load),15);
+    add(root,button("Run V2.46 Server Readiness Checks",this::diagnose),9);
     add(root,button("My Subject Subscription Packages",()->
       startActivity(new Intent(this,SubjectPackagesActivity.class))),8);
     add(root,button("GCE O / AS & A Prompt Library",()->
@@ -135,6 +137,43 @@ public final class StudentCloudDashboardActivity extends Activity {
           "\nCheck account, HTTPS API URL, deployment and V2.45 migration preflight.");
         trackCards.removeAllViews();
       });}
+    });
+  }
+  private void diagnose(){
+    serverStatus.setText("Checking V2.46 cloud catalog, account and permissions…");
+    executor.execute(()->{
+      try {
+        JSONObject data=request("deployment-readiness");
+        JSONObject checks=data.getJSONObject("checks");
+        int subjects=checks.optJSONObject("subjects")==null?0:checks.optJSONObject("subjects").optInt("actual");
+        int prompts=checks.optJSONObject("prompts")==null?0:checks.optJSONObject("prompts").optInt("actual");
+        int free=checks.optJSONObject("free_previews")==null?0:checks.optJSONObject("free_previews").optInt("actual");
+        boolean catalogReady=data.optBoolean("catalog_ready",false);
+        boolean aiConfigured=checks.optJSONObject("ai_configured")!=null&&
+          checks.optJSONObject("ai_configured").optBoolean("pass");
+        String report="Cloud API V"+data.optString("version","unknown")+
+          "\\nStudent authenticated: "+data.optBoolean("authenticated")+
+          "\\nDevice bound: "+data.optBoolean("device_bound")+
+          "\\nCatalog Subjects: "+subjects+" / 91"+
+          "\\nPublished Prompts: "+prompts+" / 910"+
+          "\\nFree Preview Prompts: "+free+" / 91"+
+          "\\nAI Key configured: "+aiConfigured+
+          "\\nYour active subject subscriptions: "+data.optInt("active_subject_subscriptions")+
+          "\\nCatalog counts matching: "+catalogReady+
+          "\\n\\nThis checks data counts, not actual payment processing or Samsung compatibility.";
+        runOnUiThread(()->{
+          serverStatus.setText(catalogReady?"Catalog readiness check: PASSED":"Catalog readiness: INCOMPLETE");
+          new AlertDialog.Builder(this).setTitle("V2.46 Cloud Readiness")
+            .setMessage(report).setPositiveButton("OK",null).show();
+        });
+      }catch(Exception ex) {
+        runOnUiThread(()->{
+          serverStatus.setText("Readiness check failed: "+ex.getMessage());
+          new AlertDialog.Builder(this).setTitle("V2.46 Server Not Ready")
+            .setMessage("Install the V2.46 PHP Server to staging and verify registration, migrations and API address.\\n"+ex.getMessage())
+            .setPositiveButton("OK",null).show();
+        });
+      }
     });
   }
   private void drawTracks(JSONArray tracks){
