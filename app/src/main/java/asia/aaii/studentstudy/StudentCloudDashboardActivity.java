@@ -87,7 +87,7 @@ public final class StudentCloudDashboardActivity extends Activity {
     root=column();root.setPadding(dp(16),dp(25),dp(16),dp(28));
     scroll.addView(root);setContentView(scroll);
     add(root,label("My Study Cloud Dashboard",23,true,INK),3);
-    add(root,label("Student AI V2.48 • Cloud & Staging Evidence",13,false,MUTED),8);
+    add(root,label("Student AI V2.49 • Cloud Integration Test",13,false,MUTED),8);
     headline=label("Connecting to server...",17,true,BLUE);add(root,headline,16);
     totalProgress=new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
     totalProgress.setMax(100);add(root,totalProgress,12);
@@ -98,6 +98,7 @@ public final class StudentCloudDashboardActivity extends Activity {
     add(root,button("Refresh My Study Progress",this::load),15);
     add(root,button("Run V2.46 Server Readiness Checks",this::diagnose),9);
     add(root,button("V2.48 Read-only Release Evidence",this::showReleaseEvidence),9);
+    add(root,button("V2.49 Verify Cloud Integration Contract",this::verifyIntegrationContract),9);
     add(root,button("My Subject Subscription Packages",()->
       startActivity(new Intent(this,SubjectPackagesActivity.class))),8);
     add(root,button("GCE O / AS & A Prompt Library",()->
@@ -226,6 +227,64 @@ public final class StudentCloudDashboardActivity extends Activity {
       }
     });
   }
+
+  /**
+   * V2.49 read-only integration contract.
+   * This NEVER requests purchases, mutates user progress or invokes paid AI.
+   */
+  private void verifyIntegrationContract(){
+    serverStatus.setText("Checking V2.49 schema, catalog and your login…");
+    executor.execute(()->{
+      try {
+        JSONObject r=request("integration-readiness");
+        JSONObject checks=r.optJSONObject("catalog_checks");
+        boolean passes=r.optBoolean("schema_ready")&&
+          r.optBoolean("schema_columns_ready")&&
+          r.optBoolean("catalog_ready")&&"PASS".equals(r.optString("integration_gate"));
+        StringBuilder s=new StringBuilder();
+        s.append("Server API V").append(r.optString("version","unknown"));
+        s.append("\nCatalog verification: ").append(passes?"PASS":"INCOMPLETE");
+        s.append("\nDB tables: ").append(r.optBoolean("schema_ready")?"Ready":"Incomplete");
+        s.append("\nRequired columns: ").append(r.optBoolean("schema_columns_ready")?"Ready":"Incomplete");
+        if(checks!=null){
+          for(String key:new String[]{"subjects","prompts","free_previews"}){
+            JSONObject x=checks.optJSONObject(key);
+            if(x!=null)s.append("\n").append(key).append(": ")
+              .append(x.isNull("actual")?"missing":x.optString("actual"))
+              .append(" / ").append(x.optString("expected"));
+          }
+        }
+        JSONArray missingTables=r.optJSONArray("missing_tables");
+        JSONArray missingColumns=r.optJSONArray("missing_columns");
+        if(missingTables!=null&&missingTables.length()>0)
+          s.append("\nMissing tables: ").append(missingTables.toString());
+        if(missingColumns!=null&&missingColumns.length()>0) {
+          s.append("\nMissing columns: ").append(missingColumns.length());
+          for(int i=0;i<Math.min(6,missingColumns.length());i++)
+            s.append("\n  • ").append(missingColumns.optString(i));
+        }
+        s.append("\n\nThis is read-only, not a payment or AI provider test.");
+        s.append("\nLive Free/Premium account tests and Samsung tests are separate.");
+        s.append("\nProduction approved: NO");
+        final String display=s.toString();
+        runOnUiThread(()->{
+          serverStatus.setText("V2.49 Integration Contract: "+
+            (passes?"PASS (not release certified)":"INCOMPLETE"));
+          new AlertDialog.Builder(this).setTitle("Student AI V2.49 Integration")
+            .setMessage(display).setPositiveButton("Close",null).show();
+        });
+      } catch(Exception e){
+        final String message=e.getMessage();
+        runOnUiThread(()->{
+          serverStatus.setText("V2.49 API unavailable: "+message);
+          new AlertDialog.Builder(this).setTitle("V2.49 Cloud Check Failed")
+            .setMessage("Deploy matching V2.49 server to staging and confirm the login token/device ID.\n"+message)
+            .setPositiveButton("Close",null).show();
+        });
+      }
+    });
+  }
+
   private void drawTracks(JSONArray tracks){
     trackCards.removeAllViews();
     if(tracks==null)return;
