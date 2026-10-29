@@ -807,6 +807,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("✦ Create an AI Revision Prompt",()->launch(PromptStudioActivity.class));
  }
  private void settings(){
+  link("📚 Subject Subscriptions · GCE O / AS & A / University",()->launch(SubjectPackagesActivity.class));
   link("Account · Registration / License / Sign Out",()->{
     Intent i=new Intent(this,StudentLicenseActivity.class);
     i.putExtra("account_menu",true);startActivity(i);
