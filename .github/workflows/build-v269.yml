@@ -1,0 +1,36 @@
+name: Student AI V2.69 Android APK Build
+on:
+  workflow_dispatch:
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require V2.69 project files
+        run: |
+          test -f android_v269/settings.gradle.kts
+          test -f android_v269/app/build.gradle.kts
+          test -f validation/validate_v269.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - run: python3 validation/validate_v269.py
+      - name: Unit tests
+        working-directory: android_v269
+        run: gradle --no-daemon :app:testDebugUnitTest
+      - name: Build APK
+        working-directory: android_v269
+        run: gradle --no-daemon :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V269-debug-apk
+          path: android_v269/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
