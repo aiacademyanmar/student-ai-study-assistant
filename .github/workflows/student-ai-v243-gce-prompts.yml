@@ -3,6 +3,8 @@ on:
   push:
     branches: [student-ai-study-v2.43-gce-prompts]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:
