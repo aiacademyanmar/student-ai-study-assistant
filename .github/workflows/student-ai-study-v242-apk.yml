@@ -3,6 +3,8 @@ on:
   push:
     branches: [student-ai-study-v2.42-subject-packages]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:
