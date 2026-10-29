@@ -10,8 +10,8 @@ android {
         applicationId 'asia.aaii.studentstudy'
         minSdk 23
         targetSdk 35
-        versionCode 43
-        versionName '2.40.0'
+        versionCode 52
+        versionName '2.48.0'
     }
 
     buildTypes {
@@ -25,4 +25,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures { buildConfig true }
+    defaultConfig {
+        buildConfigField 'String', 'STUDENT_AI_API_URL', '"https://aaii.asia/edu/student/public/api.php"'
+    }
 }
