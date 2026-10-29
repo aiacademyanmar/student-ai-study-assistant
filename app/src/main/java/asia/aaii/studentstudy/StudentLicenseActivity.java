@@ -101,7 +101,7 @@ public final class StudentLicenseActivity extends Activity {
         pref(c).edit().putString("secret", Base64.encodeToString(cipher.getIV(),Base64.NO_WRAP)
             +"."+Base64.encodeToString(encrypted,Base64.NO_WRAP)).apply();
     }
-    private static String token(Context c) {
+    public static String token(Context c) {
         try {
             String s=pref(c).getString("secret","");
             String[] parts=s.split("\\.");
@@ -117,7 +117,7 @@ public final class StudentLicenseActivity extends Activity {
         return !token(c).isEmpty() && now < p.getLong("session_expires_ms",0)
             && now < p.getLong("license_expires_ms",0);
     }
-    private static String deviceId(Context c) {
+    public static String deviceId(Context c) {
         try {
             String androidId=Settings.Secure.getString(c.getContentResolver(),Settings.Secure.ANDROID_ID);
             String seed=c.getPackageName()+":"+String.valueOf(androidId);
