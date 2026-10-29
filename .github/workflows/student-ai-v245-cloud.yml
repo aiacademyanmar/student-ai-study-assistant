@@ -1,0 +1,36 @@
+name: Student AI Study V2.45 Cloud Dashboard APK
+on:
+  push:
+    branches: [student-ai-study-v2.45-cloud-dashboard]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Generate native illustrations
+        run: |
+          python -m pip install Pillow
+          python tools/generate_ui_png.py
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: STUDENT_AI_STUDY_V2_45_CLOUD_DASHBOARD_APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
