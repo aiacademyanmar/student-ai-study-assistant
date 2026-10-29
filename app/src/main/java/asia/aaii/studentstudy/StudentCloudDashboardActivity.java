@@ -87,7 +87,7 @@ public final class StudentCloudDashboardActivity extends Activity {
     root=column();root.setPadding(dp(16),dp(25),dp(16),dp(28));
     scroll.addView(root);setContentView(scroll);
     add(root,label("My Study Cloud Dashboard",23,true,INK),3);
-    add(root,label("Student AI V2.45 • Cloud & Subscription Diagnostics",13,false,MUTED),8);
+    add(root,label("Student AI V2.48 • Cloud & Staging Evidence",13,false,MUTED),8);
     headline=label("Connecting to server...",17,true,BLUE);add(root,headline,16);
     totalProgress=new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
     totalProgress.setMax(100);add(root,totalProgress,12);
@@ -97,6 +97,7 @@ public final class StudentCloudDashboardActivity extends Activity {
     trackCards=column();add(root,trackCards,7);
     add(root,button("Refresh My Study Progress",this::load),15);
     add(root,button("Run V2.46 Server Readiness Checks",this::diagnose),9);
+    add(root,button("V2.48 Read-only Release Evidence",this::showReleaseEvidence),9);
     add(root,button("My Subject Subscription Packages",()->
       startActivity(new Intent(this,SubjectPackagesActivity.class))),8);
     add(root,button("GCE O / AS & A Prompt Library",()->
@@ -171,6 +172,55 @@ public final class StudentCloudDashboardActivity extends Activity {
           serverStatus.setText("Readiness check failed: "+ex.getMessage());
           new AlertDialog.Builder(this).setTitle("V2.46 Server Not Ready")
             .setMessage("Install the V2.46 PHP Server to staging and verify registration, migrations and API address.\\n"+ex.getMessage())
+            .setPositiveButton("OK",null).show();
+        });
+      }
+    });
+  }
+
+  /** No migration/purchase side effects; requires current token + bound device. */
+  private void showReleaseEvidence(){
+    serverStatus.setText("Checking deployed V2.48 server evidence...");
+    executor.execute(()->{
+      try {
+        JSONObject r=request("release-evidence");
+        JSONObject checks=r.getJSONObject("checks");
+        String[] keys={"subjects","prompts","free_previews","duplicate_subject_keys","orphan_prompts"};
+        StringBuilder details=new StringBuilder();
+        details.append("Cloud API: V").append(r.optString("server_version","unknown"));
+        details.append("\\nSchema ready: ").append(r.optBoolean("schema_ready"));
+        details.append("\\nStaging catalog gate: ").append(r.optString("staging_gate","unknown"));
+        for(String key:keys) {
+          JSONObject check=checks.optJSONObject(key);
+          if(check!=null) details.append("\\n").append(key)
+            .append(": ").append(check.isNull("actual")?"missing":check.optString("actual"))
+            .append(" / ").append(check.optString("expected"))
+            .append(check.optBoolean("pass")?" ✓":" — incomplete");
+        }
+        JSONArray missing=r.optJSONArray("missing_tables");
+        if(missing!=null && missing.length()>0)
+          details.append("\\nMissing tables: ").append(missing.toString());
+        details.append("\\n\\nThis checks catalog and authentication only.");
+        details.append("\\nNot verified: payments, live AI, Samsung installation.");
+        details.append("\\nProduction release approved: NO");
+        final String text=details.toString();
+        final boolean good="PASS".equals(r.optString("staging_gate")) &&
+          "2.48.0".equals(r.optString("server_version"));
+        runOnUiThread(()->{
+          serverStatus.setText(good?
+            "V2.48 catalog evidence: PASS (not production certified)":
+            "V2.48: incomplete server catalog/migration");
+          new AlertDialog.Builder(this)
+            .setTitle("Read-only Staging Evidence").setMessage(text)
+            .setPositiveButton("OK",null).show();
+        });
+      } catch(Exception e) {
+        runOnUiThread(()->{
+          serverStatus.setText("V2.48 staging endpoint unavailable: "+e.getMessage());
+          new AlertDialog.Builder(this)
+            .setTitle("V2.48 Server Not Verified")
+            .setMessage("The latest V2.48 server API and database migration must be deployed to staging.\\n"+
+              e.getMessage())
             .setPositiveButton("OK",null).show();
         });
       }
