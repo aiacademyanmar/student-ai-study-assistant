@@ -24,7 +24,7 @@ public final class SpecializationProgressActivity extends Activity {
    "Engineering","Medicine","Management / Business"
  };
  private static final int[] TARGET={12,12,26,14,15,12};
- private static final int[] CONNECTED={12,12,0,0,0,0};
+ private static final int[] CONNECTED={12,12,26,14,15,12};
  private static final String[] DETAIL={
   "12 GCE O Level subjects available. AI Prompt Studio has 8 dynamically generated prompt modes; full official syllabus verification is separate.",
   "12 AS/A Level subjects available. AI Prompt Studio has 8 dynamically generated prompt modes; paper routes and alternative options need careful syllabus checking.",
@@ -54,7 +54,7 @@ public final class SpecializationProgressActivity extends Activity {
   LinearLayout labels=PremiumDesign.column(this);
   labels.setPadding(dp(12),0,0,0);
   labels.addView(text(LABELS[i],16,PremiumDesign.INK,true));
-  PremiumDesign.add(labels,text(done>0?"Native GCE prompts available":"Not yet merged into APK",
+  PremiumDesign.add(labels,text(done>0?"Native GCE prompts available":"Starter prompt builder available",
        12,PremiumDesign.MUTED,false),5);
   row.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
   TextView score=text(done+"/"+total,15,done>0?PremiumDesign.BLUE:PremiumDesign.MUTED,true);
@@ -64,8 +64,9 @@ public final class SpecializationProgressActivity extends Activity {
   PremiumDesign.add(outer,PremiumDesign.progress(this,done,total,PremiumDesign.BLUE,
       PremiumDesign.CYAN),12);
   PremiumDesign.add(outer,PremiumDesign.action(this,done>0?
-    "Open GCE Prompt Studio  ›":"View Integration Status  ›",()->{
-     if(done>0)startActivity(new Intent(this,PromptStudioActivity.class));
+    "Open GCE Prompt Studio  ›":"Open Specialize Prompt Studio  ›",()->{
+     if(i<2)startActivity(new Intent(this,PromptStudioActivity.class));
+     else startActivity(new Intent(this,SpecializedPromptActivity.class));
      else new AlertDialog.Builder(this).setTitle(LABELS[i])
       .setMessage(DETAIL[i]+"\n\nTarget: "+TARGET[i]+
        " subject tracks. Current native integration: 0. A prior V2.46 workstream described 10 authored prompts per specialized subject, but its files are not merged into this repository.")
@@ -105,18 +106,18 @@ public final class SpecializationProgressActivity extends Activity {
   LinearLayout overview=PremiumDesign.panel(this);
   overview.addView(text("Specialized Subject Prompt Readiness",20,
       PremiumDesign.NAVY,true));
-  PremiumDesign.add(overview,text("91 subject targets · Current Native APK integration",13,
+  PremiumDesign.add(overview,text("91 subject catalog tracks · 24 GCE + 67 starter specialty",13,
       PremiumDesign.MUTED,false),7);
   LinearLayout counters=PremiumDesign.row(this);
   counters.setGravity(Gravity.CENTER_VERTICAL);
-  TextView large=text("24 / 91",31,PremiumDesign.BLUE,true);
+  TextView large=text("91 / 91",31,PremiumDesign.BLUE,true);
   counters.addView(large,new LinearLayout.LayoutParams(0,-2,1));
-  counters.addView(text("26.4%",22,PremiumDesign.PURPLE,true));
+  counters.addView(text("100%",22,PremiumDesign.PURPLE,true));
   PremiumDesign.add(overview,counters,14);
-  PremiumDesign.add(overview,PremiumDesign.progress(this,24,91,
+  PremiumDesign.add(overview,PremiumDesign.progress(this,91,91,
       PremiumDesign.BLUE,PremiumDesign.CYAN),10);
   PremiumDesign.add(overview,text(
-    "Integrated subjects, not percent of syllabus completeness or quality.",11,
+    "91 catalog tracks have selectable prompt generators. This is NOT syllabus coverage or 910 fully authored lesson prompts.",11,
     PremiumDesign.MUTED,false),10);
   add(overview,8);
 
@@ -135,17 +136,17 @@ public final class SpecializationProgressActivity extends Activity {
   PremiumDesign.add(notes,text(
     "Separate from GCE and specialization prompts.",12,
     PremiumDesign.MUTED,false),7);
-  PremiumDesign.add(notes,text("Prior V2.46: 91 subjects / 910 authored prompts (reported)",15,
+  PremiumDesign.add(notes,text("V2.42: 67 extra tracks × 10 dynamic prompt modes",15,
       PremiumDesign.INK,true),13);
   PremiumDesign.add(notes,text(
-    "Those are from another source package. This GitHub Android project has not imported or independently validated all 910 prompts.",12,
+    "670 new prompt selections are dynamically generated starter templates. The prior V2.46 set of separately authored prompts is not imported or validated.",12,
     PremiumDesign.MUTED,false),7);
   add(notes,12);
 
   heading("Recommended Next Integration");
-  add(text("1. Import and verify original V2.46 source packages.\n"+
-    "2. Connect all 67 missing specialization subjects.\n"+
-    "3. Map 10 prompt types per subject to lessons and exercises.\n"+
+  add(text("1. Import and verify original V2.46 authored source packages.\n"+
+    "2. Map starter templates to institutional topics and lessons.\n"+
+    "3. Verify 67 specialization syllabuses with qualified educators.\n"+
     "4. Add real validation/coverage status and per-subject subscriptions.\n"+
     "5. Test learning screens on Android devices.",13,PremiumDesign.INK,false),10);
   add(PremiumDesign.action(this,"Back to Student AI Home",()->finish(),true),14);
