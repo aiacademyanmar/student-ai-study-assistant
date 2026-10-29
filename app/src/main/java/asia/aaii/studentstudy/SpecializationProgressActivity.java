@@ -63,14 +63,10 @@ public final class SpecializationProgressActivity extends Activity {
   outer.addView(row);
   PremiumDesign.add(outer,PremiumDesign.progress(this,done,total,PremiumDesign.BLUE,
       PremiumDesign.CYAN),12);
-  PremiumDesign.add(outer,PremiumDesign.action(this,done>0?
+  PremiumDesign.add(outer,PremiumDesign.action(this,i<2?
     "Open GCE Prompt Studio  ›":"Open Specialize Prompt Studio  ›",()->{
      if(i<2)startActivity(new Intent(this,PromptStudioActivity.class));
      else startActivity(new Intent(this,SpecializedPromptActivity.class));
-     else new AlertDialog.Builder(this).setTitle(LABELS[i])
-      .setMessage(DETAIL[i]+"\n\nTarget: "+TARGET[i]+
-       " subject tracks. Current native integration: 0. A prior V2.46 workstream described 10 authored prompts per specialized subject, but its files are not merged into this repository.")
-      .setPositiveButton("OK",null).show();
     },false),11);
   add(outer,11);
  }
