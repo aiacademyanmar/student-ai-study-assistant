@@ -30,6 +30,7 @@
         <activity android:name=".SyllabusCoverageActivity" android:exported="false" />
         <activity android:name=".PriorityStudyActivity" android:exported="false" />
         <activity android:name=".TeacherRentActivity" android:exported="false" />
+        <activity android:name=".StudentCloudDashboardActivity" android:exported="false" />
         <activity android:name=".UniversitySpecializedPromptsActivity" android:exported="false" />
         <activity android:name=".GceSpecializedPromptsActivity" android:exported="false" />
         <activity android:name=".SubjectPackagesActivity" android:exported="false" />
