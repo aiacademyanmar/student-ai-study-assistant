@@ -807,6 +807,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("✦ Create an AI Revision Prompt",()->launch(PromptStudioActivity.class));
  }
  private void settings(){
+  link("🎓 University / Engineering / Medicine / Management AI Prompts",()->launch(UniversitySpecializedPromptsActivity.class));
   link("✦ GCE Specialized AI Prompts · Study Progress",()->launch(GceSpecializedPromptsActivity.class));
   link("📚 Subject Subscriptions · GCE O / AS & A / University",()->launch(SubjectPackagesActivity.class));
   link("Account · Registration / License / Sign Out",()->{
