@@ -310,6 +310,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   section("Quick Access");
   shortcutRow(new String[]{"Prompt 100","Case Studies","Quiz","AI Tutor"},
      new String[]{"100","▤","✓","✦"},new int[]{9,11,6,8});
+  link("Specialize Subject Prompt Progress  ›",()->launch(SpecializationProgressActivity.class));
   link("Browse GCE Subjects  ›",()->go(3));
  }
  private void subjects(){
@@ -853,6 +854,7 @@ public final class StudentTwentyPagesActivity extends Activity {
   link("Select Academy Courses (external browser)",()->AcademyBrowser.openCourses(this));
   section("Support & App");
   link("Help & Community Resources",()->go(19));
+  link("Specialize Subject Prompt Progress",()->launch(SpecializationProgressActivity.class));
   link("About and Version",()->go(20));
  }
  private void editProfile(){
