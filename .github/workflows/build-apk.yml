@@ -66,7 +66,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Student-AI-Study-Assistant-V2.41-Specialize-Subject-Prompt-Progress-debug
+          name: Student-AI-Study-Assistant-V2.42-67-Specialized-Subjects-Prompts-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
