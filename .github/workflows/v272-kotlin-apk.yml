@@ -27,6 +27,17 @@ jobs:
           gdown 'https://drive.google.com/uc?id=1vY7FXd6GbV8XR45kimlcyGoKagATDEKL' --output source.zip
           echo "5aa35b9573ae553a4722dd00cffec8c4960ea0272c9fedc4cba7debe39de3f71  source.zip" | sha256sum -c -
           unzip -q source.zip
+      - name: Align Kotlin and Java JVM targets to 17
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android_v272/app/build.gradle.kts")
+          text=p.read_text()
+          before='android { namespace = "asia.aaii.studentai"'
+          after='android { compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }; namespace = "asia.aaii.studentai"'
+          assert before in text, "Build script layout changed; fix needs review"
+          p.write_text(text.replace(before,after,1))
+          PY
       - name: Validate source
         run: python3 validation/validate_v272.py
       - name: Build Kotlin APK
