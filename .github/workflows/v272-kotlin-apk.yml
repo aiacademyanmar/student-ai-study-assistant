@@ -1,0 +1,41 @@
+name: Student AI V2.72 Kotlin APK
+on:
+  push:
+    branches: [student-ai-v272-exact-ui]
+    paths: ['.github/workflows/v272-kotlin-apk.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Download versioned source from Google Drive
+        run: |
+          python3 -m pip install --quiet gdown
+          gdown --id 1vY7FXd6GbV8XR45kimlcyGoKagATDEKL --output source.zip
+          echo "5aa35b9573ae553a4722dd00cffec8c4960ea0272c9fedc4cba7debe39de3f71  source.zip" | sha256sum -c -
+          unzip -q source.zip
+      - name: Validate source
+        run: python3 validation/validate_v272.py
+      - name: Build Kotlin APK
+        working-directory: android_v272
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK exists
+        run: test -s android_v272/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V272-Kotlin-debug-apk
+          path: android_v272/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
