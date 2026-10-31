@@ -1,0 +1,62 @@
+name: Student AI V2.75 - Fixed Footer Native10 APK
+on:
+  push:
+    branches: [student-ai-v275-fixed-footer]
+    paths: ['.github/workflows/student-ai-v275-fixed-footer.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Download V2.75 Kotlin Native10 source
+        run: |
+          python3 -m pip install --quiet gdown
+          gdown 'https://drive.google.com/uc?id=15dvnyOZsjOJQ2o2giaxF6FfA-IrM8d26' --output source.zip
+          echo 'd6bc899a8990678d5f8d85cb5577a95f80367ca119b77a3b9650d68874657c93  source.zip' | sha256sum -c -
+          mkdir -p native10
+          unzip -q source.zip -d native10
+      - name: Verify system-footer positioning and native screens
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path("native10/android")
+          p=(root/"app/src/main/java/asia/aaii/studentai/NativeTenActivity.kt").read_text()
+          checks=["WindowCompat.setDecorFitsSystemWindows(window,false)","WindowInsetsCompat.Type.systemBars()","WindowInsetsCompat.Type.ime()","bottomMenu.visibility=if(imeOpen)View.GONE","root.setPadding(sys.left,sys.top,sys.right","bottomMenu=foot","1->home()","10->promptBuilder()"]
+          assert all(v in p for v in checks), "Missing footer/native screen code"
+          assert "ExactVisualActivity" not in p
+          gradle=(root/"app/build.gradle.kts").read_text()
+          assert 'versionCode = 275' in gradle
+          print("System navigation insets + fixed footer + ten native screens verified")
+          PY
+      - name: Build Android debug APK
+        working-directory: native10/android
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK package and launcher
+        run: |
+          test -s native10/android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging native10/android/app/build/outputs/apk/debug/app-debug.apk | tee badging.txt
+          grep -q "package: name='asia.aaii.studentai'" badging.txt
+      - name: Upload V2.75 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V275-Native10-FooterAbovePhoneBar-debug-APK
+          path: native10/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
