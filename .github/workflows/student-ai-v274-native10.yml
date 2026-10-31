@@ -29,8 +29,8 @@ jobs:
       - name: Fetch immutable V2.74 source backup
         run: |
           python3 -m pip install --quiet gdown
-          gdown 'https://drive.google.com/uc?id=1wsmBOJMHy-o6U0lv_qNfiYKX2o5TfCsn' --output source.zip
-          echo '78db20d821bc6d40e85e24af41bc094757ede99e23bdaddf47fe63de3b6990fa  source.zip' | sha256sum -c -
+          gdown 'https://drive.google.com/uc?id=1WhotRZ-pbpOTSqyW9KWSHk8gL_QeziNP' --output source.zip
+          echo '3e520b943d07991852d19b39418734b580f4cf35739280723f3ab5b67f9ff43c  source.zip' | sha256sum -c -
           unzip -q source.zip -d native10
           test -f native10/android/app/src/main/java/asia/aaii/studentai/NativeTenActivity.kt
           test ! -e native10/android/app/src/main/java/asia/aaii/studentai/ExactVisualActivity.kt
