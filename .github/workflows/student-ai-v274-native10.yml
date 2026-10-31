@@ -1,0 +1,64 @@
+name: Student AI V2.74 Native 10 Screens APK
+on:
+  push:
+    branches: [student-ai-v274-native10]
+    paths:
+      - '.github/workflows/student-ai-v274-native10.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Fetch immutable V2.74 source backup
+        run: |
+          python3 -m pip install --quiet gdown
+          gdown 'https://drive.google.com/uc?id=1wsmBOJMHy-o6U0lv_qNfiYKX2o5TfCsn' --output source.zip
+          echo '78db20d821bc6d40e85e24af41bc094757ede99e23bdaddf47fe63de3b6990fa  source.zip' | sha256sum -c -
+          unzip -q source.zip -d native10
+          test -f native10/android/app/src/main/java/asia/aaii/studentai/NativeTenActivity.kt
+          test ! -e native10/android/app/src/main/java/asia/aaii/studentai/ExactVisualActivity.kt
+      - name: Verify content and 10 native screens
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("native10/android/app/src/main")
+          cat=json.loads((root/"assets/catalog.json").read_text())
+          prompts=json.loads((root/"assets/prompts_910.json").read_text())
+          assert (len(cat["subjects"]),len(cat["lessons"]),len(cat["assessment_sets"]),len(prompts)) == (91,193,6,910)
+          activity=(root/"java/asia/aaii/studentai/NativeTenActivity.kt").read_text()
+          assert "1->home()" in activity and "10->promptBuilder()" in activity
+          assert "ExactVisualActivity" not in activity
+          PY
+      - name: Build real Android native widgets
+        working-directory: native10/android
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK and launcher
+        run: |
+          test -s native10/android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging native10/android/app/build/outputs/apk/debug/app-debug.apk | tee badging.txt
+          grep -q "package: name='asia.aaii.studentai'" badging.txt
+      - name: Upload installable debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V274-Native10-Installable-Debug-APK
+          path: native10/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
