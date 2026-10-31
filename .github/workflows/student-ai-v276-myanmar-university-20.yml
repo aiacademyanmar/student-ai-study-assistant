@@ -1,0 +1,71 @@
+name: Student AI V2.76 - Myanmar University 20 Majors Native APK
+on:
+  push:
+    branches: [student-ai-v276-myanmar-university-20]
+    paths: ['.github/workflows/student-ai-v276-myanmar-university-20.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Download verified V2.76 source backup
+        run: |
+          python3 -m pip install --quiet gdown
+          gdown 'https://drive.google.com/uc?id=1iQPObXzRApWOM0tqjzUgz25n3Uen2XA-' --output source.zip
+          echo '16cfa0f045d524c5a12c6c2ebb020a44310e5489422616a1c2fd9528a521048f  source.zip' | sha256sum -c -
+          mkdir -p native10
+          unzip -q source.zip -d native10
+      - name: Verify 20 majors, original curriculum, prompts, and fixed footer
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=Path('native10/android/app/src/main')
+          catalog=json.loads((r/'assets/catalog.json').read_text(encoding='utf-8'))
+          prompts=json.loads((r/'assets/prompts_910.json').read_text(encoding='utf-8'))
+          ss=catalog['subjects']; ls=catalog['lessons']
+          majors=[s for s in ss if s.get('track')=='Myanmar University']
+          assert (len(ss),len(ls),len(prompts),len(majors)) == (111,253,1110,20)
+          assert all(s.get('name_mm') for s in majors)
+          assert all(sum(l['subject_id']==s['id'] for l in ls)==3 for s in majors)
+          assert all(sum(p['subject_id']==s['id'] for p in prompts)==10 for s in majors)
+          assert len([s for s in ss if s.get('track')=='University'])==20
+          src=(r/'java/asia/aaii/studentai/NativeTenActivity.kt').read_text()
+          for key in ['WindowInsetsCompat.Type.systemBars()', 'bottomMenu.visibility=if(imeOpen)View.GONE', 'filter.take(140)', 'Myanmar University — 20 Majors', 'University-specific quiz not authored yet']:
+              assert key in src, key
+          assert 'ExactVisualActivity' not in src
+          assert 'versionCode = 276' in Path('native10/android/app/build.gradle.kts').read_text()
+          print('Verified 20 majors, 60 lessons, 200 study prompts, original data, native 10 screens and fixed footer')
+          PY
+      - name: Build V2.76 native Kotlin APK
+        working-directory: native10/android
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify package id
+        run: |
+          test -s native10/android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging native10/android/app/build/outputs/apk/debug/app-debug.apk | tee apk-badging.txt
+          grep -q "package: name='asia.aaii.studentai'" apk-badging.txt
+      - name: Upload installable APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V276-MyanmarUniversity20-Native10-FixedFooter-debugAPK
+          path: native10/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
