@@ -1,0 +1,46 @@
+name: Student AI V2.73 Approved UI Kotlin APK
+on:
+  push:
+    branches: [student-ai-v273-approved-ui-apk]
+    paths: ['.github/workflows/v273-approved-ui-kotlin-apk.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Download V2.73 approved UI source from Google Drive
+        run: |
+          python3 -m pip install --quiet gdown
+          gdown 'https://drive.google.com/uc?id=1_-7S6qOfOAXSQ1u9ER6ofCo3o9rW0gRX' --output source.zip
+          echo "b371bad40ceb371045c7c4911c6305c0df9de909081f16d8ae40cf5da5932b2c  source.zip" | sha256sum -c -
+          unzip -q source.zip
+      - name: Verify UI references and offline content
+        run: python3 validation/validate_v272.py
+      - name: Build V2.73 Native Kotlin debug APK
+        working-directory: android_v272
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK and application ID
+        run: |
+          test -s android_v272/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android_v272/app/build/outputs/apk/debug/app-debug.apk | tee apk-badging.txt
+          grep -q "package: name='asia.aaii.studentai'" apk-badging.txt
+      - name: Upload V2.73 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: StudentAI-V273-ApprovedUI-Kotlin-debug-APK
+          path: android_v272/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
