@@ -38,6 +38,16 @@ jobs:
           assert before in text, "Build script layout changed; fix needs review"
           p.write_text(text.replace(before,after,1))
           PY
+      - name: Fix Android ScrollView property
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android_v272/app/src/main/java/asia/aaii/studentai/DesignActivity.kt")
+          s=p.read_text()
+          old="fillViewport=false"
+          assert old in s
+          p.write_text(s.replace(old,"isFillViewport=false"))
+          PY
       - name: Validate source
         run: python3 validation/validate_v272.py
       - name: Build Kotlin APK
