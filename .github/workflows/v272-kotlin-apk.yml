@@ -24,7 +24,7 @@ jobs:
       - name: Download versioned source from Google Drive
         run: |
           python3 -m pip install --quiet gdown
-          gdown --id 1vY7FXd6GbV8XR45kimlcyGoKagATDEKL --output source.zip
+          gdown 'https://drive.google.com/uc?id=1vY7FXd6GbV8XR45kimlcyGoKagATDEKL' --output source.zip
           echo "5aa35b9573ae553a4722dd00cffec8c4960ea0272c9fedc4cba7debe39de3f71  source.zip" | sha256sum -c -
           unzip -q source.zip
       - name: Validate source
